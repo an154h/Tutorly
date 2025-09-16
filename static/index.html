@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorly - AI Homework Tutor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main App */
+        .main-app {
+            display: none;
+            height: 80vh;
+            min-height: 600px;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .user-id {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            height: calc(100% - 120px);
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.ai .message-content {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .subject-tag {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .rating-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .star {
+            cursor: pointer;
+            font-size: 18px;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            gap: 15px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+            max-height: 120px;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            padding: 15px 25px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 30px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid #e1e5e9;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .dashboard-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .recent-chats {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-item {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .chat-item:last-child {
+            border-bottom: none;
+        }
+
+        .chat-preview {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .chat-response {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .subject-chart {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-label {
+            width: 80px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .chart-progress {
+            flex: 1;
+            height: 20px;
+            background: #e1e5e9;
+            border-radius: 10px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .chart-value {
+            font-size: 0.9em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Status Indicators */
+        .ai-status {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-connected {
+            background: #28a745;
+        }
+
+        .status-mock {
+            background: #ffc107;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px 20px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            max-width: 70%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .login-screen {
+                padding: 40px 20px;
+            }
+
+            .logo {
+                font-size: 2.5em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .app-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+            }
+
+            .nav-tab {
+                white-space: nowrap;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .stat-number {
+                font-size: 2em;
+            }
+
+            .dashboard {
+                padding: 20px;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-screen">
+            <div class="logo">📚 Tutorly</div>
+            <p class="tagline">Your AI-powered homework companion</p>
+            
+            <form class="login-form" id="loginForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentName">Full Name</label>
+                        <input type="text" id="studentName" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input type="text" id="studentId" placeholder="Enter your student ID" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn">Start Learning</button>
+                </div>
+            </form>
+            
+            <div id="loginError" class="error hidden"></div>
+            
+            <div class="ai-status">
+                <span class="status-indicator status-connected" id="aiStatusIndicator"></span>
+                <span id="aiStatusText">Connecting to AI tutor...</span>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="mainApp" class="main-app">
+            <div class="app-header">
+                <div class="app-title">📚 Tutorly</div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Welcome!</div>
+                        <div class="user-id" id="userStudentId"></div>
+                    </div>
+                    <button class="btn" onclick="logout()" style="padding: 8px 16px; font-size: 14px;">Logout</button>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('chat')">💬 Chat</button>
+                <button class="nav-tab" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="chatTab" class="tab-content active">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            <div class="message-content">
+                                <strong>Hi there! 👋</strong><br><br>
+                                I'm Tutorly, your AI homework tutor powered by advanced AI! I'm here to help you understand your schoolwork through step-by-step explanations. 
+                                <br><br>
+                                Whether you're working on math problems, science concepts, English essays, history questions, or any other subject, just ask me a question and I'll guide you through it!
+                                <br><br>
+                                <strong>How I help:</strong><br>
+                                📝 Break down complex problems into simple steps<br>
+                                🤔 Ask questions to check your understanding<br>
+                                💡 Provide real-world examples and analogies<br>
+                                🎯 Focus on teaching, not just giving answers
+                                <br><br>
+                                What would you like to work on today? 📚
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <textarea 
+                            id="messageInput" 
+                            class="message-input" 
+                            placeholder="Ask me anything about your homework..."
+                            rows="1"
+                        ></textarea>
+                        <button id="sendBtn" class="send-btn" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content">
+                <div class="dashboard">
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalQuestions">0</div>
+                            <div class="stat-label">Questions Asked</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="avgRating">0.0</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="questionsToday">0</div>
+                            <div class="stat-label">Questions Today</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <h3 class="section-title">📊 Subject Breakdown</h3>
+                        <div class="subject-chart" id="subjectChart">
+                            <!-- Subject chart will be populated here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <h3 class="section-title">💬 Recent Conversations</h3>
+                        <div class="recent-chats" id="recentChats">
+                            <!-- Recent chats will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let sessionToken = null;
+        let currentChatId = null;
+        let aiStatus = 'unknown';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-resize textarea
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Enter key to send message
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Check for existing session
+            const savedToken = localStorage.getItem('tutorly_token');
+            const savedUser = localStorage.getItem('tutorly_user');
+            
+            if (savedToken && savedUser) {
+                sessionToken = savedToken;
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            }
+
+            // Check AI status
+            checkAIStatus();
+        });
+
+        // Check AI status
+        async function checkAIStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                aiStatus = data.gemini_status;
+                const indicator = document.getElementById('aiStatusIndicator');
+                const statusText = document.getElementById('aiStatusText');
+                
+                if (aiStatus === 'connected') {
+                    indicator.className = 'status-indicator status-connected';
+                    statusText.textContent = 'AI Tutor Ready (Gemini AI)';
+                } else {
+                    indicator.className = 'status-indicator status-mock';
+                    statusText.textContent = 'Demo Mode (Mock Responses)';
+                }
+            } catch (error) {
+                console.error('Health check failed:', error);
+                const indicator = document.getElementById('aiStatusIndicator');
+                const statusText = document.getElementById('aiStatusText');
+                indicator.className = 'status-indicator status-mock';
+                statusText.textContent = 'Demo Mode Available';
+            }
+        }
+
+        // Authentication functions
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('studentName').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (!name) {
+                showError('loginError', 'Please enter your name');
+                return;
+            }
+
+            if (!studentId) {
+                showError('loginError', 'Please enter your student ID');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Signing in...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, student_id: studentId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionToken = data.token;
+                    currentUser = data.user;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('tutorly_token', sessionToken);
+                    localStorage.setItem('tutorly_user', JSON.stringify(currentUser));
+                    
+                    showMainApp();
+                } else {
+                    showError('loginError', data.error || 'Login failed');
+                }
+            } catch (error) {
+                showError('loginError', 'Connection error. Please try again.');
+                console.error('Login error:', error);
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Start Learning';
+        });
+
+        function logout() {
+            localStorage.removeItem('tutorly_token');
+            localStorage.removeItem('tutorly_user');
+            sessionToken = null;
+            currentUser = null;
+            
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            
+            // Reset form
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentId').value = '';
+            resetChat();
+        }
+
+        function resetChat() {
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="message ai">
+                    <div class="message-content">
+                        <strong>Hi there! 👋</strong><br><br>
+                        I'm Tutorly, your AI homework tutor powered by advanced AI! I'm here to help you understand your schoolwork through step-by-step explanations. 
+                        <br><br>
+                        Whether you're working on math problems, science concepts, English essays, history questions, or any other subject, just ask me a question and I'll guide you through it!
+                        <br><br>
+                        <strong>How I help:</strong><br>
+                        📝 Break down complex problems into simple steps<br>
+                        🤔 Ask questions to check your understanding<br>
+                        💡 Provide real-world examples and analogies<br>
+                        🎯 Focus on teaching, not just giving answers
+                        <br><br>
+                        What would you like to work on today? 📚
+                    </div>
+                </div>
+            `;
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userName').textContent = `Welcome, ${currentUser.name}!`;
+            document.getElementById('userStudentId').textContent = `ID: ${currentUser.student_id}`;
+            
+            // Load dashboard data
+            loadDashboard();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Load dashboard data when switching to dashboard
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            }
+        }
+
+        // Chat functions
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+            
+            if (!message) return;
+
+            // Disable input and button
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span>';
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message,
+                        token: sessionToken
+                    })
+                });
+
+                const data = await response.json();
+
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                if (data.success) {
+                    addMessage(data.response, 'ai', data.chatId, data.subject);
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+                    console.error('Chat error:', data.error);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Connection error. Please check your internet and try again.', 'ai');
+                console.error('Send message error:', error);
+            }
+
+            // Re-enable input and button
+            input.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = 'Send';
+            input.focus();
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            const messagesContainer = document.getElementById('chatMessages');
+            indicator.style.display = 'block';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+
+        function addMessage(content, sender, chatId = null, subject = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let subjectTag = '';
+            if (sender === 'ai' && subject) {
+                subjectTag = `<span class="subject-tag">${subject}</span>`;
+            }
+            
+            let ratingHtml = '';
+            if (sender === 'ai' && chatId) {
+                ratingHtml = `
+                    <div class="rating-container">
+                        <span style="font-size: 0.8em; color: #666; margin-right: 10px;">Rate this response:</span>
+                        ${[1,2,3,4,5].map(star => 
+                            `<span class="star" onclick="rateResponse('${chatId}', ${star})" data-rating="${star}">⭐</span>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${content.replace(/\n/g, '<br>')}
+                    <div class="message-meta">
+                        <span>${timeString}</span>
+                        ${subjectTag}
+                    </div>
+                    ${ratingHtml}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function rateResponse(chatId, rating) {
+            try {
+                const response = await fetch('/api/chat/rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chatId,
+                        rating,
+                        token: sessionToken
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update star display
+                    const stars = document.querySelectorAll(`[onclick*="${chatId}"]`);
+                    stars.forEach((star, index) => {
+                        if (index < rating) {
+                            star.classList.add('active');
+                        } else {
+                            star.classList.remove('active');
+                        }
+                        star.style.pointerEvents = 'none'; // Disable further clicking
+                    });
+                    
+                    // Show thank you message
+                    const ratingContainer = stars[0].closest('.rating-container');
+                    ratingContainer.innerHTML = `
+                        <span style="font-size: 0.8em; color: #28a745;">✓ Thank you for your feedback!</span>
+                    `;
+                }
+            } catch (error) {
+                console.error('Rating error:', error);
+            }
+        }
+
+        // Dashboard functions
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.user && data.stats) {
+                    updateDashboard(data);
+                }
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+            }
+        }
+
+        function updateDashboard(data) {
+            // Update stats
+            document.getElementById('totalQuestions').textContent = data.stats.totalQuestions;
+            document.getElementById('avgRating').textContent = data.stats.avgRating;
+            document.getElementById('questionsToday').textContent = data.stats.questionsToday;
+
+            // Update subject chart
+            const subjectChart = document.getElementById('subjectChart');
+            const subjects = data.stats.subjectBreakdown;
+            const total = Object.values(subjects).reduce((sum, count) => sum + count, 0);
+            
+            if (total > 0) {
+                subjectChart.innerHTML = Object.entries(subjects).map(([subject, count]) => {
+                    const percentage = (count / total * 100);
+                    return `
+                        <div class="chart-bar">
+                            <div class="chart-label">${subject}</div>
+                            <div class="chart-progress">
+                                <div class="chart-fill" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="chart-value">${count}</div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                subjectChart.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 20px;">
+                        No questions asked yet. Start chatting to see your subject breakdown!
+                    </div>
+                `;
+            }
+
+            // Update recent chats
+            const recentChats = document.getElementById('recentChats');
+            if (data.recentChats && data.recentChats.length > 0) {
+                recentChats.innerHTML = data.recentChats.map(chat => `
+                    <div class="chat-item">
+                        <div class="chat-preview">${chat.message}</div>
+                        <div class="chat-response">${chat.response}</div>
+                        <div class="chat-meta">
+                            <span>${new Date(chat.createdAt).toLocaleDateString()} • ${chat.subject || 'General'}</span>
+                            <span>${chat.rating ? '⭐'.repeat(chat.rating) : 'Not rated'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                recentChats.innerHTML = `
+                    <div class="chat-item text-center">
+                        <div style="color: #666;">No conversations yet. Start chatting to see your history!</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Utility functions
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Auto-scroll to bottom when new messages are added
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Format message content for better display
+        function formatMessageContent(content) {
+            // Convert **text** to bold
+            content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert line breaks
+            content = content.replace(/\n/g, '<br>');
+            
+            return content;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to send message
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+            
+            // Escape to clear input
+            if (e.key === 'Escape') {
+                const input = document.getElementById('messageInput');
+                if (input === document.activeElement) {
+                    input.value = '';
+                    input.style.height = 'auto';
+                }
+            }
+        });
+
+        // Auto-save draft message
+        let draftTimeout;
+        document.getElementById('messageInput').addEventListener('input', function() {
+            clearTimeout(draftTimeout);
+            draftTimeout = setTimeout(() => {
+                localStorage.setItem('tutorly_draft', this.value);
+            }, 500);
+        });
+
+        // Restore draft message
+        window.addEventListener('load', function() {
+            const draft = localStorage.getItem('tutorly_draft');
+            if (draft && draft.trim()) {
+                const input = document.getElementById('messageInput');
+                input.value = draft;
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+            }
+        });
+
+        // Clear draft when message is sent
+        function clearDraft() {
+            localStorage.removeItem('tutorly_draft');
+        }
+
+        // Update sendMessage to clear draft
+        const originalSendMessage = sendMessage;
+        sendMessage = function() {
+            clearDraft();
+            return originalSendMessage();
+        };
+
+        // Show connection status
+        window.addEventListener('online', function() {
+            console.log('Connection restored');
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('Connection lost');
+            showError('chatError', 'Connection lost. Please check your internet connection.');
+        });
+
+        // Performance monitoring
+        let responseStartTime;
+        
+        function trackResponseTime() {
+            responseStartTime = Date.now();
+        }
+        
+        function logResponseTime() {
+            if (responseStartTime) {
+                const responseTime = Date.now() - responseStartTime;
+                console.log(`AI response time: ${responseTime}ms`);
+                responseStartTime = null;
+            }
+        }
+
+        // Update sendMessage to track performance
+        const originalSendMessageWithTracking = sendMessage;
+        sendMessage = function() {
+            trackResponseTime();
+            return originalSendMessageWithTracking();
+        };
+
+        // Add to addMessage function for AI responses
+        const originalAddMessage = addMessage;
+        addMessage = function(content, sender, chatId, subject) {
+            if (sender === 'ai') {
+                logResponseTime();
+            }
+            return originalAddMessage(content, sender, chatId, subject);
+        };
+    </script>
+</body>
+</html>

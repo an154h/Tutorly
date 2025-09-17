@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Auth from '../components/Auth.jsx';
 import Dashboard from '../components/Dashboard.jsx';
 import ChatbotPage from '../components/Chatbot.jsx';
-import './styles.css';
 
 function App() {
   const [studentName, setStudentName] = useState('');

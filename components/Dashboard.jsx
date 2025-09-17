@@ -8,55 +8,48 @@ export default function Dashboard({ studentName, setLoggedIn, setStudentName, se
   const [darkMode, setDarkMode] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Logout function
+  const metrics = ['Learning Sessions', 'Hours Learning', 'Problems Solved', 'Streaks'];
+
   const handleLogout = () => {
     setStudentName('');
     setStudentId('');
     setLoggedIn(false);
   };
 
-  // Toggle dark/light mode
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle('dark', !darkMode);
+  };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Top Navigation */}
-      <nav className={`navbar shadow ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-        <div className="flex items-center space-x-3">
-          <img src="/logo.png" alt="Tutorly Logo" className="h-8 w-8" />
-          <span className="logo font-bold text-lg">Tutorly</span>
+    <div className={`dashboard ${darkMode ? 'dark' : ''}`}>
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="logo-section">
+          <img src="/tutorly-logo.jpg" alt="Tutorly Logo" className="logo-img" />
+          <span className="logo-text">Tutorly</span>
         </div>
 
-        <div className="nav-links flex space-x-4">
-          <Link to="/dashboard" className={`nav-link ${tab === 'overview' ? 'active text-blue-500' : ''}`}>
+        <div className="nav-links">
+          <Link to="/dashboard" className={tab === 'overview' ? 'active' : ''}>
             Dashboard
           </Link>
-          <Link to="/ai-tutor" className="nav-link hover:text-blue-600">
-            AI Tutor
-          </Link>
+          <Link to="/ai-tutor">AI Tutor</Link>
         </div>
 
-        {/* Profile Picture with Dropdown */}
-        <div className="relative">
+        <div className="profile-section">
           <img
             src="/profile.jpg"
             alt="Profile"
-            className="h-10 w-10 rounded-full object-cover cursor-pointer"
+            className="profile-img"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           />
-
           {dropdownOpen && (
-            <div className={`absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-              <button
-                onClick={toggleDarkMode}
-                className="w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition rounded-t-lg"
-              >
+            <div className="dropdown">
+              <button onClick={toggleDarkMode}>
                 {darkMode ? 'Light Mode' : 'Dark Mode'}
               </button>
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-600 transition rounded-b-lg"
-              >
+              <button onClick={handleLogout} style={{ color: 'red' }}>
                 Logout
               </button>
             </div>
@@ -65,22 +58,18 @@ export default function Dashboard({ studentName, setLoggedIn, setStudentName, se
       </nav>
 
       {/* Welcome Section */}
-      <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold">
-          Welcome back, {studentName || 'Student'}!
-        </h1>
-        <p className="mb-4">Ready to continue your learning journey?</p>
-        <Link to="/ai-tutor" className="btn-primary inline-block">
-          Go to AI Tutor
-        </Link>
+      <div className="welcome-section">
+        <h1>Welcome back, {studentName || 'Student'}!</h1>
+        <p>Ready to continue your learning journey?</p>
+        <Link to="/ai-tutor" className="ai-tutor-btn">Go to AI Tutor</Link>
       </div>
 
-      {/* Stats Cards */}
-      <div className="metrics-grid px-6">
-        {['Learning Sessions', 'Hours Learning', 'Problems Solved', 'Streaks'].map((item, i) => (
-          <div key={i} className="custom-card text-center">
-            <h2 className="text-xl font-semibold">{item}</h2>
-            <p className="text-2xl font-bold mt-2">0</p>
+      {/* Metrics Cards */}
+      <div className="metrics-grid">
+        {metrics.map((metric, i) => (
+          <div key={i} className="metric-card">
+            <h2>{metric}</h2>
+            <p>0</p>
           </div>
         ))}
       </div>
@@ -91,7 +80,7 @@ export default function Dashboard({ studentName, setLoggedIn, setStudentName, se
           <button
             key={item}
             onClick={() => setTab(item)}
-            className={`tab-btn ${tab === item ? 'tab-active' : 'tab-inactive'}`}
+            className={tab === item ? 'active-tab' : ''}
           >
             {item.charAt(0).toUpperCase() + item.slice(1)}
           </button>
@@ -99,25 +88,27 @@ export default function Dashboard({ studentName, setLoggedIn, setStudentName, se
       </div>
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="main-content">
         {tab === 'overview' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="custom-card">Recent Activity</div>
-            <div className="custom-card">Achievements</div>
-            <div className="custom-card">Quick Actions</div>
-            <div className="custom-card">Daily Goal</div>
+          <div className="overview-grid">
+            <div className="content-card">Recent Activity</div>
+            <div className="content-card">Achievements</div>
+            <div className="content-card">Quick Actions</div>
+            <div className="content-card">Daily Goal</div>
           </div>
         )}
 
         {tab === 'assignments' && (
-          <div className="custom-card">
+          <div className="content-card">
             <Assignments />
           </div>
         )}
 
         {tab === 'progress' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Progress />
+          <div className="overview-grid">
+            <div className="content-card">
+              <Progress />
+            </div>
           </div>
         )}
       </div>

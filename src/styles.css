@@ -1,24 +1,38 @@
 /* ===========================
    Global Styles
 =========================== */
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: #f9fafb; /* Tailwind gray-50 */
+body, html {
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb; /* light gray */
+  color: #111827;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-/* Utility for cards */
-div.card {
+body.dark {
+  background-color: #1f2937;
+  color: #fff;
+}
+
+/* ===========================
+   Utility Cards
+=========================== */
+.card {
   background-color: white;
-  border-radius: 1rem; /* rounded-2xl */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   padding: 1.5rem;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
 }
 
-div.card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+body.dark .card {
+  background-color: #374151;
+  color: #fff;
 }
 
 /* ===========================
@@ -26,10 +40,30 @@ div.card:hover {
 =========================== */
 #auth {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background-color: #f9fafb; /* light gray background */
+  padding: 0 1rem;
+}
+
+#auth .card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#auth h2 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #111827;
 }
 
 #auth input {
@@ -38,139 +72,321 @@ div.card:hover {
   padding: 0.75rem;
   margin-bottom: 1rem;
   width: 100%;
-  max-width: 300px;
+  font-size: 1rem;
+  outline: none;
+}
+
+#auth input:focus {
+  border-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
 #auth button {
-  background-color: #2563eb; /* blue-600 */
-  color: white;
+  background-color: #000;
+  color: #fff;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  margin: 0.25rem;
-  width: 100%;
-  max-width: 300px;
-  transition: background-color 0.2s ease;
+  border: 1px solid #000;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 #auth button:hover {
-  background-color: #1e40af; /* blue-800 */
+  background-color: #fff;
+  color: #000;
+}
+
+#auth .error-msg {
+  color: #dc2626; /* red-500 */
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.95rem;
 }
 
 /* ===========================
-   Dashboard
+   Navbar
 =========================== */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: white;
-  border-bottom: 1px solid #e5e7eb; /* gray-200 */
-}
-
-.navbar .logo {
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-.navbar .nav-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.navbar .nav-links a {
-  text-decoration: none;
-  color: #374151; /* gray-700 */
-  font-weight: 500;
-}
-
-.navbar .nav-links a.active {
-  border-bottom: 2px solid #2563eb; /* blue-600 */
-  font-weight: 600;
-}
-
-.secondary-nav {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
+  background-color: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.secondary-nav button {
-  padding: 0.5rem 1.5rem;
-  margin: 0;
+body.dark .navbar {
+  background-color: #374151;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+.nav-links a {
+  margin-left: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+  color: #374151;
+  border-bottom: none;
+}
+
+.nav-links a.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+}
+
+body.dark .nav-links a {
+  color: #d1d5db;
+}
+
+body.dark .nav-links a.active {
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
+}
+
+/* Profile Dropdown */
+.profile-section {
+  position: relative;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 160px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 50;
+  overflow: hidden;
+}
+
+body.dark .dropdown {
+  background-color: #374151;
+  color: #fff;
+}
+
+.dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
   border: none;
   background: none;
   cursor: pointer;
-  color: #6b7280; /* gray-500 */
-  font-weight: 500;
+  transition: background 0.2s;
 }
 
-.secondary-nav button.active {
-  border-bottom: 2px solid #2563eb;
-  font-weight: 600;
-  color: #111827; /* gray-900 */
+.dropdown button:hover {
+  background-color: #e5e7eb;
 }
 
-/* Dashboard metrics cards */
+body.dark .dropdown button:hover {
+  background-color: #4b5563;
+}
+
+/* ===========================
+   Welcome Section
+=========================== */
+.welcome-section {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.ai-tutor-btn {
+  display: inline-block;
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  border: 1px solid #000;
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+.ai-tutor-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* ===========================
+   Stats Cards
+=========================== */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+  margin-top: 2rem;
+}
+
+.metric-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s, background-color 0.3s, color 0.3s;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+body.dark .metric-card {
+  background-color: #374151;
+  color: #fff;
 }
 
 /* ===========================
-   Chatbot (AI Tutor)
+   Secondary Navigation
 =========================== */
-.chatbot-container {
+.secondary-nav {
   display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
+  justify-content: center;
+  border-bottom: 1px solid #e5e7eb;
+  margin-top: 2rem;
 }
 
-@media (max-width: 768px) {
-  .chatbot-container {
-    flex-direction: column;
+.secondary-nav button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0 0.25rem;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+
+.secondary-nav button.active-tab {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+}
+
+body.dark .secondary-nav button {
+  color: #9ca3af;
+}
+
+body.dark .secondary-nav button.active-tab {
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
+}
+
+/* ===========================
+   Main Content / Cards
+=========================== */
+.main-content {
+  padding: 1.5rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .overview-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-/* Chat area */
+.content-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s, background-color 0.3s, color 0.3s;
+}
+
+.content-card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+body.dark .content-card {
+  background-color: #374151;
+  color: #fff;
+}
+
+/* AI Tutor Layout */
+.ai-tutor-layout {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.quick-actions-column {
+  flex: 1;
+}
+
+.ai-chat-column {
+  flex: 2;
+}
+
+/* Chat card adjustments */
+.chat-card {
+  display: flex;
+  flex-direction: column;
+  height: 36rem;
+}
+
 .chat-messages {
-  max-height: 400px;
+  flex: 1;
   overflow-y: auto;
   padding-right: 0.5rem;
   display: flex;
   flex-direction: column;
-}
-
-.chat-message-user {
-  background-color: #bfdbfe; /* blue-200 */
-  align-self: flex-end;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
-.chat-message-ai {
-  background-color: #e5e7eb; /* gray-200 */
-  align-self: flex-start;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  margin-bottom: 0.5rem;
+.chat-input-area {
+  display: flex;
+  gap: 0.5rem;
 }
 
-/* Quick Actions */
-.quick-action-btn {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
+.chat-input-area input {
+  flex: 1;
+  padding: 0.5rem;
   border-radius: 0.5rem;
-  transition: background-color 0.2s ease;
+  border: 1px solid #d1d5db;
+  outline: none;
+  background-color: #fff;
+  color: #111827;
 }
 
-.quick-action-btn:hover {
-  background-color: #1e40af;
+.dashboard.dark .chat-input-area input {
+  background-color: #1f2937;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-tutor-layout {
+    flex-direction: column;
+  }
 }
 
 /* ===========================
@@ -190,7 +406,7 @@ div.card:hover {
 }
 
 .assignment-table th {
-  background-color: #f3f4f6; /* gray-100 */
+  background-color: #f3f4f6;
   font-weight: 600;
 }
 
@@ -225,7 +441,7 @@ div.card:hover {
 }
 
 .todo-list-item:hover {
-  background-color: #f9fafb; /* gray-50 */
+  background-color: #f9fafb;
 }
 
 .todo-list-item input[type="checkbox"] {

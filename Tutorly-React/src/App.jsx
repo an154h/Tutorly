@@ -1,29 +1,72 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from '../components/Auth.jsx';
-import Chatbot from '../components/Chatbot';
-import TodoList from '../components/TodoList';
-import CalendarView from '../components/Calendar';
-import Assignments from '../components/Assignments';
+import Dashboard from '../components/Dashboard.jsx';
+import ChatbotPage from '../components/Chatbot.jsx';
+import './styles.css';
 
 function App() {
-  const [user, setUser] = useState('');
+  const [studentName, setStudentName] = useState('');
+  const [studentId, setStudentId] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-    <div className="app">
-      {!loggedIn ? (
-        <Auth setUser={setUser} setLoggedIn={setLoggedIn} />
-      ) : (
-        <div id="dashboard">
-          <h1>AI Chatbot Tool & Dashboard</h1>
-          <Chatbot />
-          <TodoList />
-          <CalendarView />
-          <Assignments />
-          {/* <Auth /> */}
-        </div>
-      )}
-    </div>
+    <Router>
+      <Routes>
+        {/* Login / Sign Up */}
+        <Route
+          path="/login"
+          element={
+            loggedIn ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Auth
+                setStudentName={setStudentName}
+                setStudentId={setStudentId}
+                setLoggedIn={setLoggedIn}
+              />
+            )
+          }
+        />
+
+        {/* Dashboard */}
+        <Route
+          path="/dashboard"
+          element={
+            loggedIn ? (
+              <Dashboard
+                studentName={studentName}
+                setLoggedIn={setLoggedIn}
+                setStudentName={setStudentName}
+                setStudentId={setStudentId}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* AI Chatbot */}
+        <Route
+          path="/ai-tutor"
+          element={
+            loggedIn ? (
+              <ChatbotPage
+                studentName={studentName}
+                setLoggedIn={setLoggedIn}
+                setStudentName={setStudentName}
+                setStudentId={setStudentId}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* Redirect root */}
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 }
 

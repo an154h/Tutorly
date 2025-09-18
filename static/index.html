@@ -108,6 +108,103 @@
             border-bottom: 2px solid #2563eb;
         }
 
+        /* Profile dropdown and top-right logo */
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .top-right img.top-right-logo {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            border-radius: 0.375rem;
+        }
+
+        .profile-button {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        body.dark .profile-button {
+            background: #4b5563;
+            border-color: #6b7280;
+            color: #fff;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 130%;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            min-width: 220px;
+            z-index: 10;
+        }
+
+        body.dark .profile-dropdown {
+            background: #374151;
+            border-color: #4b5563;
+            color: #fff;
+        }
+
+        .profile-dropdown .item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .profile-dropdown .item + .item {
+            border-top: 1px solid #e5e7eb;
+        }
+
+        body.dark .profile-dropdown .item + .item {
+            border-top-color: #4b5563;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { display:none; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #d1d5db;
+            transition: .2s;
+            border-radius: 9999px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 9999px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
         /* Chat styles */
         .chat-card {
             display: flex;
@@ -141,6 +238,67 @@
             border-radius: 1rem;
             margin-right: 2rem;
             align-self: flex-start;
+            line-height: 1.6;
+            max-width: 85%;
+        }
+
+        .chat-message-ai h3,
+        .chat-message-ai h4,
+        .chat-message-ai h5 {
+            margin: 0.75rem 0 0.5rem 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .chat-message-ai h3 {
+            font-size: 1.1em;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.25rem;
+        }
+
+        .chat-message-ai h4 {
+            font-size: 1.05em;
+        }
+
+        .chat-message-ai h5 {
+            font-size: 1em;
+        }
+
+        .chat-message-ai strong {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .chat-message-ai em {
+            font-style: italic;
+            color: #374151;
+        }
+
+        .chat-message-ai ul,
+        .chat-message-ai ol {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .chat-message-ai li {
+            margin: 0.25rem 0;
+            line-height: 1.5;
+        }
+
+        .chat-message-ai p {
+            margin: 0.5rem 0;
+        }
+
+        .chat-message-ai p:first-child {
+            margin-top: 0;
+        }
+
+        .chat-message-ai p:last-child {
+            margin-bottom: 0;
+        }
+
+        .chat-message-ai br {
+            line-height: 1.2;
         }
 
         .chat-input-area {
@@ -322,6 +480,91 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+
+        // Text formatting utility function
+        function formatText(text) {
+            if (!text) return '';
+            
+            // Split text into lines for better processing
+            let lines = text.split('\n');
+            let formatted = [];
+            let inList = false;
+            let listItems = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                
+                // Skip empty lines but add spacing
+                if (line === '') {
+                    if (inList) {
+                        formatted.push('<ul>' + listItems.join('') + '</ul>');
+                        listItems = [];
+                        inList = false;
+                    }
+                    formatted.push('<br>');
+                    continue;
+                }
+                
+                // Handle bullet points
+                if (line.match(/^[\-\*]\s+/)) {
+                    let content = line.replace(/^[\-\*]\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    listItems.push('<li>' + content + '</li>');
+                    inList = true;
+                    continue;
+                }
+                
+                // Handle numbered lists
+                if (line.match(/^\d+\.\s+/)) {
+                    if (inList && listItems.length > 0) {
+                        formatted.push('<ul>' + listItems.join('') + '</ul>');
+                        listItems = [];
+                    }
+                    let content = line.replace(/^\d+\.\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    listItems.push('<li>' + content + '</li>');
+                    inList = true;
+                    continue;
+                }
+                
+                // Close any open list
+                if (inList) {
+                    formatted.push('<ul>' + listItems.join('') + '</ul>');
+                    listItems = [];
+                    inList = false;
+                }
+                
+                // Handle headers (##, ###, etc.)
+                if (line.match(/^#{1,3}\s+/)) {
+                    let level = line.match(/^#{1,3}/)[0].length;
+                    let content = line.replace(/^#{1,3}\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    formatted.push(`<h${level + 2}>${content}</h${level + 2}>`);
+                    continue;
+                }
+                
+                // Handle regular paragraphs
+                line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                formatted.push('<p>' + line + '</p>');
+            }
+            
+            // Close any remaining list
+            if (inList) {
+                formatted.push('<ul>' + listItems.join('') + '</ul>');
+            }
+            
+            return formatted.join('');
+        }
+
+        // React component for formatted text
+        function FormattedText({ text }) {
+            return (
+                <div 
+                    dangerouslySetInnerHTML={{ __html: formatText(text) }}
+                />
+            );
+        }
 
         // API Configuration Component
         function APISettings({ apiConfig, setApiConfig }) {
@@ -684,7 +927,11 @@ Please provide a helpful response:`
                                 ) : (
                                     chatMessages.map((msg, i) => (
                                         <div key={i} className={msg.sender === 'user' ? 'chat-message-user' : 'chat-message-ai'}>
-                                            {msg.text}
+                                            {msg.sender === 'ai' ? (
+                                                <FormattedText text={msg.text} />
+                                            ) : (
+                                                msg.text
+                                            )}
                                         </div>
                                     ))
                                 )}
@@ -947,21 +1194,25 @@ Please provide a helpful response:`
                 <div id="auth">
                     <div className="card">
                         <h2>Login to Tutorly</h2>
-                        <input
-                            type="text"
-                            placeholder="Student Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Student ID"
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                        />
-                        <button onClick={login} disabled={isLoading}>
-                            {isLoading ? 'Logging in...' : 'Login'}
-                        </button>
+                        <form onSubmit={(e) => { e.preventDefault(); login(); }}>
+                            <input
+                                type="text"
+                                placeholder="Student Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="Student ID"
+                                value={id}
+                                onChange={(e) => setId(e.target.value)}
+                                required
+                            />
+                            <button type="submit" disabled={isLoading}>
+                                {isLoading ? 'Logging in...' : 'Login'}
+                            </button>
+                        </form>
                         {msg && <p className="error-msg">{msg}</p>}
                     </div>
                 </div>
@@ -1193,6 +1444,8 @@ Please provide a helpful response:`
             const [loggedIn, setLoggedIn] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [tab, setTab] = useState('ai-tutor');
+            const [profileOpen, setProfileOpen] = useState(false);
+            const [theme, setTheme] = useState(localStorage.getItem('tutorly_theme') || 'light');
             const [apiConfig, setApiConfig] = useState({
                 geminiApiKey: '',
                 backendUrl: 'http://localhost:5000/api' // Default Flask backend
@@ -1205,6 +1458,19 @@ Please provide a helpful response:`
                     setApiConfig(JSON.parse(savedConfig));
                 }
             }, []);
+
+            // Apply theme to body and persist
+            useEffect(() => {
+                document.body.classList.toggle('dark', theme === 'dark');
+                localStorage.setItem('tutorly_theme', theme);
+            }, [theme]);
+
+            const handleLogout = () => {
+                setLoggedIn(false);
+                setStudentName('');
+                setStudentId('');
+                setProfileOpen(false);
+            };
 
             // Simple routing
             useEffect(() => {
@@ -1272,8 +1538,29 @@ Please provide a helpful response:`
                                 AI Tutor
                             </a>
                         </div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                            {studentName}
+                        <div className="top-right">
+                            {/* Top-right logo - place your file at /static/top-right-logo.png */}
+                            <img className="top-right-logo" src="/static/top-right-logo.png" alt="Tutorly Logo" />
+
+                            <div style={{ position: 'relative' }}>
+                                <button className="profile-button" onClick={() => setProfileOpen(v => !v)}>
+                                    Profile ▾
+                                </button>
+                                {profileOpen && (
+                                    <div className="profile-dropdown" onMouseLeave={() => setProfileOpen(false)}>
+                                        <div className="item" onClick={(e)=>e.stopPropagation()}>
+                                            <span>Theme</span>
+                                            <label className="switch">
+                                                <input type="checkbox" checked={theme === 'dark'} onChange={(e)=> setTheme(e.target.checked ? 'dark' : 'light')} />
+                                                <span className="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div className="item" onClick={handleLogout}>
+                                            <span>Logout</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </nav>
 

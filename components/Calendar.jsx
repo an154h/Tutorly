@@ -1,56 +1,93 @@
 import React, { useState } from 'react';
-import Assignments from './Assignments.jsx';
+import Calendar from 'react-calendar'; // install with: npm install react-calendar
+import 'react-calendar/dist/Calendar.css';
+import './styles.css'; //custom styling
 
-export default function CalendarView() {
-  const [date, setDate] = useState('');
+export default function CalendarView({ assignments, setAssignments }) {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('');
 
-  // Dummy today's assignments
-  const todaysAssignments = [
-    { title: 'Algebra Homework', subject: 'Math', due: '2025-09-17' },
-    { title: 'Science Lab Report', subject: 'Science', due: '2025-09-17' },
-  ];
+  // Format date to YYYY-MM-DD
+  const formatDate = (date) => date.toISOString().split('T')[0];
+
+  // Today's assignments
+  const today = formatDate(new Date());
+  const todaysAssignments = assignments.filter(a => a.due === today);
+
+  // Add assignment
+  const addAssignment = () => {
+    if (!title.trim() || !subject) return;
+    const newAssignment = {
+      title,
+      subject,
+      due: formatDate(selectedDate),
+      status: 'Pending',
+      score: ''
+    };
+    setAssignments([...assignments, newAssignment]);
+    setTitle('');
+    setSubject('');
+  };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen calendar-layout">
-      <h2 className="text-2xl font-bold mb-6">Study Calendar</h2>
+    <div className="calendar-container">
+      <h2 className="section-title">Study Calendar</h2>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="calendar-layout">
         {/* Left Column: Calendar */}
-        <div className="md:w-2/3 custom-card p-6">
-          <h3 className="text-xl font-semibold mb-4">Select a Date</h3>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="calendar-column custom-card">
+          <h3 className="sub-title">Select a Date</h3>
+          <Calendar
+            onChange={setSelectedDate}
+            value={selectedDate}
           />
-          <div className="mt-6 text-gray-600">
-            <p>Selected date: <span className="font-semibold">{date || 'None'}</span></p>
+          <div className="selected-date">
+            <p>
+              Selected date: <span className="highlight">{formatDate(selectedDate)}</span>
+            </p>
           </div>
         </div>
 
-        {/* Right Column: Today's Assignments + Add Assignment */}
-        <div className="md:w-1/3 flex flex-col gap-6">
+        {/* Right Column */}
+        <div className="side-column">
           {/* Today's Assignments */}
-          <div className="custom-card p-6">
-            <h3 className="text-xl font-semibold mb-4">Today's Assignments</h3>
+          <div className="custom-card">
+            <h3 className="sub-title">Today's Assignments</h3>
             {todaysAssignments.length === 0 ? (
-              <p className="text-gray-600">No assignments for today.</p>
+              <p className="placeholder-text">No assignments for today.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="todo-list">
                 {todaysAssignments.map((a, i) => (
                   <li key={i} className="todo-list-item">
-                    <span className="font-semibold">{a.title}</span> - {a.subject}
+                    <span className="highlight">{a.title}</span> - {a.subject}
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Add Assignment Form */}
-          <div className="custom-card p-6">
-            <h3 className="text-xl font-semibold mb-4">Add Assignment</h3>
-            <Assignments />
+          {/* Add Assignment */}
+          <div className="custom-card">
+            <h3 className="sub-title">Add Assignment</h3>
+            <input
+              type="text"
+              placeholder="Assignment Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="date-input"
+            />
+            <input
+              type="text"
+              placeholder="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="date-input"
+              style={{ marginTop: '0.5rem' }}
+            />
+            <button onClick={addAssignment} className="quick-action-btn" style={{ marginTop: '0.75rem' }}>
+              Add
+            </button>
           </div>
         </div>
       </div>

@@ -146,14 +146,83 @@
         .chat-input-area {
             display: flex;
             gap: 0.5rem;
+            align-items: flex-end;
         }
 
-        .chat-input-area input {
+        .chat-input-area input[type="text"] {
             flex: 1;
             padding: 0.5rem;
             border-radius: 0.5rem;
             border: 1px solid #d1d5db;
             outline: none;
+        }
+
+        .image-upload-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-upload-btn {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: background-color 0.2s;
+        }
+
+        .image-upload-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .image-upload-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .image-upload-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            border: 2px solid #e5e7eb;
+        }
+
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
         }
 
         .loading {
@@ -559,6 +628,25 @@ Please provide a helpful response:`
                     body: JSON.stringify(message)
                 });
             }
+
+            // Image chat (multipart/form-data)
+            async sendImageMessage(userId, formData) {
+                try {
+                    const response = await fetch(`${this.baseUrl}/chat/${userId}/ai/image`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Image API Error:', error);
+                    throw error;
+                }
+            }
         }
 
         // Enhanced Chatbot Component with Gemini Integration
@@ -575,6 +663,8 @@ Please provide a helpful response:`
             const [tab, setTab] = useState('ai-tutor');
             const [isLoading, setIsLoading] = useState(false);
             const [error, setError] = useState('');
+            const [selectedImage, setSelectedImage] = useState(null);
+            const [imagePreview, setImagePreview] = useState('');
 
             const geminiService = new GeminiService(apiConfig.geminiApiKey);
             const apiService = new APIService(apiConfig.backendUrl);
@@ -593,6 +683,20 @@ Please provide a helpful response:`
                 } catch (error) {
                     console.log('No previous chat history found');
                 }
+            };
+
+            const handleImageChange = (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                setSelectedImage(file);
+                const reader = new FileReader();
+                reader.onload = () => setImagePreview(reader.result);
+                reader.readAsDataURL(file);
+            };
+
+            const removeSelectedImage = () => {
+                setSelectedImage(null);
+                setImagePreview('');
             };
 
             const sendMessage = async () => {
@@ -642,6 +746,47 @@ Please provide a helpful response:`
                 }
             };
 
+            const sendImage = async () => {
+                if (!selectedImage || isLoading) return;
+                if (!apiConfig.backendUrl) {
+                    setError('Backend URL is not configured');
+                    return;
+                }
+                if (!apiConfig.geminiApiKey) {
+                    setError('Gemini API key is not configured');
+                    return;
+                }
+
+                // Optimistic UI update: show user's message with preview
+                const userMessage = { sender: 'user', text: input || 'Image message', timestamp: new Date().toISOString(), imagePreview };
+                setChatMessages(prev => [...prev, userMessage]);
+                setIsLoading(true);
+                setError('');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('image', selectedImage);
+                    formData.append('message', input || 'What do you see in this image?');
+                    formData.append('apiKey', apiConfig.geminiApiKey);
+
+                    const result = await apiService.sendImageMessage(studentId, formData);
+                    const aiMessage = {
+                        sender: 'ai',
+                        text: result.response || 'I looked at the image, but could you also describe it?',
+                        timestamp: new Date().toISOString()
+                    };
+                    setChatMessages(prev => [...prev, aiMessage]);
+
+                    // Clear input and image selection
+                    setInput('');
+                    removeSelectedImage();
+                } catch (error) {
+                    setError('Failed to send image: ' + error.message);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
             const handleQuickAction = (action) => {
                 setInput(action);
             };
@@ -685,10 +830,15 @@ Please provide a helpful response:`
                                     chatMessages.map((msg, i) => (
                                         <div key={i} className={msg.sender === 'user' ? 'chat-message-user' : 'chat-message-ai'}>
                                             {msg.text}
+                                            {msg.imagePreview && (
+                                                <div className="image-preview-container">
+                                                    <img src={msg.imagePreview} alt="uploaded preview" className="image-preview" />
+                                                </div>
+                                            )}
                                         </div>
                                     ))
                                 )}
-                                
+
                                 {isLoading && (
                                     <div className="chat-message-ai">
                                         <span>🤔 Thinking...</span>
@@ -697,20 +847,40 @@ Please provide a helpful response:`
                             </div>
                             
                             <div className={`chat-input-area ${isLoading ? 'loading' : ''}`}>
+                                <div>
+                                    {imagePreview && (
+                                        <div className="image-preview-container">
+                                            <img src={imagePreview} alt="preview" className="image-preview" />
+                                            <button className="remove-image-btn" onClick={removeSelectedImage} title="Remove image">×</button>
+                                        </div>
+                                    )}
+                                    <div className="image-upload-container" title="Upload image">
+                                        <button className="image-upload-btn" disabled={isLoading}>
+                                            📷
+                                        </button>
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            className="image-upload-input" 
+                                            onChange={handleImageChange}
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
                                 <input
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="Ask me anything..."
-                                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                    placeholder="Ask me anything... (or add an image)"
+                                    onKeyPress={(e) => e.key === 'Enter' && (selectedImage ? sendImage() : sendMessage())}
                                     disabled={isLoading}
                                 />
                                 <button 
-                                    onClick={sendMessage} 
+                                    onClick={selectedImage ? sendImage : sendMessage} 
                                     className="btn-primary"
-                                    disabled={isLoading || !input.trim()}
+                                    disabled={isLoading || (!input.trim() && !selectedImage)}
                                 >
-                                    {isLoading ? '...' : 'Send'}
+                                    {isLoading ? '...' : (selectedImage ? 'Send Image' : 'Send')}
                                 </button>
                             </div>
                         </div>

@@ -6,9 +6,25 @@ import requests
 from datetime import datetime
 import json
 import random
+import base64
+from PIL import Image
+import io
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 CORS(app)  # Enable CORS for all routes
+
+# Configure upload settings
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+
+# Create upload directory if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 # Database configuration
 DATABASE = 'tutorly.db'
@@ -175,6 +191,35 @@ def get_fallback_response(message):
     responses = MOCK_RESPONSES.get(subject, MOCK_RESPONSES['general'])
     return random.choice(responses)
 
+def allowed_file(filename):
+    """Check if the uploaded file has an allowed extension"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def process_image(image_file):
+    """Process uploaded image and convert to base64 for Gemini API"""
+    try:
+        # Open and process the image
+        img = Image.open(image_file)
+        
+        # Convert to RGB if necessary (for PNG with transparency, etc.)
+        if img.mode in ('RGBA', 'LA', 'P'):
+            img = img.convert('RGB')
+        
+        # Resize image if it's too large (max 1024x1024 for better API performance)
+        max_size = (1024, 1024)
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        # Convert to base64
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=85)
+        img_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        
+        return img_base64
+    except Exception as e:
+        print(f"Error processing image: {e}")
+        return None
+
 # Gemini AI Service
 class GeminiService:
     def __init__(self, api_key):
@@ -268,6 +313,100 @@ class GeminiService:
         except Exception as e:
             print(f"Gemini API unexpected error: {e}")
             return get_fallback_response(message)
+
+    def generate_response_with_image(self, message, image_base64, conversation_history=None):
+        """Generate AI response using Gemini 2.5 Flash API with image input"""
+        if not self.api_key:
+            return get_fallback_response(message)
+        
+        # Build context with system prompt and conversation history
+        context_parts = [TUTORLY_SYSTEM_PROMPT]
+        
+        if conversation_history:
+            context_parts.append("\n\n## Previous Conversation:")
+            for msg in conversation_history[-10:]:  # Last 10 messages for context
+                role = "Student" if msg['sender'] == 'user' else "Tutorly"
+                context_parts.append(f"{role}: {msg['message']}")
+        
+        context_parts.append(f"\n\nStudent: {message}")
+        context_parts.append("\nTutorly:")
+        
+        full_context = "\n".join(context_parts)
+        
+        # Payload with both text and image
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": full_context
+                        },
+                        {
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": image_base64
+                            }
+                        }
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.7,
+                "topK": 40,
+                "topP": 0.95,
+                "maxOutputTokens": 2048,
+                "stopSequences": ["Student:", "Tutorly:"]
+            },
+            "safetySettings": [
+                {
+                    "category": "HARM_CATEGORY_HARASSMENT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                }
+            ]
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}?key={self.api_key}",
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'candidates' in data and len(data['candidates']) > 0:
+                    return data['candidates'][0]['content']['parts'][0]['text'].strip()
+                else:
+                    return "I can see your image! However, I'm having trouble analyzing it right now. Could you describe what you'd like help with?"
+            else:
+                print(f"Gemini API Error: {response.status_code} - {response.text}")
+                return "I can see your image, but I'm having some technical difficulties. Could you try describing the problem in text?"
+                
+        except requests.exceptions.Timeout:
+            print("Gemini API timeout")
+            return "I can see your image, but the response is taking too long. Could you try again or describe the problem in text?"
+        except requests.exceptions.RequestException as e:
+            print(f"Gemini API network error: {e}")
+            return "I can see your image, but I'm having connection issues. Could you try again later?"
+        except (KeyError, IndexError) as e:
+            print(f"Gemini API response parsing error: {e}")
+            return "I can see your image, but I'm having trouble processing the response. Could you try again?"
+        except Exception as e:
+            print(f"Gemini API unexpected error: {e}")
+            return "I can see your image, but something unexpected happened. Could you try again or describe the problem in text?"
 
 # Authentication Routes
 @app.route('/api/auth/login', methods=['POST'])
@@ -483,6 +622,68 @@ def chat_with_ai(student_id):
     conn.execute(
         'INSERT INTO chat_messages (student_id, sender, message) VALUES (?, ?, ?)',
         (student_id, 'user', message)
+    )
+    
+    # Save AI response
+    conn.execute(
+        'INSERT INTO chat_messages (student_id, sender, message) VALUES (?, ?, ?)',
+        (student_id, 'ai', ai_response)
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    return jsonify({
+        'response': ai_response,
+        'timestamp': datetime.now().isoformat()
+    })
+
+# Image Upload and Chat Route
+@app.route('/api/chat/<student_id>/ai/image', methods=['POST'])
+def chat_with_ai_image(student_id):
+    """Get AI response from Gemini with image input"""
+    # Check if image file is present
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
+    
+    image_file = request.files['image']
+    message = request.form.get('message', 'What do you see in this image?')
+    api_key = request.form.get('apiKey')
+    
+    if not api_key:
+        return jsonify({'error': 'Gemini API key is required'}), 400
+    
+    if image_file.filename == '':
+        return jsonify({'error': 'No image file selected'}), 400
+    
+    if not allowed_file(image_file.filename):
+        return jsonify({'error': 'Invalid file type. Please upload an image file (PNG, JPG, JPEG, GIF, BMP, WEBP)'}), 400
+    
+    # Process the image
+    image_base64 = process_image(image_file)
+    if not image_base64:
+        return jsonify({'error': 'Failed to process image'}), 400
+    
+    # Get conversation history for context
+    conn = get_db_connection()
+    history = conn.execute(
+        'SELECT sender, message FROM chat_messages WHERE student_id = ? ORDER BY timestamp DESC LIMIT 10',
+        (student_id,)
+    ).fetchall()
+    conn.close()
+    
+    # Generate AI response with image
+    gemini = GeminiService(api_key)
+    ai_response = gemini.generate_response_with_image(message, image_base64, [dict(h) for h in history])
+    
+    # Save both user message and AI response
+    conn = get_db_connection()
+    
+    # Save user message (with indication that it included an image)
+    user_message_text = f"{message} [Image uploaded]"
+    conn.execute(
+        'INSERT INTO chat_messages (student_id, sender, message) VALUES (?, ?, ?)',
+        (student_id, 'user', user_message_text)
     )
     
     # Save AI response

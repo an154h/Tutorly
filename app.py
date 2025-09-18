@@ -159,6 +159,19 @@ def init_database():
             FOREIGN KEY (student_id) REFERENCES users (student_id)
         )
     ''')
+
+    # Subject performance table
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS subject_performance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            date DATE NOT NULL,
+            score INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (student_id)
+        )
+    ''')
     
     conn.commit()
     conn.close()
@@ -442,6 +455,63 @@ def login():
         )
         conn.commit()
     
+    # Seed sample assignments if none exist for this student
+    existing_count = conn.execute(
+        'SELECT COUNT(*) AS cnt FROM assignments WHERE student_id = ?', (student_id,)
+    ).fetchone()['cnt']
+    
+    if existing_count == 0:
+        today = datetime.now().date()
+        samples = [
+            (student_id, 'Algebra: Quadratic Equations', 'Math', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'Photosynthesis Lab Report', 'Science', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'Geometry: Triangles Worksheet', 'Math', (today.replace(day=min(28, today.day)) ).isoformat(), 'Pending', 'Easy', None),
+            (student_id, 'Poetry Analysis: Frost', 'English', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'Chemistry: Balancing Equations', 'Science', (today).isoformat(), 'Pending', 'Hard', None),
+            (student_id, 'Essay Draft: Civil War Causes', 'History', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'Statistics: Probability Set', 'Math', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'Reading Log: Chapter 5-6', 'English', (today).isoformat(), 'Pending', 'Easy', None),
+            (student_id, 'Physics: Forces Worksheet', 'Science', (today).isoformat(), 'Pending', 'Medium', None),
+            (student_id, 'World History Timeline', 'History', (today).isoformat(), 'Pending', 'Easy', None),
+        ]
+        # Distribute due dates over the next ~30 days
+        from datetime import timedelta
+        distributed = []
+        for i, item in enumerate(samples):
+            due_date = (today + timedelta(days=(i*3)%30)).isoformat()
+            distributed.append((item[0], item[1], item[2], due_date, item[4], item[5], item[6]))
+        conn.executemany(
+            'INSERT INTO assignments (student_id, title, subject, due_date, status, difficulty, score) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            distributed
+        )
+        conn.commit()
+
+    # Seed sample subject performance if none exist for this student
+    perf_count = conn.execute(
+        'SELECT COUNT(*) AS cnt FROM subject_performance WHERE student_id = ?', (student_id,)
+    ).fetchone()['cnt']
+
+    if perf_count == 0:
+        from datetime import timedelta
+        today = datetime.now().date()
+        subjects = ['Math', 'Science', 'English', 'History']
+        performance_rows = []
+        # Generate ~10 entries per subject over last 60 days
+        for subj in subjects:
+            for i in range(10):
+                day_offset = random.randint(0, 60)
+                date = (today - timedelta(days=day_offset)).isoformat()
+                # Simulate score distribution with some variety per subject
+                base = {'Math': 78, 'Science': 82, 'English': 85, 'History': 80}.get(subj, 80)
+                variance = random.randint(-15, 15)
+                score = max(50, min(100, base + variance))
+                performance_rows.append((student_id, subj, date, score))
+        conn.executemany(
+            'INSERT INTO subject_performance (student_id, subject, date, score) VALUES (?, ?, ?, ?)',
+            performance_rows
+        )
+        conn.commit()
+
     conn.close()
     
     return jsonify({
@@ -595,13 +665,11 @@ def chat_with_ai(student_id):
     """Get AI response from Gemini"""
     data = request.get_json()
     message = data.get('message')
-    api_key = data.get('apiKey')
+    # Load API key from environment (configured via .env)
+    api_key = os.environ.get('GEMINI_API_KEY')
     
     if not message:
         return jsonify({'error': 'Message is required'}), 400
-    
-    if not api_key:
-        return jsonify({'error': 'Gemini API key is required'}), 400
     
     # Get conversation history for context
     conn = get_db_connection()
@@ -648,10 +716,8 @@ def chat_with_ai_image(student_id):
     
     image_file = request.files['image']
     message = request.form.get('message', 'What do you see in this image?')
-    api_key = request.form.get('apiKey')
-    
-    if not api_key:
-        return jsonify({'error': 'Gemini API key is required'}), 400
+    # Load API key from environment (configured via .env)
+    api_key = os.environ.get('GEMINI_API_KEY')
     
     if image_file.filename == '':
         return jsonify({'error': 'No image file selected'}), 400
@@ -741,6 +807,30 @@ def get_progress(student_id):
         'chatActivity': dict(chat_count)['count']
     })
 
+# Student Subject Performance API
+@app.route('/api/performance/<student_id>', methods=['GET'])
+def get_student_performance(student_id):
+    """Return per-subject performance time series for a student"""
+    conn = get_db_connection()
+    rows = conn.execute(
+        '''SELECT subject, date, score
+           FROM subject_performance
+           WHERE student_id = ?
+           ORDER BY date ASC''',
+        (student_id,)
+    ).fetchall()
+    conn.close()
+
+    # Group by subject
+    data = {}
+    for r in rows:
+        subj = r['subject']
+        data.setdefault(subj, []).append({
+            'date': r['date'],
+            'score': r['score']
+        })
+    return jsonify(data)
+
 # Health check route
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -777,6 +867,20 @@ def internal_error(_):
 
 if __name__ == '__main__':
     # Initialize database on startup
+    # Load environment variables from .env if present (without python-dotenv)
+    try:
+        env_path = '.env'
+        if os.path.exists(env_path):
+            with open(env_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ.setdefault(key.strip(), value.strip())
+    except Exception as _e:
+        # Non-fatal; continue with existing environment
+        pass
+
     init_database()
     
     # Run the Flask app

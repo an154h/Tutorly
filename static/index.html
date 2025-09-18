@@ -8,33 +8,160 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        /* Same styles as before */
+        /* Base: elegant black & white theme */
         body, html {
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f9fafb;
-            color: #111827;
-            transition: background-color 0.3s, color 0.3s;
+            background-color: #ffffff;
+            color: #0b0f19;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body.dark {
-            background-color: #1f2937;
-            color: #fff;
+            background-color: #000000;
+            color: #ffffff;
         }
 
+        /* Cards */
         .card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            transition: box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
+            background-color: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            padding: 1.25rem 1.25rem;
+            transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s, color 0.3s;
         }
+        .card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
 
         body.dark .card {
-            background-color: #374151;
-            color: #fff;
+            background-color: #0b0b0b;
+            border-color: #1f2937;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(255,255,255,0.03);
         }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #0b0f19;
+            color: #ffffff;
+            border: 1px solid #0b0f19;
+            padding: 0.45rem 0.9rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.05s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary:hover { background-color: #111827; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        body.dark .btn-primary { background-color: #ffffff; color: #000000; border-color: #ffffff; }
+        body.dark .btn-primary:hover { background-color: #e5e7eb; }
+
+        /* Typography */
+        h1, h2, h3, h4 { letter-spacing: -0.02em; }
+        h1 { font-size: 2rem; margin: 0.25rem 0 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 0.25rem 0 0.5rem; }
+        h3 { font-size: 1.1rem; margin: 0.25rem 0 0.75rem; }
+        p { color: #4b5563; }
+        body.dark p { color: #9ca3af; }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            backdrop-filter: saturate(120%) blur(6px);
+        }
+        body.dark .navbar { background-color: #0b0b0b; border-color: #1f2937; }
+        .nav-links a { color: #111827; opacity: 0.8; padding: 0.25rem 0.35rem; border-radius: 6px; }
+        .nav-links a:hover { opacity: 1; text-decoration: none; background: #f3f4f6; }
+        .nav-links a.active { color: #000; border-bottom: 2px solid #000; }
+        body.dark .nav-links a { color: #e5e7eb; }
+        body.dark .nav-links a.active { color: #fff; border-color: #fff; }
+
+        /* Inputs / Selects */
+        input[type="text"], input[type="date"], input[type="email"],
+        input[type="password"], select, textarea {
+            background: #ffffff;
+            color: #0b0f19;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.55rem 0.75rem;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #111827; box-shadow: 0 0 0 3px rgba(17,24,39,0.1); }
+        body.dark input, body.dark select, body.dark textarea { background: #0f1115; color: #e5e7eb; border-color: #1f2937; }
+        body.dark input:focus, body.dark select:focus, body.dark textarea:focus { border-color: #e5e7eb; box-shadow: 0 0 0 3px rgba(229,231,235,0.12); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        thead th { text-align: left; font-weight: 600; color: #6b7280; font-size: 0.85rem; padding: 0.5rem 0.5rem; border-bottom: 1px solid #e5e7eb; }
+        tbody td { padding: 0.75rem 0.5rem; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
+        tbody tr:hover { background: #fafafa; }
+        body.dark thead th { color: #9ca3af; border-color: #1f2937; }
+        body.dark tbody td { border-color: #111827; }
+        body.dark tbody tr:hover { background: #0b0b0b; }
+
+        /* Modals (backdrop already inline; tweak content style via class if needed) */
+        .modal-card { border-radius: 14px; border: 1px solid #e5e7eb; }
+        body.dark .modal-card { background: #0b0b0b; border-color: #1f2937; color: #fff; }
+
+        /* Layout helpers */
+        .main-content { width: 100%; max-width: none; margin: 0; padding: 1rem 0; }
+        .section { margin: 1rem 0; }
+
+        /* Calendar cell polish (keeps event colors) */
+        .cal-cell { border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; }
+        body.dark .cal-cell { background: #0f1115; border-color: #1f2937; }
+
+        /* Calendar UI */
+        .calendar-card { padding: 1rem; overflow: hidden; }
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; }
+        .calendar-title { margin:0; font-size: 1.1rem; }
+        .calendar-nav { display:flex; gap:0.5rem; }
+        .calendar-grid { display:grid; width: 100%; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-bottom: 1rem; }
+        .calendar-weekday { font-weight:600; color:#6b7280; text-align:center; }
+        .calendar-cell { cursor:pointer; min-height:110px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:6px; display:flex; flex-direction:column; transition: box-shadow .15s ease, transform .05s ease; }
+        .calendar-cell:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .calendar-cell.outside { background:#f3f4f6; }
+        body.dark .calendar-cell { background:#0f1115; border-color:#1f2937; }
+        .calendar-date { font-size:12px; color:#6b7280; margin-bottom:4px; text-align:right; }
+        .calendar-events { display:flex; flex-direction:column; gap:4px; }
+        .event-pill { color:#fff; border-radius:6px; padding:2px 6px; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .event-more { font-size:12px; color:#374151; }
+
+        /* Modal overlay */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
+        .modal-card { background:#fff; color:#111827; width: min(720px, 95vw); border-radius:12px; padding:1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        body.dark .modal-card { background:#0b0b0b; color:#fff; border:1px solid #1f2937; }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: .5rem; }
+        .modal-actions { display:flex; gap:.5rem; }
+
+        /* Auth (login) enhancements */
+        #auth { position: relative; overflow: hidden; }
+        #auth:before { content:""; position:absolute; inset:-20%; pointer-events: none; z-index: 0; background: radial-gradient(closest-side, rgba(0,0,0,0.06), transparent 70%) -20% -20%/60% 60% no-repeat,
+                                                             radial-gradient(closest-side, rgba(0,0,0,0.06), transparent 70%) 120% 20%/60% 60% no-repeat; filter: blur(2px); }
+        body.dark #auth:before { pointer-events: none; z-index: 0; background: radial-gradient(closest-side, rgba(255,255,255,0.06), transparent 70%) -20% -20%/60% 60% no-repeat,
+                                         radial-gradient(closest-side, rgba(255,255,255,0.06), transparent 70%) 120% 20%/60% 60% no-repeat; }
+        #auth .card { position: relative; z-index: 1; max-width: 440px; padding: 1.5rem; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+        #auth .brand { display:flex; align-items:center; gap:.5rem; margin-bottom:.5rem; font-weight:700; font-size:1.15rem; }
+        #auth .subtle { color:#6b7280; margin-bottom: 1rem; }
+        #auth .auth-title { text-align:center; font-size: 1.6rem; margin: 0.25rem 0 0.75rem; }
+        #auth form { display:flex; flex-direction:column; gap: 0.75rem; }
+        #auth .input-group { display:flex; flex-direction:column; }
+        #auth .input-label { font-size: 0.85rem; color:#6b7280; margin: 0.15rem 0 0.25rem 0.15rem; }
+        #auth .btn-row { display:flex; justify-content:center; margin-top: 0.5rem; }
 
         /* Auth styles */
         #auth {
@@ -567,69 +694,7 @@
             );
         }
 
-        // API Configuration Component
-        function APISettings({ apiConfig, setApiConfig }) {
-            const [isVisible, setIsVisible] = useState(false);
-
-            const updateConfig = (key, value) => {
-                setApiConfig(prev => ({ ...prev, [key]: value }));
-                localStorage.setItem('tutorly_api_config', JSON.stringify({ ...apiConfig, [key]: value }));
-            };
-
-            return (
-                <div className="settings-panel">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <h3>API Configuration</h3>
-                        <button onClick={() => setIsVisible(!isVisible)} className="btn-primary">
-                            {isVisible ? 'Hide' : 'Show'} Settings
-                        </button>
-                    </div>
-                    
-                    {isVisible && (
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                                    Gemini API Key:
-                                </label>
-                                <input
-                                    type="password"
-                                    value={apiConfig.geminiApiKey}
-                                    onChange={(e) => updateConfig('geminiApiKey', e.target.value)}
-                                    placeholder="Enter your Gemini API key"
-                                    style={{ width: '100%' }}
-                                />
-                                <small style={{ color: '#6b7280' }}>
-                                    Get your API key from: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
-                                </small>
-                            </div>
-                            
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                                    Backend API URL:
-                                </label>
-                                <input
-                                    type="text"
-                                    value={apiConfig.backendUrl}
-                                    onChange={(e) => updateConfig('backendUrl', e.target.value)}
-                                    placeholder="https://your-api.com/api"
-                                    style={{ width: '100%' }}
-                                />
-                                <small style={{ color: '#6b7280' }}>
-                                    Your Flask backend API endpoint
-                                </small>
-                            </div>
-                            
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <span>Gemini Status:</span>
-                                <span className={`api-status ${apiConfig.geminiApiKey ? 'connected' : 'disconnected'}`}>
-                                    {apiConfig.geminiApiKey ? 'API Key Set' : 'No API Key'}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        }
+        // (Removed) API Configuration Component
 
         // API Service for Gemini
         class GeminiService {
@@ -691,7 +756,7 @@ Please provide a helpful response:`
         // Generic API Service for Backend
         class APIService {
             constructor(baseUrl) {
-                this.baseUrl = baseUrl;
+                this.baseUrl = baseUrl || '/api';
             }
 
             async request(endpoint, options = {}) {
@@ -825,7 +890,7 @@ Please provide a helpful response:`
         }
 
         // Enhanced Chatbot Component with Gemini Integration
-        function ChatbotPage({ setLoggedIn, setStudentName, setStudentId, studentId, apiConfig }) {
+        function ChatbotPage({ setLoggedIn, setStudentName, setStudentId, studentId }) {
             const quickActions = [
                 'Help me solve this math problem',
                 'Explain photosynthesis',
@@ -841,8 +906,7 @@ Please provide a helpful response:`
             const [selectedImage, setSelectedImage] = useState(null);
             const [imagePreview, setImagePreview] = useState('');
 
-            const geminiService = new GeminiService(apiConfig.geminiApiKey);
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService();
 
             // Load chat history on component mount
             useEffect(() => {
@@ -850,7 +914,7 @@ Please provide a helpful response:`
             }, [studentId]);
 
             const loadChatHistory = async () => {
-                if (!apiConfig.backendUrl || !studentId) return;
+                if (!studentId) return;
                 
                 try {
                     const history = await apiService.getChatHistory(studentId);
@@ -885,35 +949,17 @@ Please provide a helpful response:`
                 setError('');
 
                 try {
-                    // Save user message to backend
-                    if (apiConfig.backendUrl && studentId) {
-                        await apiService.saveChatMessage(studentId, userMessage);
-                    }
-
-                    // Get AI response from Gemini
-                    if (apiConfig.geminiApiKey) {
-                        const aiResponse = await geminiService.sendMessage(input, chatMessages);
-                        const aiMessage = { 
-                            sender: 'ai', 
-                            text: aiResponse, 
-                            timestamp: new Date().toISOString() 
-                        };
-                        
-                        setChatMessages(prev => [...prev, aiMessage]);
-
-                        // Save AI message to backend
-                        if (apiConfig.backendUrl && studentId) {
-                            await apiService.saveChatMessage(studentId, aiMessage);
-                        }
-                    } else {
-                        // Fallback response if no API key
-                        const fallbackMessage = {
-                            sender: 'ai',
-                            text: 'Hi! I need a Gemini API key to help you properly. Please configure your API key in the settings above.',
-                            timestamp: new Date().toISOString()
-                        };
-                        setChatMessages(prev => [...prev, fallbackMessage]);
-                    }
+                    // Ask backend to generate and persist AI response
+                    const result = await apiService.request(`/chat/${studentId}/ai`, {
+                        method: 'POST',
+                        body: JSON.stringify({ message: userMessage.text })
+                    });
+                    const aiMessage = {
+                        sender: 'ai',
+                        text: result.response,
+                        timestamp: result.timestamp || new Date().toISOString()
+                    };
+                    setChatMessages(prev => [...prev, aiMessage]);
                 } catch (error) {
                     setError('Failed to get AI response: ' + error.message);
                 } finally {
@@ -923,14 +969,6 @@ Please provide a helpful response:`
 
             const sendImage = async () => {
                 if (!selectedImage || isLoading) return;
-                if (!apiConfig.backendUrl) {
-                    setError('Backend URL is not configured');
-                    return;
-                }
-                if (!apiConfig.geminiApiKey) {
-                    setError('Gemini API key is not configured');
-                    return;
-                }
 
                 // Optimistic UI update: show user's message with preview
                 const userMessage = { sender: 'user', text: input || 'Image message', timestamp: new Date().toISOString(), imagePreview };
@@ -942,7 +980,6 @@ Please provide a helpful response:`
                     const formData = new FormData();
                     formData.append('image', selectedImage);
                     formData.append('message', input || 'What do you see in this image?');
-                    formData.append('apiKey', apiConfig.geminiApiKey);
 
                     const result = await apiService.sendImageMessage(studentId, formData);
                     const aiMessage = {
@@ -1067,21 +1104,21 @@ Please provide a helpful response:`
         }
 
         // Enhanced Todo Component with API Integration
-        function TodoList({ studentId, apiConfig }) {
+        function TodoList({ studentId }) {
             const [tasks, setTasks] = useState([]);
             const [input, setInput] = useState('');
             const [searchQuery, setSearchQuery] = useState('');
             const [filter, setFilter] = useState('all');
             const [isLoading, setIsLoading] = useState(false);
 
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService();
 
             useEffect(() => {
                 loadTodos();
             }, [studentId]);
 
             const loadTodos = async () => {
-                if (!apiConfig.backendUrl || !studentId) {
+                if (!studentId) {
                     // Load from localStorage as fallback
                     const savedTodos = localStorage.getItem(`todos_${studentId}`);
                     if (savedTodos) {
@@ -1123,7 +1160,7 @@ Please provide a helpful response:`
                 };
 
                 try {
-                    if (apiConfig.backendUrl && studentId) {
+                    if (studentId) {
                         const savedTask = await apiService.createTodo(studentId, newTask);
                         saveTodos([...tasks, savedTask]);
                     } else {
@@ -1145,7 +1182,7 @@ Please provide a helpful response:`
                 newTasks[index] = updatedTask;
 
                 try {
-                    if (apiConfig.backendUrl && task.id) {
+                    if (task.id) {
                         await apiService.updateTodo(task.id, { done: updatedTask.done });
                     }
                     saveTodos(newTasks);
@@ -1159,7 +1196,7 @@ Please provide a helpful response:`
                 const task = tasks[index];
                 
                 try {
-                    if (apiConfig.backendUrl && task.id) {
+                    if (task.id) {
                         await apiService.deleteTodo(task.id);
                     }
                     const newTasks = tasks.filter((_, i) => i !== index);
@@ -1252,13 +1289,13 @@ Please provide a helpful response:`
         }
 
         // Simple Auth Component (enhanced to work with API)
-        function Auth({ setStudentName, setStudentId, setLoggedIn, apiConfig }) {
+        function Auth({ setStudentName, setStudentId, setLoggedIn }) {
             const [name, setName] = useState('');
             const [id, setId] = useState('');
             const [msg, setMsg] = useState('');
             const [isLoading, setIsLoading] = useState(false);
 
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService('/api');
 
             const login = async () => {
                 if (!name || !id) {
@@ -1268,16 +1305,10 @@ Please provide a helpful response:`
 
                 setIsLoading(true);
                 try {
-                    if (apiConfig.backendUrl) {
-                        // Try to authenticate with backend
-                        const response = await apiService.login({ name, studentId: id });
-                        setStudentName(response.name || name);
-                        setStudentId(response.studentId || id);
-                    } else {
-                        // Local authentication
-                        setStudentName(name);
-                        setStudentId(id);
-                    }
+                    // Try to authenticate with backend
+                    const response = await apiService.login({ name, studentId: id });
+                    setStudentName(response.name || name);
+                    setStudentId(response.studentId || id);
                     setLoggedIn(true);
                 } catch (error) {
                     console.error('Login failed:', error);
@@ -1293,25 +1324,33 @@ Please provide a helpful response:`
             return (
                 <div id="auth">
                     <div className="card">
-                        <h2>Login to Tutorly</h2>
+                        <h2 className="auth-title">Login to Tutorly</h2>
                         <form onSubmit={(e) => { e.preventDefault(); login(); }}>
-                            <input
-                                type="text"
-                                placeholder="Student Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="Student ID"
-                                value={id}
-                                onChange={(e) => setId(e.target.value)}
-                                required
-                            />
-                            <button type="submit" disabled={isLoading}>
-                                {isLoading ? 'Logging in...' : 'Login'}
-                            </button>
+                            <div className="input-group">
+                                <label className="input-label">Student Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Alex Johnson"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label className="input-label">Student ID</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., S12345"
+                                    value={id}
+                                    onChange={(e) => setId(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="btn-row">
+                                <button className="btn-primary" type="submit" disabled={isLoading}>
+                                    {isLoading ? 'Logging in...' : 'Login'}
+                                </button>
+                            </div>
                         </form>
                         {msg && <p className="error-msg">{msg}</p>}
                     </div>
@@ -1320,7 +1359,7 @@ Please provide a helpful response:`
         }
 
         // Enhanced Assignments Component with API
-        function Assignments({ studentId, apiConfig }) {
+        function Assignments({ studentId }) {
             const [assignments, setAssignments] = useState([]);
             const [title, setTitle] = useState('');
             const [subject, setSubject] = useState('');
@@ -1332,14 +1371,14 @@ Please provide a helpful response:`
             const [filterStatus, setFilterStatus] = useState('');
             const [isLoading, setIsLoading] = useState(false);
 
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService('/api');
 
             useEffect(() => {
                 loadAssignments();
             }, [studentId]);
 
             const loadAssignments = async () => {
-                if (!apiConfig.backendUrl || !studentId) {
+                if (!studentId) {
                     // Load from localStorage as fallback
                     const saved = localStorage.getItem(`assignments_${studentId}`);
                     if (saved) {
@@ -1378,7 +1417,7 @@ Please provide a helpful response:`
                 };
 
                 try {
-                    if (apiConfig.backendUrl && studentId) {
+                    if (studentId) {
                         const saved = await apiService.createAssignment(studentId, newAssignment);
                         saveAssignments([...assignments, saved]);
                     } else {
@@ -1400,7 +1439,7 @@ Please provide a helpful response:`
                 const assignment = assignments[index];
 
                 try {
-                    if (apiConfig.backendUrl && assignment.id) {
+                    if (assignment.id) {
                         await apiService.deleteAssignment(assignment.id);
                     }
                     const newAssignments = assignments.filter((_, i) => i !== index);
@@ -1537,7 +1576,215 @@ Please provide a helpful response:`
             );
         }
 
-        // Main App Component with API Configuration
+        // Progress Tracker: per-subject histogram of recent scores
+        function ProgressTracker({ studentId }) {
+            const [data, setData] = useState({});
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const subjectsOrder = ['Math','Science','English','History'];
+
+            useEffect(() => { fetchData(); }, [studentId]);
+
+            async function fetchData() {
+                if (!studentId) return;
+                try {
+                    setLoading(true); setError('');
+                    const res = await fetch(`/api/performance/${studentId}`);
+                    if (!res.ok) throw new Error('Failed to fetch performance');
+                    const json = await res.json();
+                    setData(json || {});
+                } catch (e) { setError(e.message || 'Failed to load'); }
+                finally { setLoading(false); }
+            }
+
+            function buildHistogram(scores) {
+                const bins = [0,0,0,0,0];
+                for (const s of scores) {
+                    const v = s.score ?? s;
+                    if (v < 60) bins[0]++; else if (v < 70) bins[1]++; else if (v < 80) bins[2]++; else if (v < 90) bins[3]++; else bins[4]++;
+                }
+                const max = Math.max(1, ...bins);
+                return { bins, max };
+            }
+
+            function avg(scores) {
+                if (!scores || scores.length === 0) return '-';
+                const s = scores.reduce((a,b)=> a + (b.score ?? b), 0);
+                return Math.round(s / scores.length);
+            }
+
+            const subjects = Object.keys(data).length ? Object.keys(data) : subjectsOrder;
+
+            return (
+                <div className="card" style={{ marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                        <h3 style={{ margin: 0 }}>Progress Tracker</h3>
+                        {loading && <span style={{ color:'#6b7280', fontSize:'0.9rem' }}>Loading…</span>}
+                    </div>
+                    {error && <div style={{ color:'#b91c1c', marginBottom:'0.5rem' }}>{error}</div>}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(180px, 1fr))', gap: '12px' }}>
+                        {subjects.map((subj) => {
+                            const scores = data[subj] || [];
+                            const { bins, max } = buildHistogram(scores);
+                            const labels = ['50s','60s','70s','80s','90-100'];
+                            const color = ({'Math':'#2563eb','Science':'#059669','English':'#7c3aed','History':'#ea580c'}[subj]) || '#374151';
+                            return (
+                                <div key={subj} style={{ border:'1px solid #e5e7eb', borderRadius:'10px', padding:'10px' }}>
+                                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'6px' }}>
+                                        <div style={{ fontWeight:600 }}>{subj}</div>
+                                        <div style={{ color:'#6b7280', fontSize:'12px' }}>Avg: {avg(scores)}</div>
+                                    </div>
+                                    <div style={{ display:'flex', alignItems:'flex-end', gap:'8px', height:'90px', padding:'8px 4px' }}>
+                                        {bins.map((count, i) => (
+                                            <div key={i} title={`${labels[i]}: ${count}`} style={{ width:'18%', minWidth:'20px', background:color, opacity:0.9, height: `${Math.round((count/max)*100)}%`, borderRadius:'6px' }} />
+                                        ))}
+                                    </div>
+                                    <div style={{ display:'flex', justifyContent:'space-between', color:'#6b7280', fontSize:'11px', marginTop:'4px' }}>
+                                        {labels.map(l => <span key={l}>{l}</span>)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // Calendar View for Dashboard (color-coded + edit modal)
+        function CalendarView({ studentId }) {
+            const [current, setCurrent] = useState(new Date());
+            const [assignments, setAssignments] = useState([]);
+            const [title, setTitle] = useState('');
+            const [subject, setSubject] = useState('');
+            const [due, setDue] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [modalOpen, setModalOpen] = useState(false);
+            const [modalDateISO, setModalDateISO] = useState('');
+            const [editing, setEditing] = useState([]);
+            const api = new APIService('/api');
+
+            const subjectColors = { Math: '#2563eb', Science: '#059669', English: '#7c3aed', History: '#ea580c', Default: '#374151' };
+
+            useEffect(() => { load(); }, [studentId]);
+            async function load() {
+                if (!studentId) return;
+                try { const data = await api.getAssignments(studentId); setAssignments(data || []); } catch (e) { console.warn('Calendar load failed', e); }
+            }
+
+            async function quickAdd() {
+                if (!title.trim() || !subject || !due) return;
+                try {
+                    setLoading(true);
+                    const created = await api.createAssignment(studentId, { title, subject, due, status: 'Pending', difficulty: 'Medium' });
+                    setAssignments(prev => [...prev, created]); setTitle(''); setSubject(''); setDue('');
+                } catch (e) { console.error('Quick add failed', e); } finally { setLoading(false); }
+            }
+
+            function openModal(iso) {
+                const items = (assignments || []).filter(a => (a.due_date || a.due) === iso);
+                setEditing(items.map(a => ({ ...a, due: a.due_date || a.due }))); setModalDateISO(iso); setModalOpen(true);
+            }
+
+            async function saveEdit(idx) {
+                const item = editing[idx]; if (!item || !item.id) return;
+                try {
+                    await api.updateAssignment(item.id, { title: item.title, subject: item.subject, due_date: item.due, status: item.status || 'Pending', difficulty: item.difficulty || 'Medium', score: item.score || null, });
+                    await load();
+                } catch (e) { console.error('Save failed', e); }
+            }
+
+            async function deleteItem(idx) {
+                const item = editing[idx]; if (!item || !item.id) return;
+                try { await api.deleteAssignment(item.id); const next = editing.slice(); next.splice(idx,1); setEditing(next); await load(); } catch (e) { console.error('Delete failed', e); }
+            }
+
+            function updateField(idx, key, value) { const next = editing.slice(); next[idx] = { ...next[idx], [key]: value }; setEditing(next); }
+
+            const year = current.getFullYear(); const month = current.getMonth();
+            const firstDay = new Date(year, month, 1); const startDay = firstDay.getDay();
+            const weeks = []; let day = 1 - startDay;
+            for (let w = 0; w < 6; w++) { const week = []; for (let d = 0; d < 7; d++) { const date = new Date(year, month, day); const inMonth = date.getMonth() === month; const iso = date.toISOString().slice(0,10); const dueItems = assignments.filter(a => (a.due_date || a.due) === iso); week.push({ date, inMonth, iso, dueItems }); day++; } weeks.push(week); }
+
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+            return (
+                <div className="card calendar-card">
+                    <div className="calendar-header">
+                        <h3 className="calendar-title">Calendar • {months[month]} {year}</h3>
+                        <div className="calendar-nav">
+                            <button className="btn-primary" onClick={() => setCurrent(new Date(year, month - 1, 1))}>{'<'}</button>
+                            <button className="btn-primary" onClick={() => setCurrent(new Date())}>Today</button>
+                            <button className="btn-primary" onClick={() => setCurrent(new Date(year, month + 1, 1))}>{'>'}</button>
+                        </div>
+                    </div>
+
+                    <div className="calendar-grid">
+                        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
+                            <div key={d} className="calendar-weekday">{d}</div>
+                        ))}
+                        {weeks.map((week, i) => week.map((cell, j) => (
+                            <div key={i+'-'+j} onClick={() => openModal(cell.iso)} className={`calendar-cell ${cell.inMonth ? '' : 'outside'}`}>
+                                <div className="calendar-date">{cell.date.getDate()}</div>
+                                <div className="calendar-events">
+                                    {cell.dueItems.slice(0,3).map((a, idx) => (
+                                        <div key={idx} title={`${a.subject} • ${a.title}`} className="event-pill" style={{ background: subjectColors[a.subject] || subjectColors.Default }}>{a.title}</div>
+                                    ))}
+                                    {cell.dueItems.length > 3 && (<div className="event-more">+{cell.dueItems.length - 3} more</div>)}
+                                </div>
+                            </div>
+                        )))}
+                    </div>
+
+                    <div className="quick-add">
+                        <input type="text" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)} />
+                        <input type="text" placeholder="Subject" value={subject} onChange={e=>setSubject(e.target.value)} />
+                        <input type="date" value={due} onChange={e=>setDue(e.target.value)} />
+                        <button className="btn-primary" onClick={quickAdd} disabled={loading || !title || !subject || !due}>Add Assignment</button>
+                    </div>
+
+                    {modalOpen && (
+                        <div onClick={() => setModalOpen(false)} className="overlay">
+                            <div onClick={(e) => e.stopPropagation()} className="modal-card">
+                                <div className="modal-header">
+                                    <h3>Due {modalDateISO}</h3>
+                                    <button className="btn-primary" onClick={() => setModalOpen(false)}>Close</button>
+                                </div>
+                                {editing.length === 0 ? (
+                                    <p>No assignments due on this date.</p>
+                                ) : (
+                                    <div className="modal-content">
+                                        {editing.map((item, idx) => (
+                                            <div key={item.id || idx} className="modal-item">
+                                                <input type="text" value={item.title || ''} onChange={(e)=>updateField(idx,'title',e.target.value)} placeholder="Title" />
+                                                <input type="text" value={item.subject || ''} onChange={(e)=>updateField(idx,'subject',e.target.value)} placeholder="Subject" />
+                                                <input type="date" value={item.due || ''} onChange={(e)=>updateField(idx,'due',e.target.value)} />
+                                                <select value={item.status || 'Pending'} onChange={(e)=>updateField(idx,'status',e.target.value)}>
+                                                    <option>Pending</option>
+                                                    <option>In Progress</option>
+                                                    <option>Completed</option>
+                                                    <option>Overdue</option>
+                                                </select>
+                                                <select value={item.difficulty || 'Medium'} onChange={(e)=>updateField(idx,'difficulty',e.target.value)}>
+                                                    <option>Easy</option>
+                                                    <option>Medium</option>
+                                                    <option>Hard</option>
+                                                </select>
+                                                <div className="modal-actions">
+                                                    <button className="btn-primary" onClick={()=>saveEdit(idx)}>Save</button>
+                                                    <button onClick={()=>deleteItem(idx)} style={{ background:'#ef4444', color:'#fff', border:'none', padding:'0.5rem 0.75rem', borderRadius:'6px', cursor:'pointer' }}>Delete</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Main App Component
         function App() {
             const [studentName, setStudentName] = useState('');
             const [studentId, setStudentId] = useState('');
@@ -1546,18 +1793,7 @@ Please provide a helpful response:`
             const [tab, setTab] = useState('ai-tutor');
             const [profileOpen, setProfileOpen] = useState(false);
             const [theme, setTheme] = useState(localStorage.getItem('tutorly_theme') || 'light');
-            const [apiConfig, setApiConfig] = useState({
-                geminiApiKey: '',
-                backendUrl: 'http://localhost:5000/api' // Default Flask backend
-            });
-
-            // Load API config from localStorage
-            useEffect(() => {
-                const savedConfig = localStorage.getItem('tutorly_api_config');
-                if (savedConfig) {
-                    setApiConfig(JSON.parse(savedConfig));
-                }
-            }, []);
+            
 
             // Apply theme to body and persist
             useEffect(() => {
@@ -1592,12 +1828,10 @@ Please provide a helpful response:`
             if (!loggedIn) {
                 return (
                     <div>
-                        <APISettings apiConfig={apiConfig} setApiConfig={setApiConfig} />
                         <Auth
                             setStudentName={setStudentName}
                             setStudentId={setStudentId}
                             setLoggedIn={setLoggedIn}
-                            apiConfig={apiConfig}
                         />
                     </div>
                 );
@@ -1619,7 +1853,7 @@ Please provide a helpful response:`
                                 color: 'white', 
                                 fontWeight: 'bold' 
                             }}>
-                                T
+                                <img src="/static/logo.png" alt="Tutorly Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
                             </div>
                             <span style={{ fontWeight: 'bold', fontSize: '1.125rem' }}>Tutorly</span>
                         </div>
@@ -1639,9 +1873,6 @@ Please provide a helpful response:`
                             </a>
                         </div>
                         <div className="top-right">
-                            {/* Top-right logo - place your file at /static/top-right-logo.png */}
-                            <img className="top-right-logo" src="/static/top-right-logo.png" alt="Tutorly Logo" />
-
                             <div style={{ position: 'relative' }}>
                                 <button className="profile-button" onClick={() => setProfileOpen(v => !v)}>
                                     Profile ▾
@@ -1664,11 +1895,6 @@ Please provide a helpful response:`
                         </div>
                     </nav>
 
-                    {/* API Settings (always visible when logged in) */}
-                    <div style={{ padding: '0 1.5rem' }}>
-                        <APISettings apiConfig={apiConfig} setApiConfig={setApiConfig} />
-                    </div>
-
                     {currentPage === 'ai-tutor' ? (
                         <div>
                             <div className="secondary-nav">
@@ -1690,19 +1916,18 @@ Please provide a helpful response:`
                                         setStudentName={setStudentName}
                                         setStudentId={setStudentId}
                                         studentId={studentId}
-                                        apiConfig={apiConfig}
                                     />
                                 )}
 
                                 {tab === 'todo' && (
                                     <div className="card">
-                                        <TodoList studentId={studentId} apiConfig={apiConfig} />
+                                        <TodoList studentId={studentId} />
                                     </div>
                                 )}
 
                                 {tab === 'calendar' && (
                                     <div className="card">
-                                        <Assignments studentId={studentId} apiConfig={apiConfig} />
+                                        <Assignments studentId={studentId} />
                                     </div>
                                 )}
                             </div>
@@ -1728,11 +1953,11 @@ Please provide a helpful response:`
                                 </button>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', padding: '0 1.5rem' }}>
-                                <div className="card">
-                                    <h3>Assignment Management</h3>
-                                    <Assignments studentId={studentId} apiConfig={apiConfig} />
-                                </div>
+                            <div style={{ padding: '0 1.5rem' }}>
+                                <ProgressTracker studentId={studentId} />
+                            </div>
+                            <div style={{ padding: '0 1.5rem' }}>
+                                <CalendarView studentId={studentId} />
                             </div>
                         </div>
                     )}

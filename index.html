@@ -392,69 +392,7 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // API Configuration Component
-        function APISettings({ apiConfig, setApiConfig }) {
-            const [isVisible, setIsVisible] = useState(false);
-
-            const updateConfig = (key, value) => {
-                setApiConfig(prev => ({ ...prev, [key]: value }));
-                localStorage.setItem('tutorly_api_config', JSON.stringify({ ...apiConfig, [key]: value }));
-            };
-
-            return (
-                <div className="settings-panel">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <h3>API Configuration</h3>
-                        <button onClick={() => setIsVisible(!isVisible)} className="btn-primary">
-                            {isVisible ? 'Hide' : 'Show'} Settings
-                        </button>
-                    </div>
-                    
-                    {isVisible && (
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                                    Gemini API Key:
-                                </label>
-                                <input
-                                    type="password"
-                                    value={apiConfig.geminiApiKey}
-                                    onChange={(e) => updateConfig('geminiApiKey', e.target.value)}
-                                    placeholder="Enter your Gemini API key"
-                                    style={{ width: '100%' }}
-                                />
-                                <small style={{ color: '#6b7280' }}>
-                                    Get your API key from: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
-                                </small>
-                            </div>
-                            
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                                    Backend API URL:
-                                </label>
-                                <input
-                                    type="text"
-                                    value={apiConfig.backendUrl}
-                                    onChange={(e) => updateConfig('backendUrl', e.target.value)}
-                                    placeholder="https://your-api.com/api"
-                                    style={{ width: '100%' }}
-                                />
-                                <small style={{ color: '#6b7280' }}>
-                                    Your Flask backend API endpoint
-                                </small>
-                            </div>
-                            
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <span>Gemini Status:</span>
-                                <span className={`api-status ${apiConfig.geminiApiKey ? 'connected' : 'disconnected'}`}>
-                                    {apiConfig.geminiApiKey ? 'API Key Set' : 'No API Key'}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        }
+        // (Removed) API Configuration Component
 
         // API Service for Gemini
         class GeminiService {
@@ -516,7 +454,7 @@ Please provide a helpful response:`
         // Generic API Service for Backend
         class APIService {
             constructor(baseUrl) {
-                this.baseUrl = baseUrl;
+                this.baseUrl = baseUrl || '/api';
             }
 
             async request(endpoint, options = {}) {
@@ -650,7 +588,7 @@ Please provide a helpful response:`
         }
 
         // Enhanced Chatbot Component with Gemini Integration
-        function ChatbotPage({ setLoggedIn, setStudentName, setStudentId, studentId, apiConfig }) {
+        function ChatbotPage({ setLoggedIn, setStudentName, setStudentId, studentId }) {
             const quickActions = [
                 'Help me solve this math problem',
                 'Explain photosynthesis',
@@ -666,8 +604,7 @@ Please provide a helpful response:`
             const [selectedImage, setSelectedImage] = useState(null);
             const [imagePreview, setImagePreview] = useState('');
 
-            const geminiService = new GeminiService(apiConfig.geminiApiKey);
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService();
 
             // Load chat history on component mount
             useEffect(() => {
@@ -675,7 +612,7 @@ Please provide a helpful response:`
             }, [studentId]);
 
             const loadChatHistory = async () => {
-                if (!apiConfig.backendUrl || !studentId) return;
+                if (!studentId) return;
                 
                 try {
                     const history = await apiService.getChatHistory(studentId);
@@ -710,35 +647,17 @@ Please provide a helpful response:`
                 setError('');
 
                 try {
-                    // Save user message to backend
-                    if (apiConfig.backendUrl && studentId) {
-                        await apiService.saveChatMessage(studentId, userMessage);
-                    }
-
-                    // Get AI response from Gemini
-                    if (apiConfig.geminiApiKey) {
-                        const aiResponse = await geminiService.sendMessage(input, chatMessages);
-                        const aiMessage = { 
-                            sender: 'ai', 
-                            text: aiResponse, 
-                            timestamp: new Date().toISOString() 
-                        };
-                        
-                        setChatMessages(prev => [...prev, aiMessage]);
-
-                        // Save AI message to backend
-                        if (apiConfig.backendUrl && studentId) {
-                            await apiService.saveChatMessage(studentId, aiMessage);
-                        }
-                    } else {
-                        // Fallback response if no API key
-                        const fallbackMessage = {
-                            sender: 'ai',
-                            text: 'Hi! I need a Gemini API key to help you properly. Please configure your API key in the settings above.',
-                            timestamp: new Date().toISOString()
-                        };
-                        setChatMessages(prev => [...prev, fallbackMessage]);
-                    }
+                    // Ask backend to generate and persist AI response
+                    const result = await apiService.request(`/chat/${studentId}/ai`, {
+                        method: 'POST',
+                        body: JSON.stringify({ message: userMessage.text })
+                    });
+                    const aiMessage = {
+                        sender: 'ai',
+                        text: result.response,
+                        timestamp: result.timestamp || new Date().toISOString()
+                    };
+                    setChatMessages(prev => [...prev, aiMessage]);
                 } catch (error) {
                     setError('Failed to get AI response: ' + error.message);
                 } finally {
@@ -748,14 +667,6 @@ Please provide a helpful response:`
 
             const sendImage = async () => {
                 if (!selectedImage || isLoading) return;
-                if (!apiConfig.backendUrl) {
-                    setError('Backend URL is not configured');
-                    return;
-                }
-                if (!apiConfig.geminiApiKey) {
-                    setError('Gemini API key is not configured');
-                    return;
-                }
 
                 // Optimistic UI update: show user's message with preview
                 const userMessage = { sender: 'user', text: input || 'Image message', timestamp: new Date().toISOString(), imagePreview };
@@ -767,7 +678,6 @@ Please provide a helpful response:`
                     const formData = new FormData();
                     formData.append('image', selectedImage);
                     formData.append('message', input || 'What do you see in this image?');
-                    formData.append('apiKey', apiConfig.geminiApiKey);
 
                     const result = await apiService.sendImageMessage(studentId, formData);
                     const aiMessage = {
@@ -890,21 +800,21 @@ Please provide a helpful response:`
         }
 
         // Enhanced Todo Component with API Integration
-        function TodoList({ studentId, apiConfig }) {
+        function TodoList({ studentId }) {
             const [tasks, setTasks] = useState([]);
             const [input, setInput] = useState('');
             const [searchQuery, setSearchQuery] = useState('');
             const [filter, setFilter] = useState('all');
             const [isLoading, setIsLoading] = useState(false);
 
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService();
 
             useEffect(() => {
                 loadTodos();
             }, [studentId]);
 
             const loadTodos = async () => {
-                if (!apiConfig.backendUrl || !studentId) {
+                if (!studentId) {
                     // Load from localStorage as fallback
                     const savedTodos = localStorage.getItem(`todos_${studentId}`);
                     if (savedTodos) {
@@ -946,7 +856,7 @@ Please provide a helpful response:`
                 };
 
                 try {
-                    if (apiConfig.backendUrl && studentId) {
+                    if (studentId) {
                         const savedTask = await apiService.createTodo(studentId, newTask);
                         saveTodos([...tasks, savedTask]);
                     } else {
@@ -968,7 +878,7 @@ Please provide a helpful response:`
                 newTasks[index] = updatedTask;
 
                 try {
-                    if (apiConfig.backendUrl && task.id) {
+                    if (task.id) {
                         await apiService.updateTodo(task.id, { done: updatedTask.done });
                     }
                     saveTodos(newTasks);
@@ -982,7 +892,7 @@ Please provide a helpful response:`
                 const task = tasks[index];
                 
                 try {
-                    if (apiConfig.backendUrl && task.id) {
+                    if (task.id) {
                         await apiService.deleteTodo(task.id);
                     }
                     const newTasks = tasks.filter((_, i) => i !== index);
@@ -1075,13 +985,13 @@ Please provide a helpful response:`
         }
 
         // Simple Auth Component (enhanced to work with API)
-        function Auth({ setStudentName, setStudentId, setLoggedIn, apiConfig }) {
+        function Auth({ setStudentName, setStudentId, setLoggedIn }) {
             const [name, setName] = useState('');
             const [id, setId] = useState('');
             const [msg, setMsg] = useState('');
             const [isLoading, setIsLoading] = useState(false);
 
-            const apiService = new APIService(apiConfig.backendUrl);
+            const apiService = new APIService();
 
             const login = async () => {
                 if (!name || !id) {
@@ -1091,16 +1001,10 @@ Please provide a helpful response:`
 
                 setIsLoading(true);
                 try {
-                    if (apiConfig.backendUrl) {
-                        // Try to authenticate with backend
-                        const response = await apiService.login({ name, studentId: id });
-                        setStudentName(response.name || name);
-                        setStudentId(response.studentId || id);
-                    } else {
-                        // Local authentication
-                        setStudentName(name);
-                        setStudentId(id);
-                    }
+                    // Try to authenticate with backend; if it fails, fall back to local
+                    const response = await apiService.login({ name, studentId: id });
+                    setStudentName(response.name || name);
+                    setStudentId(response.studentId || id);
                     setLoggedIn(true);
                 } catch (error) {
                     console.error('Login failed:', error);
@@ -1139,7 +1043,7 @@ Please provide a helpful response:`
         }
 
         // Enhanced Assignments Component with API
-        function Assignments({ studentId, apiConfig }) {
+        function Assignments({ studentId }) {
             const [assignments, setAssignments] = useState([]);
             const [title, setTitle] = useState('');
             const [subject, setSubject] = useState('');
@@ -1150,20 +1054,21 @@ Please provide a helpful response:`
             const [search, setSearch] = useState('');
             const [filterStatus, setFilterStatus] = useState('');
             const [isLoading, setIsLoading] = useState(false);
-
-            const apiService = new APIService(apiConfig.backendUrl);
+            
+            const apiService = new APIService();
 
             useEffect(() => {
                 loadAssignments();
             }, [studentId]);
 
             const loadAssignments = async () => {
-                if (!apiConfig.backendUrl || !studentId) {
+                if (!studentId) {
                     // Load from localStorage as fallback
                     const saved = localStorage.getItem(`assignments_${studentId}`);
                     if (saved) {
                         setAssignments(JSON.parse(saved));
                     }
+                    setIsLoading(false);
                     return;
                 }
 
@@ -1197,14 +1102,12 @@ Please provide a helpful response:`
                 };
 
                 try {
-                    if (apiConfig.backendUrl && studentId) {
+                    if (studentId) {
                         const saved = await apiService.createAssignment(studentId, newAssignment);
                         saveAssignments([...assignments, saved]);
                     } else {
                         saveAssignments([...assignments, newAssignment]);
                     }
-                    
-                    // Reset form
                     setTitle(''); setSubject(''); setDue(''); 
                     setStatus('Pending'); setDifficulty('Medium'); setScore('');
                 } catch (error) {
@@ -1219,7 +1122,7 @@ Please provide a helpful response:`
                 const assignment = assignments[index];
 
                 try {
-                    if (apiConfig.backendUrl && assignment.id) {
+                    if (assignment.id) {
                         await apiService.deleteAssignment(assignment.id);
                     }
                     const newAssignments = assignments.filter((_, i) => i !== index);
@@ -1356,25 +1259,14 @@ Please provide a helpful response:`
             );
         }
 
-        // Main App Component with API Configuration
+        // Main App Component
         function App() {
             const [studentName, setStudentName] = useState('');
             const [studentId, setStudentId] = useState('');
             const [loggedIn, setLoggedIn] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [tab, setTab] = useState('ai-tutor');
-            const [apiConfig, setApiConfig] = useState({
-                geminiApiKey: '',
-                backendUrl: 'http://localhost:5000/api' // Default Flask backend
-            });
-
-            // Load API config from localStorage
-            useEffect(() => {
-                const savedConfig = localStorage.getItem('tutorly_api_config');
-                if (savedConfig) {
-                    setApiConfig(JSON.parse(savedConfig));
-                }
-            }, []);
+            
 
             // Simple routing
             useEffect(() => {
@@ -1396,12 +1288,10 @@ Please provide a helpful response:`
             if (!loggedIn) {
                 return (
                     <div>
-                        <APISettings apiConfig={apiConfig} setApiConfig={setApiConfig} />
                         <Auth
                             setStudentName={setStudentName}
                             setStudentId={setStudentId}
                             setLoggedIn={setLoggedIn}
-                            apiConfig={apiConfig}
                         />
                     </div>
                 );
@@ -1423,7 +1313,7 @@ Please provide a helpful response:`
                                 color: 'white', 
                                 fontWeight: 'bold' 
                             }}>
-                                T
+                                <img src="/static/logo.png" alt="Tutorly Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }} />
                             </div>
                             <span style={{ fontWeight: 'bold', fontSize: '1.125rem' }}>Tutorly</span>
                         </div>
@@ -1447,10 +1337,7 @@ Please provide a helpful response:`
                         </div>
                     </nav>
 
-                    {/* API Settings (always visible when logged in) */}
-                    <div style={{ padding: '0 1.5rem' }}>
-                        <APISettings apiConfig={apiConfig} setApiConfig={setApiConfig} />
-                    </div>
+                    {/* API Settings removed */}
 
                     {currentPage === 'ai-tutor' ? (
                         <div>
@@ -1473,19 +1360,18 @@ Please provide a helpful response:`
                                         setStudentName={setStudentName}
                                         setStudentId={setStudentId}
                                         studentId={studentId}
-                                        apiConfig={apiConfig}
                                     />
                                 )}
 
                                 {tab === 'todo' && (
                                     <div className="card">
-                                        <TodoList studentId={studentId} apiConfig={apiConfig} />
+                                        <TodoList studentId={studentId} />
                                     </div>
                                 )}
 
                                 {tab === 'calendar' && (
                                     <div className="card">
-                                        <Assignments studentId={studentId} apiConfig={apiConfig} />
+                                        <Assignments studentId={studentId} />
                                     </div>
                                 )}
                             </div>
@@ -1514,7 +1400,7 @@ Please provide a helpful response:`
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', padding: '0 1.5rem' }}>
                                 <div className="card">
                                     <h3>Assignment Management</h3>
-                                    <Assignments studentId={studentId} apiConfig={apiConfig} />
+                                    <Assignments studentId={studentId} />
                                 </div>
                             </div>
                         </div>

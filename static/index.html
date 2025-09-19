@@ -788,6 +788,42 @@ Please provide a helpful response:`
                 });
             }
 
+            async teacherLogin(credentials) {
+                return this.request('/auth/teacher/login', {
+                    method: 'POST',
+                    body: JSON.stringify(credentials)
+                });
+            }
+
+            // Teacher endpoints
+            async getTeacherStudents() {
+                return this.request('/teacher/students');
+            }
+
+            async teacherCreateAssignment(payload) {
+                return this.request('/teacher/assignments', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            async getTeacherCalendar(teacherId) {
+                return this.request(`/teacher/${teacherId}/calendar`);
+            }
+
+            async createTeacherCalendarEvent(teacherId, event) {
+                return this.request(`/teacher/${teacherId}/calendar`, {
+                    method: 'POST',
+                    body: JSON.stringify(event)
+                });
+            }
+
+            async deleteTeacherCalendarEvent(teacherId, eventId) {
+                return this.request(`/teacher/${teacherId}/calendar/${eventId}`, {
+                    method: 'DELETE'
+                });
+            }
+
             async register(userData) {
                 return this.request('/auth/register', {
                     method: 'POST',
@@ -1289,33 +1325,51 @@ Please provide a helpful response:`
         }
 
         // Simple Auth Component (enhanced to work with API)
-        function Auth({ setStudentName, setStudentId, setLoggedIn }) {
+        function Auth({ setStudentName, setStudentId, setTeacherName, setTeacherId, setRole, setLoggedIn }) {
             const [name, setName] = useState('');
             const [id, setId] = useState('');
             const [msg, setMsg] = useState('');
             const [isLoading, setIsLoading] = useState(false);
+            const [role, setLocalRole] = useState('student'); // 'student' | 'teacher'
 
             const apiService = new APIService('/api');
 
             const login = async () => {
                 if (!name || !id) {
-                    setMsg('Please enter both Student Name and Student ID.');
+                    setMsg(`Please enter both ${role === 'teacher' ? 'Teacher' : 'Student'} Name and ${role === 'teacher' ? 'Teacher' : 'Student'} ID.`);
                     return;
                 }
 
                 setIsLoading(true);
                 try {
-                    // Try to authenticate with backend
-                    const response = await apiService.login({ name, studentId: id });
-                    setStudentName(response.name || name);
-                    setStudentId(response.studentId || id);
-                    setLoggedIn(true);
+                    if (role === 'teacher') {
+                        const response = await apiService.teacherLogin({ name, teacherId: id });
+                        setTeacherName(response.name || name);
+                        setTeacherId(response.teacherId || id);
+                        setRole('teacher');
+                        setLoggedIn(true);
+                    } else {
+                        // Student login
+                        const response = await apiService.login({ name, studentId: id });
+                        setStudentName(response.name || name);
+                        setStudentId(response.studentId || id);
+                        setRole('student');
+                        setLoggedIn(true);
+                    }
                 } catch (error) {
                     console.error('Login failed:', error);
                     // Fallback to local login
-                    setStudentName(name);
-                    setStudentId(id);
-                    setLoggedIn(true);
+                    if (role === 'teacher') {
+                        setTeacherName(name);
+                        setTeacherId(id);
+                        setRole('teacher');
+                        setLoggedIn(true);
+                    } else {
+                        setStudentName(name);
+                        setStudentId(id);
+                        setRole('student');
+                        setLoggedIn(true);
+                    }
                 } finally {
                     setIsLoading(false);
                 }
@@ -1325,22 +1379,30 @@ Please provide a helpful response:`
                 <div id="auth">
                     <div className="card">
                         <h2 className="auth-title">Login to Tutorly</h2>
+                        <div style={{ display:'flex', gap:'0.5rem', justifyContent:'center', marginBottom:'0.75rem' }}>
+                            <button type="button" className="btn-primary" onClick={() => setLocalRole('student')} disabled={role==='student'}>
+                                Student
+                            </button>
+                            <button type="button" className="btn-primary" onClick={() => setLocalRole('teacher')} disabled={role==='teacher'}>
+                                Teacher
+                            </button>
+                        </div>
                         <form onSubmit={(e) => { e.preventDefault(); login(); }}>
                             <div className="input-group">
-                                <label className="input-label">Student Name</label>
+                                <label className="input-label">{role === 'teacher' ? 'Teacher Name' : 'Student Name'}</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g., Alex Johnson"
+                                    placeholder={role === 'teacher' ? 'e.g., Ms. Garcia' : 'e.g., Alex Johnson'}
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                 />
                             </div>
                             <div className="input-group">
-                                <label className="input-label">Student ID</label>
+                                <label className="input-label">{role === 'teacher' ? 'Teacher ID' : 'Student ID'}</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g., S12345"
+                                    placeholder={role === 'teacher' ? 'e.g., T98765' : 'e.g., S12345'}
                                     value={id}
                                     onChange={(e) => setId(e.target.value)}
                                     required
@@ -1348,11 +1410,203 @@ Please provide a helpful response:`
                             </div>
                             <div className="btn-row">
                                 <button className="btn-primary" type="submit" disabled={isLoading}>
-                                    {isLoading ? 'Logging in...' : 'Login'}
+                                    {isLoading ? 'Logging in...' : (role === 'teacher' ? 'Login as Teacher' : 'Login as Student')}
                                 </button>
                             </div>
                         </form>
                         {msg && <p className="error-msg">{msg}</p>}
+                    </div>
+                </div>
+            );
+        }
+
+        // Simple Teacher Home View
+        function TeacherHome({ teacherName, teacherId, onLogout }) {
+            const [students, setStudents] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState('');
+            const [selectedStudent, setSelectedStudent] = useState('');
+            const [title, setTitle] = useState('');
+            const [subject, setSubject] = useState('');
+            const [due, setDue] = useState('');
+            const [status, setStatus] = useState('Pending');
+            const [difficulty, setDifficulty] = useState('Medium');
+            const [score, setScore] = useState('');
+            const [creating, setCreating] = useState(false);
+
+            // Calendar
+            const [events, setEvents] = useState([]);
+            const [evtTitle, setEvtTitle] = useState('');
+            const [evtDate, setEvtDate] = useState('');
+            const [evtSubject, setEvtSubject] = useState('');
+            const [evtDesc, setEvtDesc] = useState('');
+            const [evtLoading, setEvtLoading] = useState(false);
+
+            const api = new APIService('/api');
+
+            useEffect(() => {
+                async function load() {
+                    try {
+                        setLoading(true);
+                        const [s, c] = await Promise.all([
+                            api.getTeacherStudents(),
+                            api.getTeacherCalendar(teacherId)
+                        ]);
+                        setStudents(s || []);
+                        setEvents(c || []);
+                        if ((s || []).length > 0) setSelectedStudent(s[0].studentId);
+                    } catch (e) {
+                        console.error(e);
+                        setError('Failed to load teacher data.');
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+                if (teacherId) load();
+            }, [teacherId]);
+
+            async function createAssignment() {
+                if (!selectedStudent || !title.trim() || !subject || !due) return;
+                try {
+                    setCreating(true);
+                    await api.teacherCreateAssignment({
+                        teacherId,
+                        studentId: selectedStudent,
+                        title,
+                        subject,
+                        due,
+                        status,
+                        difficulty,
+                        score: score !== '' ? Number(score) : null,
+                    });
+                    setTitle(''); setSubject(''); setDue(''); setStatus('Pending'); setDifficulty('Medium'); setScore('');
+                    alert('Assignment created for student');
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to create assignment');
+                } finally {
+                    setCreating(false);
+                }
+            }
+
+            async function addEvent() {
+                if (!evtTitle.trim() || !evtDate) return;
+                try {
+                    setEvtLoading(true);
+                    const created = await api.createTeacherCalendarEvent(teacherId, {
+                        title: evtTitle,
+                        date: evtDate,
+                        subject: evtSubject,
+                        description: evtDesc
+                    });
+                    setEvents(prev => [...prev, created]);
+                    setEvtTitle(''); setEvtDate(''); setEvtSubject(''); setEvtDesc('');
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to add event');
+                } finally {
+                    setEvtLoading(false);
+                }
+            }
+
+            async function deleteEvent(id) {
+                try {
+                    await api.deleteTeacherCalendarEvent(teacherId, id);
+                    setEvents(prev => prev.filter(e => e.id !== id));
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to delete event');
+                }
+            }
+
+            return (
+                <div>
+                    <div className="navbar">
+                        <div className="logo-section">
+                            <strong>Tutorly</strong>
+                            <span style={{ color:'#6b7280' }}>Teacher Portal</span>
+                        </div>
+                        <div className="top-right">
+                            <button className="profile-button" onClick={onLogout}>Logout</button>
+                        </div>
+                    </div>
+                    <div className="main-content">
+                        <div className="card" style={{ marginBottom: '1rem' }}>
+                            <h2 style={{ marginTop: 0 }}>Welcome, {teacherName || 'Teacher'}!</h2>
+                            <p style={{ marginBottom: 0 }}>Teacher ID: <strong>{teacherId}</strong></p>
+                        </div>
+
+                        {error && <div className="card" style={{ color:'#b91c1c' }}>{error}</div>}
+
+                        <div className="card" style={{ marginBottom: '1rem' }}>
+                            <h3>Assign Task to a Student</h3>
+                            {loading ? (
+                                <p>Loading students…</p>
+                            ) : (
+                                <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem', alignItems:'center' }}>
+                                    <select value={selectedStudent} onChange={e=>setSelectedStudent(e.target.value)}>
+                                        {students.map(s => (
+                                            <option key={s.studentId} value={s.studentId}>{s.name} ({s.studentId})</option>
+                                        ))}
+                                    </select>
+                                    <input type="text" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)} />
+                                    <input type="text" placeholder="Subject" value={subject} onChange={e=>setSubject(e.target.value)} />
+                                    <input type="date" value={due} onChange={e=>setDue(e.target.value)} />
+                                    <select value={status} onChange={e=>setStatus(e.target.value)}>
+                                        <option>Pending</option>
+                                        <option>In Progress</option>
+                                        <option>Completed</option>
+                                        <option>Overdue</option>
+                                    </select>
+                                    <select value={difficulty} onChange={e=>setDifficulty(e.target.value)}>
+                                        <option>Easy</option>
+                                        <option>Medium</option>
+                                        <option>Hard</option>
+                                    </select>
+                                    <input type="number" placeholder="Score (optional)" value={score} onChange={e=>setScore(e.target.value)} />
+                                    <button className="btn-primary" onClick={createAssignment} disabled={creating || loading || !selectedStudent || !title || !subject || !due}>Add Assignment</button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="card">
+                            <h3>Teacher Calendar</h3>
+                            <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem', alignItems:'center', marginBottom:'0.5rem' }}>
+                                <input type="text" placeholder="Event title" value={evtTitle} onChange={e=>setEvtTitle(e.target.value)} />
+                                <input type="date" value={evtDate} onChange={e=>setEvtDate(e.target.value)} />
+                                <input type="text" placeholder="Subject (optional)" value={evtSubject} onChange={e=>setEvtSubject(e.target.value)} />
+                                <input type="text" placeholder="Description (optional)" value={evtDesc} onChange={e=>setEvtDesc(e.target.value)} />
+                                <button className="btn-primary" onClick={addEvent} disabled={evtLoading || !evtTitle || !evtDate}>Add Event</button>
+                            </div>
+                            {events.length === 0 ? (
+                                <p style={{ color:'#6b7280' }}>No events yet.</p>
+                            ) : (
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style={{width:'15%'}}>Date</th>
+                                            <th style={{width:'30%'}}>Title</th>
+                                            <th style={{width:'20%'}}>Subject</th>
+                                            <th>Description</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {events.map(ev => (
+                                            <tr key={ev.id}>
+                                                <td>{ev.date}</td>
+                                                <td>{ev.title}</td>
+                                                <td>{ev.subject || '-'}</td>
+                                                <td>{ev.description || '-'}</td>
+                                                <td>
+                                                    <button onClick={()=>deleteEvent(ev.id)} style={{ background:'#ef4444', color:'#fff', border:'none', padding:'0.35rem 0.65rem', borderRadius:'6px', cursor:'pointer' }}>Delete</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
                     </div>
                 </div>
             );
@@ -1788,6 +2042,9 @@ Please provide a helpful response:`
         function App() {
             const [studentName, setStudentName] = useState('');
             const [studentId, setStudentId] = useState('');
+            const [teacherName, setTeacherName] = useState('');
+            const [teacherId, setTeacherId] = useState('');
+            const [role, setRole] = useState('student');
             const [loggedIn, setLoggedIn] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [tab, setTab] = useState('ai-tutor');
@@ -1805,6 +2062,9 @@ Please provide a helpful response:`
                 setLoggedIn(false);
                 setStudentName('');
                 setStudentId('');
+                setTeacherName('');
+                setTeacherId('');
+                setRole('student');
                 setProfileOpen(false);
             };
 
@@ -1831,9 +2091,23 @@ Please provide a helpful response:`
                         <Auth
                             setStudentName={setStudentName}
                             setStudentId={setStudentId}
+                            setTeacherName={setTeacherName}
+                            setTeacherId={setTeacherId}
+                            setRole={setRole}
                             setLoggedIn={setLoggedIn}
                         />
                     </div>
+                );
+            }
+
+            // If teacher is logged in, show Teacher view
+            if (role === 'teacher') {
+                return (
+                    <TeacherHome
+                        teacherName={teacherName}
+                        teacherId={teacherId}
+                        onLogout={handleLogout}
+                    />
                 );
             }
 

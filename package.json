@@ -1,0 +1,17 @@
+{
+  "name": "edutech-ai-tutor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev-all": "concurrently \"npm start --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

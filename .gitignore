@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Environment variables
 .env
 .env.local
@@ -90,3 +91,22 @@ node_modules/
 # Temporary folders
 tmp/
 temp/
+=======
+# Node stuff (if anything left)
+node_modules/
+package-lock.json
+
+# Python stuff
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env
+
+# IDE / system files
+.vscode/
+.DS_Store
+>>>>>>> parent of 6067a66 (Deleted files)

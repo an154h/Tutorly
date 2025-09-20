@@ -131,8 +131,7 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-<<<<<<< HEAD
-=======
+
     # Add optional columns for roles/teachers if they don't exist
     try:
         # role column: 'student' or 'teacher'
@@ -144,7 +143,6 @@ def init_database():
         conn.execute("ALTER TABLE users ADD COLUMN teacher_id TEXT UNIQUE")
     except Exception:
         pass
->>>>>>> parent of d8ff936 (Deleted files and moving files)
     
     # Assignments table
     conn.execute('''
@@ -174,8 +172,6 @@ def init_database():
         )
     ''')
 
-<<<<<<< HEAD
-=======
     # Calendar events table (per student)
     conn.execute('''
         CREATE TABLE IF NOT EXISTS calendar_events (
@@ -189,7 +185,6 @@ def init_database():
         )
     ''')
     
->>>>>>> parent of d8ff936 (Deleted files and moving files)
     # Subject performance table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS subject_performance (
@@ -480,13 +475,11 @@ def login():
     else:
         # Create new user
         conn.execute(
-<<<<<<< HEAD
+
             'INSERT INTO users (student_id, name) VALUES (?, ?)',
-            (student_id, name)
-=======
+            (student_id, name),
             'INSERT INTO users (student_id, name, role) VALUES (?, ?, ?)',
             (student_id, name, 'student')
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         )
         conn.commit()
     
@@ -552,8 +545,6 @@ def login():
     return jsonify({
         'studentId': student_id,
         'name': name,
-<<<<<<< HEAD
-=======
         'role': 'student',
         'message': 'Login successful'
     })
@@ -597,7 +588,6 @@ def teacher_login():
         'teacherId': teacher_id,
         'name': name,
         'role': 'teacher',
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         'message': 'Login successful'
     })
 

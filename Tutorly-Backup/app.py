@@ -131,16 +131,20 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-    
-    # Teachers table
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS teachers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id TEXT UNIQUE NOT NULL,
-            name TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
+<<<<<<< HEAD
+=======
+    # Add optional columns for roles/teachers if they don't exist
+    try:
+        # role column: 'student' or 'teacher'
+        conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'student'")
+    except Exception:
+        pass
+    try:
+        # teacher_id column for teacher accounts
+        conn.execute("ALTER TABLE users ADD COLUMN teacher_id TEXT UNIQUE")
+    except Exception:
+        pass
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
     
     # Assignments table
     conn.execute('''
@@ -170,6 +174,22 @@ def init_database():
         )
     ''')
 
+<<<<<<< HEAD
+=======
+    # Calendar events table (per student)
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            event_date DATE NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (student_id)
+        )
+    ''')
+    
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
     # Subject performance table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS subject_performance (
@@ -180,20 +200,6 @@ def init_database():
             score INTEGER NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (student_id) REFERENCES users (student_id)
-        )
-    ''')
-    
-    # Teacher calendar events table
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS calendar_events (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id TEXT NOT NULL,
-            title TEXT NOT NULL,
-            date DATE NOT NULL,
-            description TEXT,
-            subject TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (teacher_id) REFERENCES teachers (teacher_id)
         )
     ''')
     
@@ -474,8 +480,13 @@ def login():
     else:
         # Create new user
         conn.execute(
+<<<<<<< HEAD
             'INSERT INTO users (student_id, name) VALUES (?, ?)',
             (student_id, name)
+=======
+            'INSERT INTO users (student_id, name, role) VALUES (?, ?, ?)',
+            (student_id, name, 'student')
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         )
         conn.commit()
     
@@ -541,6 +552,9 @@ def login():
     return jsonify({
         'studentId': student_id,
         'name': name,
+<<<<<<< HEAD
+=======
+        'role': 'student',
         'message': 'Login successful'
     })
 
@@ -551,124 +565,41 @@ def teacher_login():
     data = request.get_json()
     name = data.get('name')
     teacher_id = data.get('teacherId')
-    
+
     if not name or not teacher_id:
         return jsonify({'error': 'Name and teacher ID are required'}), 400
-    
+
     conn = get_db_connection()
-    
-    # Check if teacher exists
-    teacher = conn.execute(
-        'SELECT * FROM teachers WHERE teacher_id = ?', (teacher_id,)
+
+    # Check if teacher exists by teacher_id
+    user = conn.execute(
+        'SELECT * FROM users WHERE teacher_id = ?', (teacher_id,)
     ).fetchone()
-    
-    if teacher:
-        # Update name if different
-        if teacher['name'] != name:
+
+    if user:
+        if user['name'] != name:
             conn.execute(
-                'UPDATE teachers SET name = ? WHERE teacher_id = ?',
+                'UPDATE users SET name = ? WHERE teacher_id = ?',
                 (name, teacher_id)
             )
             conn.commit()
     else:
         # Create new teacher
         conn.execute(
-            'INSERT INTO teachers (teacher_id, name) VALUES (?, ?)',
-            (teacher_id, name)
+            'INSERT INTO users (teacher_id, name, role) VALUES (?, ?, ?)',
+            (teacher_id, name, 'teacher')
         )
         conn.commit()
-    
+
     conn.close()
-    
+
     return jsonify({
         'teacherId': teacher_id,
         'name': name,
-        'message': 'Teacher login successful'
+        'role': 'teacher',
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+        'message': 'Login successful'
     })
-
-# Teacher utilities and management routes
-@app.route('/api/teacher/students', methods=['GET'])
-def list_students():
-    """List all students for teacher selection"""
-    conn = get_db_connection()
-    rows = conn.execute('SELECT student_id, name FROM users ORDER BY name ASC').fetchall()
-    conn.close()
-    return jsonify([{'studentId': r['student_id'], 'name': r['name']} for r in rows])
-
-@app.route('/api/teacher/assignments', methods=['POST'])
-def teacher_create_assignment():
-    """Teacher creates an assignment for a student"""
-    data = request.get_json()
-    required = ['teacherId', 'studentId', 'title', 'subject', 'due']
-    if not all(k in data and data[k] for k in required):
-        return jsonify({'error': 'Missing required fields'}), 400
-    
-    conn = get_db_connection()
-    cursor = conn.execute(
-        '''INSERT INTO assignments
-           (student_id, title, subject, due_date, status, difficulty, score)
-           VALUES (?, ?, ?, ?, ?, ?, ?)''',
-        (
-            data['studentId'],
-            data['title'],
-            data['subject'],
-            data['due'],
-            data.get('status', 'Pending'),
-            data.get('difficulty', 'Medium'),
-            data.get('score')
-        )
-    )
-    new_id = cursor.lastrowid
-    conn.commit()
-    assignment = conn.execute('SELECT * FROM assignments WHERE id = ?', (new_id,)).fetchone()
-    conn.close()
-    return jsonify(dict(assignment)), 201
-
-@app.route('/api/teacher/<teacher_id>/calendar', methods=['GET'])
-def get_teacher_calendar(teacher_id):
-    """Get teacher calendar events"""
-    conn = get_db_connection()
-    rows = conn.execute(
-        'SELECT * FROM calendar_events WHERE teacher_id = ? ORDER BY date ASC, id ASC',
-        (teacher_id,)
-    ).fetchall()
-    conn.close()
-    return jsonify([dict(r) for r in rows])
-
-@app.route('/api/teacher/<teacher_id>/calendar', methods=['POST'])
-def create_teacher_calendar_event(teacher_id):
-    """Create a calendar event for a teacher"""
-    data = request.get_json()
-    title = data.get('title')
-    date = data.get('date')
-    description = data.get('description')
-    subject = data.get('subject')
-    if not title or not date:
-        return jsonify({'error': 'Title and date are required'}), 400
-    conn = get_db_connection()
-    cursor = conn.execute(
-        'INSERT INTO calendar_events (teacher_id, title, date, description, subject) VALUES (?, ?, ?, ?, ?)',
-        (teacher_id, title, date, description, subject)
-    )
-    event_id = cursor.lastrowid
-    conn.commit()
-    event = conn.execute('SELECT * FROM calendar_events WHERE id = ?', (event_id,)).fetchone()
-    conn.close()
-    return jsonify(dict(event)), 201
-
-@app.route('/api/teacher/<teacher_id>/calendar/<int:event_id>', methods=['DELETE'])
-def delete_teacher_calendar_event(teacher_id, event_id):
-    """Delete a calendar event for a teacher"""
-    conn = get_db_connection()
-    res = conn.execute(
-        'DELETE FROM calendar_events WHERE id = ? AND teacher_id = ?',
-        (event_id, teacher_id)
-    )
-    conn.commit()
-    conn.close()
-    if res.rowcount:
-        return jsonify({'message': 'Event deleted'})
-    return jsonify({'error': 'Event not found'}), 404
 
 # Assignment Routes
 @app.route('/api/assignments/<student_id>', methods=['GET'])

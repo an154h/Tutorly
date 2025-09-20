@@ -8,76 +8,41 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-<<<<<<< HEAD
-        /* Same styles as before */
-=======
-<<<<<<< HEAD
-        /* Same styles as before */
-=======
         /* Base: elegant black & white theme */
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         body, html {
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-<<<<<<< HEAD
-            background-color: #f9fafb;
-            color: #111827;
-            transition: background-color 0.3s, color 0.3s;
-=======
-<<<<<<< HEAD
-            background-color: #f9fafb;
-            color: #111827;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        body.dark {
-            background-color: #1f2937;
-            color: #fff;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            transition: box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
-        }
-
-        body.dark .card {
-            background-color: #374151;
-            color: #fff;
-        }
-=======
             background-color: #ffffff;
             color: #0b0f19;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             transition: background-color 0.3s ease, color 0.3s ease;
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         }
 
         body.dark {
-            background-color: #1f2937;
-            color: #fff;
+            background-color: #000000;
+            color: #ffffff;
         }
 
+        /* Cards */
         .card {
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            transition: box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
+            background-color: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            padding: 1.25rem 1.25rem;
+            transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s, color 0.3s;
         }
+        .card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
 
         body.dark .card {
-            background-color: #374151;
-            color: #fff;
+            background-color: #0b0b0b;
+            border-color: #1f2937;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(255,255,255,0.03);
         }
 
-<<<<<<< HEAD
-=======
         /* Buttons */
         .btn-primary {
             background-color: #0b0f19;
@@ -197,9 +162,7 @@
         #auth .input-group { display:flex; flex-direction:column; }
         #auth .input-label { font-size: 0.85rem; color:#6b7280; margin: 0.15rem 0 0.25rem 0.15rem; }
         #auth .btn-row { display:flex; justify-content:center; margin-top: 0.5rem; }
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
 
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         /* Auth styles */
         #auth {
             display: flex;
@@ -272,10 +235,6 @@
             border-bottom: 2px solid #2563eb;
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         /* Profile dropdown and top-right logo */
         .top-right {
             display: flex;
@@ -373,8 +332,6 @@
         input:checked + .slider { background-color: #2563eb; }
         input:checked + .slider:before { transform: translateX(20px); }
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         /* Chat styles */
         .chat-card {
             display: flex;
@@ -408,193 +365,65 @@
             border-radius: 1rem;
             margin-right: 2rem;
             align-self: flex-start;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-end;
-        }
-
-        .chat-input-area input[type="text"] {
-            flex: 1;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid #d1d5db;
-            outline: none;
-        }
-
-        .image-upload-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .image-upload-btn {
-            background-color: #6b7280;
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            transition: background-color 0.2s;
-        }
-
-        .image-upload-btn:hover {
-            background-color: #4b5563;
-        }
-
-        .image-upload-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .image-upload-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .image-preview {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-            border: 2px solid #e5e7eb;
-        }
-
-        .image-preview-container {
-            position: relative;
-            display: inline-block;
-            margin: 0.5rem 0;
-        }
-
-        .remove-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-=======
             line-height: 1.6;
             max-width: 85%;
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         }
 
-        .chat-input-area {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-end;
+        .chat-message-ai h3,
+        .chat-message-ai h4,
+        .chat-message-ai h5 {
+            margin: 0.75rem 0 0.5rem 0;
+            font-weight: 600;
+            color: #1f2937;
         }
 
-        .chat-input-area input[type="text"] {
-            flex: 1;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid #d1d5db;
-            outline: none;
+        .chat-message-ai h3 {
+            font-size: 1.1em;
+            border-bottom: 1px solid #d1d5db;
+            padding-bottom: 0.25rem;
         }
 
-        .image-upload-container {
-            position: relative;
-            display: inline-block;
+        .chat-message-ai h4 {
+            font-size: 1.05em;
         }
 
-        .image-upload-btn {
-            background-color: #6b7280;
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            transition: background-color 0.2s;
+        .chat-message-ai h5 {
+            font-size: 1em;
         }
 
-        .image-upload-btn:hover {
-            background-color: #4b5563;
+        .chat-message-ai strong {
+            font-weight: 600;
+            color: #1f2937;
         }
 
-        .image-upload-btn:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
+        .chat-message-ai em {
+            font-style: italic;
+            color: #374151;
         }
 
-        .image-upload-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .image-preview {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 0.5rem;
+        .chat-message-ai ul,
+        .chat-message-ai ol {
             margin: 0.5rem 0;
-            border: 2px solid #e5e7eb;
+            padding-left: 1.5rem;
         }
 
-        .image-preview-container {
-            position: relative;
-            display: inline-block;
+        .chat-message-ai li {
+            margin: 0.25rem 0;
+            line-height: 1.5;
+        }
+
+        .chat-message-ai p {
             margin: 0.5rem 0;
         }
 
-        .remove-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+        .chat-message-ai p:first-child {
+            margin-top: 0;
         }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
+        .chat-message-ai p:last-child {
+            margin-bottom: 0;
         }
 
-<<<<<<< HEAD
-=======
             .chat-message-ai br {
                 line-height: 1.2;
             }
@@ -618,8 +447,6 @@
                 display: inline-block;
             }
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         .error-message {
             color: #dc2626;
             background-color: #fef2f2;
@@ -629,54 +456,24 @@
         }
 
         /* Quick action styles */
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-
-            .quick-action-btn {
-                background-color: #f3f4f6;
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                cursor: pointer;
-                transition: all 0.2s;
-                text-align: left;
-            }
-
-            .quick-action-btn:hover {
-                background-color: #e5e7eb;
-            }
-
-            /* Layout styles */
-=======
         .quick-actions-grid {
             display: grid;
             gap: 0.5rem;
         }
->>>>>>> parent of d8ff936 (Deleted files and moving files)
 
-            .quick-action-btn {
-                background-color: #f3f4f6;
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                cursor: pointer;
-                transition: all 0.2s;
-                text-align: left;
-            }
+        .quick-action-btn {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
 
-<<<<<<< HEAD
-            .quick-action-btn:hover {
-                background-color: #e5e7eb;
-            }
-
-            /* Layout styles */
-=======
         .quick-action-btn:hover {
             background-color: #e5e7eb;
         }
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
 
         /* Layout styles */
         .ai-tutor-layout {
@@ -812,10 +609,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         // Text formatting utility function
         function formatText(text) {
             if (!text) return '';
@@ -901,8 +694,6 @@
             );
         }
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
         // (Removed) API Configuration Component
 
         // API Service for Gemini
@@ -973,15 +764,7 @@ Please provide a helpful response:`
                     const response = await fetch(`${this.baseUrl}${endpoint}`, {
                         headers: {
                             'Content-Type': 'application/json',
-<<<<<<< HEAD
-                            ...(options.headers || {})
-=======
-<<<<<<< HEAD
-                            ...(options.headers || {})
-=======
                             ...options.headers
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                         },
                         ...options
                     });
@@ -1005,15 +788,6 @@ Please provide a helpful response:`
                 });
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async teacherLogin(credentials) {
                 return this.request('/auth/teacher/login', {
                     method: 'POST',
@@ -1021,17 +795,35 @@ Please provide a helpful response:`
                 });
             }
 
-            // Todo Operations (placeholder if wired later)
-            async getTodos(userId) {
-                return this.request(`/todos/${userId}`);
+            // Teacher endpoints
+            async getTeacherStudents() {
+                return this.request('/teacher/students');
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
+
+            async teacherCreateAssignment(payload) {
+                return this.request('/teacher/assignments', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            async getTeacherCalendar(teacherId) {
+                return this.request(`/teacher/${teacherId}/calendar`);
+            }
+
+            async createTeacherCalendarEvent(teacherId, event) {
+                return this.request(`/teacher/${teacherId}/calendar`, {
+                    method: 'POST',
+                    body: JSON.stringify(event)
+                });
+            }
+
+            async deleteTeacherCalendarEvent(teacherId, eventId) {
+                return this.request(`/teacher/${teacherId}/calendar/${eventId}`, {
+                    method: 'DELETE'
+                });
+            }
+
             async register(userData) {
                 return this.request('/auth/register', {
                     method: 'POST',
@@ -1044,38 +836,20 @@ Please provide a helpful response:`
                 return this.request(`/todos/${userId}`);
             }
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async createTodo(userId, todo) {
                 return this.request(`/todos/${userId}`, {
                     method: 'POST',
                     body: JSON.stringify(todo)
                 });
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateTodo(todoId, updates) {
                 return this.request(`/todos/${todoId}`, {
                     method: 'PUT',
                     body: JSON.stringify(updates)
                 });
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async deleteTodo(todoId) {
                 return this.request(`/todos/${todoId}`, {
                     method: 'DELETE'
@@ -1086,76 +860,32 @@ Please provide a helpful response:`
             async getAssignments(userId) {
                 return this.request(`/assignments/${userId}`);
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async createAssignment(userId, assignment) {
                 return this.request(`/assignments/${userId}`, {
                     method: 'POST',
                     body: JSON.stringify(assignment)
                 });
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateAssignment(assignmentId, updates) {
                 return this.request(`/assignments/${assignmentId}`, {
                     method: 'PUT',
                     body: JSON.stringify(updates)
                 });
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async deleteAssignment(assignmentId) {
                 return this.request(`/assignments/${assignmentId}`, {
                     method: 'DELETE'
                 });
             }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-            // Calendar Operations
-            async getCalendar(userId) {
-                return this.request(`/calendar/${userId}`);
-            }
-            async createCalendarEvent(userId, event) {
-                return this.request(`/calendar/${userId}`, {
-                    method: 'POST',
-                    body: JSON.stringify(event)
-                });
-            }
-
-<<<<<<< HEAD
-=======
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Progress/Analytics
             async getProgress(userId) {
                 return this.request(`/progress/${userId}`);
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateProgress(userId, progressData) {
                 return this.request(`/progress/${userId}`, {
                     method: 'PUT',
@@ -1167,13 +897,7 @@ Please provide a helpful response:`
             async getChatHistory(userId) {
                 return this.request(`/chat/${userId}`);
             }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             async saveChatMessage(userId, message) {
                 return this.request(`/chat/${userId}`, {
                     method: 'POST',
@@ -1183,23 +907,6 @@ Please provide a helpful response:`
 
             // Image chat (multipart/form-data)
             async sendImageMessage(userId, formData) {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-                const response = await fetch(`${this.baseUrl}/chat/${userId}/ai/image`, {
-                    method: 'POST',
-                    body: formData
-                });
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-<<<<<<< HEAD
-                }
-                return await response.json();
-=======
-                }
-                return await response.json();
-=======
                 try {
                     const response = await fetch(`${this.baseUrl}/chat/${userId}/ai/image`, {
                         method: 'POST',
@@ -1215,8 +922,6 @@ Please provide a helpful response:`
                     console.error('Image API Error:', error);
                     throw error;
                 }
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             }
         }
 
@@ -1372,19 +1077,11 @@ Please provide a helpful response:`
                                 ) : (
                                     chatMessages.map((msg, i) => (
                                         <div key={i} className={msg.sender === 'user' ? 'chat-message-user' : 'chat-message-ai'}>
-<<<<<<< HEAD
-                                            {msg.text}
-=======
-<<<<<<< HEAD
-                                            {msg.text}
-=======
                                             {msg.sender === 'ai' ? (
                                                 <FormattedText text={msg.text} />
                                             ) : (
                                                 msg.text
                                             )}
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                             {msg.imagePreview && (
                                                 <div className="image-preview-container">
                                                     <img src={msg.imagePreview} alt="uploaded preview" className="image-preview" />
@@ -1393,15 +1090,7 @@ Please provide a helpful response:`
                                         </div>
                                     ))
                                 )}
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
-
-=======
                                 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                 {isLoading && (
                                     <div className="chat-message-ai">
                                         <span>🤔 Thinking...</span>
@@ -1418,19 +1107,7 @@ Please provide a helpful response:`
                                         </div>
                                     )}
                                     <div className="image-upload-container" title="Upload image">
-<<<<<<< HEAD
-                                        <button className="image-upload-btn" disabled={isLoading}>
-                                            📷
-                                        </button>
-=======
-<<<<<<< HEAD
-                                        <button className="image-upload-btn" disabled={isLoading}>
-                                            📷
-                                        </button>
-=======
                                         <button className="image-upload-btn" disabled={isLoading}>📷</button>
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                         <input 
                                             type="file" 
                                             accept="image/*" 
@@ -1648,125 +1325,51 @@ Please provide a helpful response:`
         }
 
         // Simple Auth Component (enhanced to work with API)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-        function Auth({ setStudentName, setStudentId, setLoggedIn, setRole, setTeacherId }) {
-            const [name, setName] = useState('');
-            const [id, setId] = useState('');
-            const [roleLocal, setRoleLocal] = useState('student');
-            const [msg, setMsg] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-
-            const apiService = new APIService();
-
-            const login = async () => {
-                if (!name || !id) {
-                    setMsg(`Please enter both ${roleLocal === 'teacher' ? 'Teacher' : 'Student'} Name and ${roleLocal === 'teacher' ? 'Teacher' : 'Student'} ID.`);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-        function Auth({ setStudentName, setStudentId, setLoggedIn }) {
+        function Auth({ setStudentName, setStudentId, setTeacherName, setTeacherId, setRole, setLoggedIn }) {
             const [name, setName] = useState('');
             const [id, setId] = useState('');
             const [msg, setMsg] = useState('');
             const [isLoading, setIsLoading] = useState(false);
+            const [role, setLocalRole] = useState('student'); // 'student' | 'teacher'
 
             const apiService = new APIService('/api');
 
             const login = async () => {
                 if (!name || !id) {
-                    setMsg('Please enter both Student Name and Student ID.');
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
+                    setMsg(`Please enter both ${role === 'teacher' ? 'Teacher' : 'Student'} Name and ${role === 'teacher' ? 'Teacher' : 'Student'} ID.`);
                     return;
                 }
 
                 setIsLoading(true);
                 try {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    // Try to authenticate with backend
-                    const response = await apiService.login({ name, studentId: id });
-                    setStudentName(response.name || name);
-                    setStudentId(response.studentId || id);
-                    setLoggedIn(true);
-                } catch (error) {
-                    console.error('Login failed:', error);
-                    // Fallback to local login
-                    setStudentName(name);
-                    setStudentId(id);
-=======
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-                    if (roleLocal === 'teacher') {
+                    if (role === 'teacher') {
                         const response = await apiService.teacherLogin({ name, teacherId: id });
-                        setRole(response.role || 'teacher');
+                        setTeacherName(response.name || name);
                         setTeacherId(response.teacherId || id);
-                        setStudentName(response.name || name);
+                        setRole('teacher');
                         setLoggedIn(true);
                     } else {
+                        // Student login
                         const response = await apiService.login({ name, studentId: id });
-                        setRole(response.role || 'student');
                         setStudentName(response.name || name);
                         setStudentId(response.studentId || id);
+                        setRole('student');
                         setLoggedIn(true);
                     }
                 } catch (error) {
                     console.error('Login failed:', error);
                     // Fallback to local login
-                    setRole(roleLocal);
-                    setStudentName(name);
-                    if (roleLocal === 'teacher') {
+                    if (role === 'teacher') {
+                        setTeacherName(name);
                         setTeacherId(id);
+                        setRole('teacher');
+                        setLoggedIn(true);
                     } else {
+                        setStudentName(name);
                         setStudentId(id);
+                        setRole('student');
+                        setLoggedIn(true);
                     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
-                    // Try to authenticate with backend
-                    const response = await apiService.login({ name, studentId: id });
-                    setStudentName(response.name || name);
-                    setStudentId(response.studentId || id);
-                    setLoggedIn(true);
-                } catch (error) {
-                    console.error('Login failed:', error);
-                    // Fallback to local login
-                    setStudentName(name);
-                    setStudentId(id);
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-                    setLoggedIn(true);
                 } finally {
                     setIsLoading(false);
                 }
@@ -1775,69 +1378,31 @@ Please provide a helpful response:`
             return (
                 <div id="auth">
                     <div className="card">
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-                        <h2 style={{ marginTop: 0 }}>Welcome to Tutorly</h2>
-                        <p style={{ color: '#6b7280' }}>Your AI-powered learning companion</p>
-                        {msg && (<div className="error-message">{msg}</div>)}
-                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                            <button 
-                                className={`btn-primary ${roleLocal === 'student' ? '' : ''}`}
-                                style={{ backgroundColor: roleLocal === 'student' ? '#2563eb' : '#6b7280' }}
-                                onClick={() => setRoleLocal('student')}
-                            >Student</button>
-                            <button 
-                                className={`btn-primary ${roleLocal === 'teacher' ? '' : ''}`}
-                                style={{ backgroundColor: roleLocal === 'teacher' ? '#2563eb' : '#6b7280' }}
-                                onClick={() => setRoleLocal('teacher')}
-                            >Teacher</button>
-                        </div>
-                        <input 
-                            type="text" 
-                            placeholder={`${roleLocal === 'teacher' ? 'Teacher' : 'Student'} Name`} 
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                        <input 
-                            type="text" 
-                            placeholder={`${roleLocal === 'teacher' ? 'Teacher' : 'Student'} ID`} 
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                        />
-                        <button onClick={login} disabled={isLoading}>
-                            {isLoading ? 'Logging in...' : 'Login'}
-                        </button>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                         <h2 className="auth-title">Login to Tutorly</h2>
+                        <div style={{ display:'flex', gap:'0.5rem', justifyContent:'center', marginBottom:'0.75rem' }}>
+                            <button type="button" className="btn-primary" onClick={() => setLocalRole('student')} disabled={role==='student'}>
+                                Student
+                            </button>
+                            <button type="button" className="btn-primary" onClick={() => setLocalRole('teacher')} disabled={role==='teacher'}>
+                                Teacher
+                            </button>
+                        </div>
                         <form onSubmit={(e) => { e.preventDefault(); login(); }}>
                             <div className="input-group">
-                                <label className="input-label">Student Name</label>
+                                <label className="input-label">{role === 'teacher' ? 'Teacher Name' : 'Student Name'}</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g., Alex Johnson"
+                                    placeholder={role === 'teacher' ? 'e.g., Ms. Garcia' : 'e.g., Alex Johnson'}
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                 />
                             </div>
                             <div className="input-group">
-                                <label className="input-label">Student ID</label>
+                                <label className="input-label">{role === 'teacher' ? 'Teacher ID' : 'Student ID'}</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g., S12345"
+                                    placeholder={role === 'teacher' ? 'e.g., T98765' : 'e.g., S12345'}
                                     value={id}
                                     onChange={(e) => setId(e.target.value)}
                                     required
@@ -1845,21 +1410,203 @@ Please provide a helpful response:`
                             </div>
                             <div className="btn-row">
                                 <button className="btn-primary" type="submit" disabled={isLoading}>
-                                    {isLoading ? 'Logging in...' : 'Login'}
+                                    {isLoading ? 'Logging in...' : (role === 'teacher' ? 'Login as Teacher' : 'Login as Student')}
                                 </button>
                             </div>
                         </form>
                         {msg && <p className="error-msg">{msg}</p>}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
+                    </div>
+                </div>
+            );
+        }
+
+        // Simple Teacher Home View
+        function TeacherHome({ teacherName, teacherId, onLogout }) {
+            const [students, setStudents] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState('');
+            const [selectedStudent, setSelectedStudent] = useState('');
+            const [title, setTitle] = useState('');
+            const [subject, setSubject] = useState('');
+            const [due, setDue] = useState('');
+            const [status, setStatus] = useState('Pending');
+            const [difficulty, setDifficulty] = useState('Medium');
+            const [score, setScore] = useState('');
+            const [creating, setCreating] = useState(false);
+
+            // Calendar
+            const [events, setEvents] = useState([]);
+            const [evtTitle, setEvtTitle] = useState('');
+            const [evtDate, setEvtDate] = useState('');
+            const [evtSubject, setEvtSubject] = useState('');
+            const [evtDesc, setEvtDesc] = useState('');
+            const [evtLoading, setEvtLoading] = useState(false);
+
+            const api = new APIService('/api');
+
+            useEffect(() => {
+                async function load() {
+                    try {
+                        setLoading(true);
+                        const [s, c] = await Promise.all([
+                            api.getTeacherStudents(),
+                            api.getTeacherCalendar(teacherId)
+                        ]);
+                        setStudents(s || []);
+                        setEvents(c || []);
+                        if ((s || []).length > 0) setSelectedStudent(s[0].studentId);
+                    } catch (e) {
+                        console.error(e);
+                        setError('Failed to load teacher data.');
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+                if (teacherId) load();
+            }, [teacherId]);
+
+            async function createAssignment() {
+                if (!selectedStudent || !title.trim() || !subject || !due) return;
+                try {
+                    setCreating(true);
+                    await api.teacherCreateAssignment({
+                        teacherId,
+                        studentId: selectedStudent,
+                        title,
+                        subject,
+                        due,
+                        status,
+                        difficulty,
+                        score: score !== '' ? Number(score) : null,
+                    });
+                    setTitle(''); setSubject(''); setDue(''); setStatus('Pending'); setDifficulty('Medium'); setScore('');
+                    alert('Assignment created for student');
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to create assignment');
+                } finally {
+                    setCreating(false);
+                }
+            }
+
+            async function addEvent() {
+                if (!evtTitle.trim() || !evtDate) return;
+                try {
+                    setEvtLoading(true);
+                    const created = await api.createTeacherCalendarEvent(teacherId, {
+                        title: evtTitle,
+                        date: evtDate,
+                        subject: evtSubject,
+                        description: evtDesc
+                    });
+                    setEvents(prev => [...prev, created]);
+                    setEvtTitle(''); setEvtDate(''); setEvtSubject(''); setEvtDesc('');
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to add event');
+                } finally {
+                    setEvtLoading(false);
+                }
+            }
+
+            async function deleteEvent(id) {
+                try {
+                    await api.deleteTeacherCalendarEvent(teacherId, id);
+                    setEvents(prev => prev.filter(e => e.id !== id));
+                } catch (e) {
+                    console.error(e);
+                    alert('Failed to delete event');
+                }
+            }
+
+            return (
+                <div>
+                    <div className="navbar">
+                        <div className="logo-section">
+                            <strong>Tutorly</strong>
+                            <span style={{ color:'#6b7280' }}>Teacher Portal</span>
+                        </div>
+                        <div className="top-right">
+                            <button className="profile-button" onClick={onLogout}>Logout</button>
+                        </div>
+                    </div>
+                    <div className="main-content">
+                        <div className="card" style={{ marginBottom: '1rem' }}>
+                            <h2 style={{ marginTop: 0 }}>Welcome, {teacherName || 'Teacher'}!</h2>
+                            <p style={{ marginBottom: 0 }}>Teacher ID: <strong>{teacherId}</strong></p>
+                        </div>
+
+                        {error && <div className="card" style={{ color:'#b91c1c' }}>{error}</div>}
+
+                        <div className="card" style={{ marginBottom: '1rem' }}>
+                            <h3>Assign Task to a Student</h3>
+                            {loading ? (
+                                <p>Loading students…</p>
+                            ) : (
+                                <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem', alignItems:'center' }}>
+                                    <select value={selectedStudent} onChange={e=>setSelectedStudent(e.target.value)}>
+                                        {students.map(s => (
+                                            <option key={s.studentId} value={s.studentId}>{s.name} ({s.studentId})</option>
+                                        ))}
+                                    </select>
+                                    <input type="text" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)} />
+                                    <input type="text" placeholder="Subject" value={subject} onChange={e=>setSubject(e.target.value)} />
+                                    <input type="date" value={due} onChange={e=>setDue(e.target.value)} />
+                                    <select value={status} onChange={e=>setStatus(e.target.value)}>
+                                        <option>Pending</option>
+                                        <option>In Progress</option>
+                                        <option>Completed</option>
+                                        <option>Overdue</option>
+                                    </select>
+                                    <select value={difficulty} onChange={e=>setDifficulty(e.target.value)}>
+                                        <option>Easy</option>
+                                        <option>Medium</option>
+                                        <option>Hard</option>
+                                    </select>
+                                    <input type="number" placeholder="Score (optional)" value={score} onChange={e=>setScore(e.target.value)} />
+                                    <button className="btn-primary" onClick={createAssignment} disabled={creating || loading || !selectedStudent || !title || !subject || !due}>Add Assignment</button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="card">
+                            <h3>Teacher Calendar</h3>
+                            <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem', alignItems:'center', marginBottom:'0.5rem' }}>
+                                <input type="text" placeholder="Event title" value={evtTitle} onChange={e=>setEvtTitle(e.target.value)} />
+                                <input type="date" value={evtDate} onChange={e=>setEvtDate(e.target.value)} />
+                                <input type="text" placeholder="Subject (optional)" value={evtSubject} onChange={e=>setEvtSubject(e.target.value)} />
+                                <input type="text" placeholder="Description (optional)" value={evtDesc} onChange={e=>setEvtDesc(e.target.value)} />
+                                <button className="btn-primary" onClick={addEvent} disabled={evtLoading || !evtTitle || !evtDate}>Add Event</button>
+                            </div>
+                            {events.length === 0 ? (
+                                <p style={{ color:'#6b7280' }}>No events yet.</p>
+                            ) : (
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style={{width:'15%'}}>Date</th>
+                                            <th style={{width:'30%'}}>Title</th>
+                                            <th style={{width:'20%'}}>Subject</th>
+                                            <th>Description</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {events.map(ev => (
+                                            <tr key={ev.id}>
+                                                <td>{ev.date}</td>
+                                                <td>{ev.title}</td>
+                                                <td>{ev.subject || '-'}</td>
+                                                <td>{ev.description || '-'}</td>
+                                                <td>
+                                                    <button onClick={()=>deleteEvent(ev.id)} style={{ background:'#ef4444', color:'#fff', border:'none', padding:'0.35rem 0.65rem', borderRadius:'6px', cursor:'pointer' }}>Delete</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
                     </div>
                 </div>
             );
@@ -1877,18 +1624,8 @@ Please provide a helpful response:`
             const [search, setSearch] = useState('');
             const [filterStatus, setFilterStatus] = useState('');
             const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
-            
-            const apiService = new APIService();
-=======
-<<<<<<< HEAD
-            
-            const apiService = new APIService();
-=======
 
             const apiService = new APIService('/api');
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
 
             useEffect(() => {
                 loadAssignments();
@@ -1901,14 +1638,6 @@ Please provide a helpful response:`
                     if (saved) {
                         setAssignments(JSON.parse(saved));
                     }
-<<<<<<< HEAD
-                    setIsLoading(false);
-=======
-<<<<<<< HEAD
-                    setIsLoading(false);
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                     return;
                 }
 
@@ -1936,15 +1665,7 @@ Please provide a helpful response:`
                 if (!title.trim() || !subject || !due) return;
 
                 const newAssignment = {
-<<<<<<< HEAD
-                    title, subject, due: due, status, difficulty, score,
-=======
-<<<<<<< HEAD
-                    title, subject, due: due, status, difficulty, score,
-=======
                     title, subject, due, status, difficulty, score,
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                     id: Date.now(),
                     createdAt: new Date().toISOString()
                 };
@@ -1956,14 +1677,8 @@ Please provide a helpful response:`
                     } else {
                         saveAssignments([...assignments, newAssignment]);
                     }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
                     
                     // Reset form
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                     setTitle(''); setSubject(''); setDue(''); 
                     setStatus('Pending'); setDifficulty('Medium'); setScore('');
                 } catch (error) {
@@ -2093,15 +1808,7 @@ Please provide a helpful response:`
                                         <tr key={a.id || i}>
                                             <td>{a.title}</td>
                                             <td>{a.subject}</td>
-<<<<<<< HEAD
-                                            <td>{a.due_date || a.due}</td>
-=======
-<<<<<<< HEAD
-                                            <td>{a.due_date || a.due}</td>
-=======
                                             <td>{a.due}</td>
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                             <td>{a.status}</td>
                                             <td>{a.difficulty}</td>
                                             <td>{a.score}</td>
@@ -2123,117 +1830,46 @@ Please provide a helpful response:`
             );
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-        // Calendar Component (student view)
-        function Calendar({ studentId }) {
-            const [events, setEvents] = useState([]);
-            const [isLoading, setIsLoading] = useState(false);
-            const apiService = new APIService();
-<<<<<<< HEAD
-=======
-
-            useEffect(() => {
-                loadEvents();
-            }, [studentId]);
-
-            const loadEvents = async () => {
-                if (!studentId) return;
-                try {
-                    setIsLoading(true);
-                    const data = await apiService.getCalendar(studentId);
-                    setEvents(data);
-                } catch (e) {
-                    console.error('Failed to load calendar:', e);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            return (
-                <div style={{ padding: '1.5rem' }}>
-                    <h2>Calendar {isLoading && <span style={{ fontSize: '0.8em', color: '#6b7280' }}>Loading...</span>}</h2>
-                    {events.length === 0 ? (
-                        <p style={{ color: '#6b7280' }}>No calendar events yet.</p>
-                    ) : (
-                        <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '1rem', overflowX: 'auto' }}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {events.map((e) => (
-                                        <tr key={e.id}>
-                                            <td>{e.title}</td>
-                                            <td>{e.event_date}</td>
-                                            <td>{e.description || '-'}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-=======
         // Progress Tracker: per-subject histogram of recent scores
         function ProgressTracker({ studentId }) {
             const [data, setData] = useState({});
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
             const subjectsOrder = ['Math','Science','English','History'];
->>>>>>> parent of d8ff936 (Deleted files and moving files)
 
-            useEffect(() => {
-                loadEvents();
-            }, [studentId]);
+            useEffect(() => { fetchData(); }, [studentId]);
 
-            const loadEvents = async () => {
+            async function fetchData() {
                 if (!studentId) return;
                 try {
-                    setIsLoading(true);
-                    const data = await apiService.getCalendar(studentId);
-                    setEvents(data);
-                } catch (e) {
-                    console.error('Failed to load calendar:', e);
-                } finally {
-                    setIsLoading(false);
+                    setLoading(true); setError('');
+                    const res = await fetch(`/api/performance/${studentId}`);
+                    if (!res.ok) throw new Error('Failed to fetch performance');
+                    const json = await res.json();
+                    setData(json || {});
+                } catch (e) { setError(e.message || 'Failed to load'); }
+                finally { setLoading(false); }
+            }
+
+            function buildHistogram(scores) {
+                const bins = [0,0,0,0,0];
+                for (const s of scores) {
+                    const v = s.score ?? s;
+                    if (v < 60) bins[0]++; else if (v < 70) bins[1]++; else if (v < 80) bins[2]++; else if (v < 90) bins[3]++; else bins[4]++;
                 }
-            };
+                const max = Math.max(1, ...bins);
+                return { bins, max };
+            }
+
+            function avg(scores) {
+                if (!scores || scores.length === 0) return '-';
+                const s = scores.reduce((a,b)=> a + (b.score ?? b), 0);
+                return Math.round(s / scores.length);
+            }
+
+            const subjects = Object.keys(data).length ? Object.keys(data) : subjectsOrder;
 
             return (
-<<<<<<< HEAD
-                <div style={{ padding: '1.5rem' }}>
-                    <h2>Calendar {isLoading && <span style={{ fontSize: '0.8em', color: '#6b7280' }}>Loading...</span>}</h2>
-                    {events.length === 0 ? (
-                        <p style={{ color: '#6b7280' }}>No calendar events yet.</p>
-                    ) : (
-                        <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '1rem', overflowX: 'auto' }}>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {events.map((e) => (
-                                        <tr key={e.id}>
-                                            <td>{e.title}</td>
-                                            <td>{e.event_date}</td>
-                                            <td>{e.description || '-'}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-=======
                 <div className="card" style={{ marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                         <h3 style={{ margin: 0 }}>Progress Tracker</h3>
@@ -2264,174 +1900,140 @@ Please provide a helpful response:`
                             );
                         })}
                     </div>
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                 </div>
             );
         }
 
-<<<<<<< HEAD
-        // Teacher Dashboard: add assignments and calendar events for a student
-        function TeacherDashboard({ teacherId }) {
-            const [targetStudentId, setTargetStudentId] = useState('');
-=======
-<<<<<<< HEAD
-        // Teacher Dashboard: add assignments and calendar events for a student
-        function TeacherDashboard({ teacherId }) {
-            const [targetStudentId, setTargetStudentId] = useState('');
-            const [title, setTitle] = useState('');
-            const [subject, setSubject] = useState('');
-            const [due, setDue] = useState('');
-            const [eventTitle, setEventTitle] = useState('');
-            const [eventDate, setEventDate] = useState('');
-            const [eventDesc, setEventDesc] = useState('');
-            const [msg, setMsg] = useState('');
-            const apiService = new APIService();
-
-            const addAssignment = async () => {
-                setMsg('');
-                if (!targetStudentId || !title || !subject || !due) {
-                    setMsg('Please enter Student ID and all assignment fields.');
-                    return;
-                }
-                try {
-                    await apiService.createAssignment(targetStudentId, { title, subject, due_date: due });
-                    setMsg('Assignment added successfully.');
-                    setTitle(''); setSubject(''); setDue('');
-                } catch (e) {
-                    setMsg('Failed to add assignment.');
-                }
-            };
-
-            const addCalendarEvent = async () => {
-                setMsg('');
-                if (!targetStudentId || !eventTitle || !eventDate) {
-                    setMsg('Please enter Student ID, event title and date.');
-                    return;
-                }
-                try {
-                    await apiService.createCalendarEvent(targetStudentId, { title: eventTitle, event_date: eventDate, description: eventDesc });
-                    setMsg('Calendar event added successfully.');
-                    setEventTitle(''); setEventDate(''); setEventDesc('');
-                } catch (e) {
-                    setMsg('Failed to add calendar event.');
-                }
-            };
-
-            return (
-                <div className="main-content">
-                    <div className="card">
-                        <h2>Teacher Dashboard</h2>
-                        {msg && <div className="error-message" style={{ backgroundColor: '#ECFDF5', color: '#065F46' }}>{msg}</div>}
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ fontWeight: 600 }}>Target Student ID</label>
-                            <input type="text" placeholder="Student ID" value={targetStudentId} onChange={(e) => setTargetStudentId(e.target.value)} />
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-                            <div className="settings-panel">
-                                <h3 style={{ marginTop: 0 }}>Add Assignment</h3>
-                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                                    <input type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
-                                    <input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
-                                    <button className="btn-primary" onClick={addAssignment}>Add Assignment</button>
-                                </div>
-                            </div>
-
-                            <div className="settings-panel">
-                                <h3 style={{ marginTop: 0 }}>Add Calendar Event</h3>
-                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    <input type="text" placeholder="Event Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
-                                    <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-                                    <input type="text" placeholder="Description (optional)" value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
-                                    <button className="btn-primary" onClick={addCalendarEvent}>Add Event</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-=======
         // Calendar View for Dashboard (color-coded + edit modal)
         function CalendarView({ studentId }) {
             const [current, setCurrent] = useState(new Date());
             const [assignments, setAssignments] = useState([]);
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             const [title, setTitle] = useState('');
             const [subject, setSubject] = useState('');
             const [due, setDue] = useState('');
-            const [eventTitle, setEventTitle] = useState('');
-            const [eventDate, setEventDate] = useState('');
-            const [eventDesc, setEventDesc] = useState('');
-            const [msg, setMsg] = useState('');
-            const apiService = new APIService();
+            const [loading, setLoading] = useState(false);
+            const [modalOpen, setModalOpen] = useState(false);
+            const [modalDateISO, setModalDateISO] = useState('');
+            const [editing, setEditing] = useState([]);
+            const api = new APIService('/api');
 
-            const addAssignment = async () => {
-                setMsg('');
-                if (!targetStudentId || !title || !subject || !due) {
-                    setMsg('Please enter Student ID and all assignment fields.');
-                    return;
-                }
-                try {
-                    await apiService.createAssignment(targetStudentId, { title, subject, due_date: due });
-                    setMsg('Assignment added successfully.');
-                    setTitle(''); setSubject(''); setDue('');
-                } catch (e) {
-                    setMsg('Failed to add assignment.');
-                }
-            };
+            const subjectColors = { Math: '#2563eb', Science: '#059669', English: '#7c3aed', History: '#ea580c', Default: '#374151' };
 
-            const addCalendarEvent = async () => {
-                setMsg('');
-                if (!targetStudentId || !eventTitle || !eventDate) {
-                    setMsg('Please enter Student ID, event title and date.');
-                    return;
-                }
+            useEffect(() => { load(); }, [studentId]);
+            async function load() {
+                if (!studentId) return;
+                try { const data = await api.getAssignments(studentId); setAssignments(data || []); } catch (e) { console.warn('Calendar load failed', e); }
+            }
+
+            async function quickAdd() {
+                if (!title.trim() || !subject || !due) return;
                 try {
-                    await apiService.createCalendarEvent(targetStudentId, { title: eventTitle, event_date: eventDate, description: eventDesc });
-                    setMsg('Calendar event added successfully.');
-                    setEventTitle(''); setEventDate(''); setEventDesc('');
-                } catch (e) {
-                    setMsg('Failed to add calendar event.');
-                }
-            };
+                    setLoading(true);
+                    const created = await api.createAssignment(studentId, { title, subject, due, status: 'Pending', difficulty: 'Medium' });
+                    setAssignments(prev => [...prev, created]); setTitle(''); setSubject(''); setDue('');
+                } catch (e) { console.error('Quick add failed', e); } finally { setLoading(false); }
+            }
+
+            function openModal(iso) {
+                const items = (assignments || []).filter(a => (a.due_date || a.due) === iso);
+                setEditing(items.map(a => ({ ...a, due: a.due_date || a.due }))); setModalDateISO(iso); setModalOpen(true);
+            }
+
+            async function saveEdit(idx) {
+                const item = editing[idx]; if (!item || !item.id) return;
+                try {
+                    await api.updateAssignment(item.id, { title: item.title, subject: item.subject, due_date: item.due, status: item.status || 'Pending', difficulty: item.difficulty || 'Medium', score: item.score || null, });
+                    await load();
+                } catch (e) { console.error('Save failed', e); }
+            }
+
+            async function deleteItem(idx) {
+                const item = editing[idx]; if (!item || !item.id) return;
+                try { await api.deleteAssignment(item.id); const next = editing.slice(); next.splice(idx,1); setEditing(next); await load(); } catch (e) { console.error('Delete failed', e); }
+            }
+
+            function updateField(idx, key, value) { const next = editing.slice(); next[idx] = { ...next[idx], [key]: value }; setEditing(next); }
+
+            const year = current.getFullYear(); const month = current.getMonth();
+            const firstDay = new Date(year, month, 1); const startDay = firstDay.getDay();
+            const weeks = []; let day = 1 - startDay;
+            for (let w = 0; w < 6; w++) { const week = []; for (let d = 0; d < 7; d++) { const date = new Date(year, month, day); const inMonth = date.getMonth() === month; const iso = date.toISOString().slice(0,10); const dueItems = assignments.filter(a => (a.due_date || a.due) === iso); week.push({ date, inMonth, iso, dueItems }); day++; } weeks.push(week); }
+
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
             return (
-                <div className="main-content">
-                    <div className="card">
-                        <h2>Teacher Dashboard</h2>
-                        {msg && <div className="error-message" style={{ backgroundColor: '#ECFDF5', color: '#065F46' }}>{msg}</div>}
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ fontWeight: 600 }}>Target Student ID</label>
-                            <input type="text" placeholder="Student ID" value={targetStudentId} onChange={(e) => setTargetStudentId(e.target.value)} />
+                <div className="card calendar-card">
+                    <div className="calendar-header">
+                        <h3 className="calendar-title">Calendar • {months[month]} {year}</h3>
+                        <div className="calendar-nav">
+                            <button className="btn-primary" onClick={() => setCurrent(new Date(year, month - 1, 1))}>{'<'}</button>
+                            <button className="btn-primary" onClick={() => setCurrent(new Date())}>Today</button>
+                            <button className="btn-primary" onClick={() => setCurrent(new Date(year, month + 1, 1))}>{'>'}</button>
                         </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-                            <div className="settings-panel">
-                                <h3 style={{ marginTop: 0 }}>Add Assignment</h3>
-                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                                    <input type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
-                                    <input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
-                                    <button className="btn-primary" onClick={addAssignment}>Add Assignment</button>
-                                </div>
-                            </div>
-
-                            <div className="settings-panel">
-                                <h3 style={{ marginTop: 0 }}>Add Calendar Event</h3>
-                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                    <input type="text" placeholder="Event Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
-                                    <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-                                    <input type="text" placeholder="Description (optional)" value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
-                                    <button className="btn-primary" onClick={addCalendarEvent}>Add Event</button>
-                                </div>
-                            </div>
-                        </div>
-<<<<<<< HEAD
                     </div>
-=======
+
+                    <div className="calendar-grid">
+                        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
+                            <div key={d} className="calendar-weekday">{d}</div>
+                        ))}
+                        {weeks.map((week, i) => week.map((cell, j) => (
+                            <div key={i+'-'+j} onClick={() => openModal(cell.iso)} className={`calendar-cell ${cell.inMonth ? '' : 'outside'}`}>
+                                <div className="calendar-date">{cell.date.getDate()}</div>
+                                <div className="calendar-events">
+                                    {cell.dueItems.slice(0,3).map((a, idx) => (
+                                        <div key={idx} title={`${a.subject} • ${a.title}`} className="event-pill" style={{ background: subjectColors[a.subject] || subjectColors.Default }}>{a.title}</div>
+                                    ))}
+                                    {cell.dueItems.length > 3 && (<div className="event-more">+{cell.dueItems.length - 3} more</div>)}
+                                </div>
+                            </div>
+                        )))}
+                    </div>
+
+                    <div className="quick-add">
+                        <input type="text" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)} />
+                        <input type="text" placeholder="Subject" value={subject} onChange={e=>setSubject(e.target.value)} />
+                        <input type="date" value={due} onChange={e=>setDue(e.target.value)} />
+                        <button className="btn-primary" onClick={quickAdd} disabled={loading || !title || !subject || !due}>Add Assignment</button>
+                    </div>
+
+                    {modalOpen && (
+                        <div onClick={() => setModalOpen(false)} className="overlay">
+                            <div onClick={(e) => e.stopPropagation()} className="modal-card">
+                                <div className="modal-header">
+                                    <h3>Due {modalDateISO}</h3>
+                                    <button className="btn-primary" onClick={() => setModalOpen(false)}>Close</button>
+                                </div>
+                                {editing.length === 0 ? (
+                                    <p>No assignments due on this date.</p>
+                                ) : (
+                                    <div className="modal-content">
+                                        {editing.map((item, idx) => (
+                                            <div key={item.id || idx} className="modal-item">
+                                                <input type="text" value={item.title || ''} onChange={(e)=>updateField(idx,'title',e.target.value)} placeholder="Title" />
+                                                <input type="text" value={item.subject || ''} onChange={(e)=>updateField(idx,'subject',e.target.value)} placeholder="Subject" />
+                                                <input type="date" value={item.due || ''} onChange={(e)=>updateField(idx,'due',e.target.value)} />
+                                                <select value={item.status || 'Pending'} onChange={(e)=>updateField(idx,'status',e.target.value)}>
+                                                    <option>Pending</option>
+                                                    <option>In Progress</option>
+                                                    <option>Completed</option>
+                                                    <option>Overdue</option>
+                                                </select>
+                                                <select value={item.difficulty || 'Medium'} onChange={(e)=>updateField(idx,'difficulty',e.target.value)}>
+                                                    <option>Easy</option>
+                                                    <option>Medium</option>
+                                                    <option>Hard</option>
+                                                </select>
+                                                <div className="modal-actions">
+                                                    <button className="btn-primary" onClick={()=>saveEdit(idx)}>Save</button>
+                                                    <button onClick={()=>deleteItem(idx)} style={{ background:'#ef4444', color:'#fff', border:'none', padding:'0.5rem 0.75rem', borderRadius:'6px', cursor:'pointer' }}>Delete</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     )}
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                 </div>
             );
         }
@@ -2440,28 +2042,9 @@ Please provide a helpful response:`
         function App() {
             const [studentName, setStudentName] = useState('');
             const [studentId, setStudentId] = useState('');
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> parent of 6067a66 (Deleted files)
-=======
->>>>>>> parent of d8ff936 (Deleted files and moving files)
+            const [teacherName, setTeacherName] = useState('');
             const [teacherId, setTeacherId] = useState('');
             const [role, setRole] = useState('student');
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-            const [loggedIn, setLoggedIn] = useState(false);
-            const [currentPage, setCurrentPage] = useState('dashboard');
-            const [tab, setTab] = useState('ai-tutor');
-<<<<<<< HEAD
-            
-
-=======
-            
-
-=======
             const [loggedIn, setLoggedIn] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [tab, setTab] = useState('ai-tutor');
@@ -2479,11 +2062,12 @@ Please provide a helpful response:`
                 setLoggedIn(false);
                 setStudentName('');
                 setStudentId('');
+                setTeacherName('');
+                setTeacherId('');
+                setRole('student');
                 setProfileOpen(false);
             };
 
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Simple routing
             useEffect(() => {
                 const handleHashChange = () => {
@@ -2501,44 +2085,29 @@ Please provide a helpful response:`
                 return () => window.removeEventListener('hashchange', handleHashChange);
             }, []);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-            // Ensure correct initial tab by role after login
-            useEffect(() => {
-                if (!loggedIn) return;
-                if (role === 'teacher') {
-                    setTab('teacher');
-                } else {
-                    setTab('ai-tutor');
-                }
-            }, [loggedIn, role]);
-
-<<<<<<< HEAD
-=======
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
             if (!loggedIn) {
                 return (
                     <div>
                         <Auth
                             setStudentName={setStudentName}
                             setStudentId={setStudentId}
+                            setTeacherName={setTeacherName}
+                            setTeacherId={setTeacherId}
+                            setRole={setRole}
                             setLoggedIn={setLoggedIn}
-<<<<<<< HEAD
-                            setRole={setRole}
-                            setTeacherId={setTeacherId}
-=======
-<<<<<<< HEAD
-                            setRole={setRole}
-                            setTeacherId={setTeacherId}
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                         />
                     </div>
+                );
+            }
+
+            // If teacher is logged in, show Teacher view
+            if (role === 'teacher') {
+                return (
+                    <TeacherHome
+                        teacherName={teacherName}
+                        teacherId={teacherId}
+                        onLogout={handleLogout}
+                    />
                 );
             }
 
@@ -2577,23 +2146,6 @@ Please provide a helpful response:`
                                 AI Tutor
                             </a>
                         </div>
-<<<<<<< HEAD
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                            {studentName}
-=======
-<<<<<<< HEAD
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                            {studentName}
-                        </div>
-                    </nav>
-
-                    {/* API Settings removed */}
-
-                    {currentPage === 'ai-tutor' ? (
-                        <div>
-                            <div className="secondary-nav">
-                                {(role === 'student' ? ['ai-tutor', 'assignments', 'calendar'] : ['teacher']).map((item) => (
-=======
                         <div className="top-right">
                             <div style={{ position: 'relative' }}>
                                 <button className="profile-button" onClick={() => setProfileOpen(v => !v)}>
@@ -2614,35 +2166,19 @@ Please provide a helpful response:`
                                     </div>
                                 )}
                             </div>
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                         </div>
                     </nav>
-
-                    {/* API Settings removed */}
 
                     {currentPage === 'ai-tutor' ? (
                         <div>
                             <div className="secondary-nav">
-<<<<<<< HEAD
-                                {(role === 'student' ? ['ai-tutor', 'assignments', 'calendar'] : ['teacher']).map((item) => (
-=======
                                 {['ai-tutor', 'calendar'].map((item) => (
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                     <button
                                         key={item}
                                         onClick={() => setTab(item)}
                                         className={tab === item ? 'active-tab' : ''}
                                     >
-<<<<<<< HEAD
-                                        {item === 'ai-tutor' ? 'AI Tutor' : item === 'teacher' ? 'Teacher Dashboard' : item.charAt(0).toUpperCase() + item.slice(1)}
-=======
-<<<<<<< HEAD
-                                        {item === 'ai-tutor' ? 'AI Tutor' : item === 'teacher' ? 'Teacher Dashboard' : item.charAt(0).toUpperCase() + item.slice(1)}
-=======
                                         {item === 'ai-tutor' ? 'AI Tutor' : item.charAt(0).toUpperCase() + item.slice(1)}
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                     </button>
                                 ))}
                             </div>
@@ -2657,26 +2193,6 @@ Please provide a helpful response:`
                                     />
                                 )}
 
-<<<<<<< HEAD
-                                {tab === 'assignments' && role === 'student' && (
-=======
-<<<<<<< HEAD
-                                {tab === 'assignments' && role === 'student' && (
-                                    <div className="card">
-                                        <Assignments studentId={studentId} />
-                                    </div>
-                                )}
-
-                                {tab === 'calendar' && role === 'student' && (
-                                    <div className="card">
-                                        <Calendar studentId={studentId} />
-                                    </div>
-                                )}
-
-                                {tab === 'teacher' && role === 'teacher' && (
-                                    <TeacherDashboard teacherId={teacherId} />
-                                )}
-=======
                                 {tab === 'todo' && (
                                     <div className="card">
                                         <TodoList studentId={studentId} />
@@ -2684,25 +2200,10 @@ Please provide a helpful response:`
                                 )}
 
                                 {tab === 'calendar' && (
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                                     <div className="card">
                                         <Assignments studentId={studentId} />
                                     </div>
                                 )}
-<<<<<<< HEAD
-
-                                {tab === 'calendar' && role === 'student' && (
-                                    <div className="card">
-                                        <Calendar studentId={studentId} />
-                                    </div>
-                                )}
-
-                                {tab === 'teacher' && role === 'teacher' && (
-                                    <TeacherDashboard teacherId={teacherId} />
-                                )}
-=======
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                             </div>
                         </div>
                     ) : (
@@ -2726,35 +2227,12 @@ Please provide a helpful response:`
                                 </button>
                             </div>
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> parent of d8ff936 (Deleted files and moving files)
-                            {role === 'student' ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', padding: '0 1.5rem' }}>
-                                    <div className="card">
-                                        <h3>Your Assignments</h3>
-                                        <Assignments studentId={studentId} />
-                                    </div>
-                                    <div className="card">
-                                        <h3>Your Calendar</h3>
-                                        <Calendar studentId={studentId} />
-                                    </div>
-                                </div>
-                            ) : (
-                                <TeacherDashboard teacherId={teacherId} />
-                            )}
-<<<<<<< HEAD
-=======
-=======
                             <div style={{ padding: '0 1.5rem' }}>
                                 <ProgressTracker studentId={studentId} />
                             </div>
                             <div style={{ padding: '0 1.5rem' }}>
                                 <CalendarView studentId={studentId} />
                             </div>
->>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
->>>>>>> parent of d8ff936 (Deleted files and moving files)
                         </div>
                     )}
                 </div>

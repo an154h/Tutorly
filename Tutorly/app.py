@@ -131,6 +131,20 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+<<<<<<< HEAD
+=======
+    # Add optional columns for roles/teachers if they don't exist
+    try:
+        # role column: 'student' or 'teacher'
+        conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'student'")
+    except Exception:
+        pass
+    try:
+        # teacher_id column for teacher accounts
+        conn.execute("ALTER TABLE users ADD COLUMN teacher_id TEXT UNIQUE")
+    except Exception:
+        pass
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
     
     # Assignments table
     conn.execute('''
@@ -160,6 +174,22 @@ def init_database():
         )
     ''')
 
+<<<<<<< HEAD
+=======
+    # Calendar events table (per student)
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS calendar_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            event_date DATE NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (student_id)
+        )
+    ''')
+    
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
     # Subject performance table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS subject_performance (
@@ -450,8 +480,13 @@ def login():
     else:
         # Create new user
         conn.execute(
+<<<<<<< HEAD
             'INSERT INTO users (student_id, name) VALUES (?, ?)',
             (student_id, name)
+=======
+            'INSERT INTO users (student_id, name, role) VALUES (?, ?, ?)',
+            (student_id, name, 'student')
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         )
         conn.commit()
     
@@ -517,6 +552,52 @@ def login():
     return jsonify({
         'studentId': student_id,
         'name': name,
+<<<<<<< HEAD
+=======
+        'role': 'student',
+        'message': 'Login successful'
+    })
+
+# Teacher Authentication Route
+@app.route('/api/auth/teacher/login', methods=['POST'])
+def teacher_login():
+    """Handle teacher login/registration"""
+    data = request.get_json()
+    name = data.get('name')
+    teacher_id = data.get('teacherId')
+
+    if not name or not teacher_id:
+        return jsonify({'error': 'Name and teacher ID are required'}), 400
+
+    conn = get_db_connection()
+
+    # Check if teacher exists by teacher_id
+    user = conn.execute(
+        'SELECT * FROM users WHERE teacher_id = ?', (teacher_id,)
+    ).fetchone()
+
+    if user:
+        if user['name'] != name:
+            conn.execute(
+                'UPDATE users SET name = ? WHERE teacher_id = ?',
+                (name, teacher_id)
+            )
+            conn.commit()
+    else:
+        # Create new teacher
+        conn.execute(
+            'INSERT INTO users (teacher_id, name, role) VALUES (?, ?, ?)',
+            (teacher_id, name, 'teacher')
+        )
+        conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        'teacherId': teacher_id,
+        'name': name,
+        'role': 'teacher',
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         'message': 'Login successful'
     })
 

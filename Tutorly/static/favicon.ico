@@ -2,5 +2,10 @@
 <TITLE>301 Moved</TITLE></HEAD><BODY>
 <H1>301 Moved</H1>
 The document has moved
+<<<<<<< HEAD
 <A HREF="https://t2.gstatic.com/faviconV2?client=SOCIAL&amp;type=FAVICON&amp;fallback_opts=TYPE,SIZE,URL&amp;url=http://google.com&amp;size=32">here</A>.
 </BODY></HTML>
+=======
+<A HREF="https://t2.gstatic.com/faviconV2?client=SOCIAL&amp;type=FAVICON&amp;fallback_opts=TYPE,SIZE,URL&amp;url=http://google.com&amp;size=32">here</A>.
+</BODY></HTML>
+>>>>>>> parent of d8ff936 (Deleted files and moving files)

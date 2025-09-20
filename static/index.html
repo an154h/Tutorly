@@ -8,11 +8,25 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+<<<<<<< HEAD
         /* Same styles as before */
+=======
+<<<<<<< HEAD
+        /* Same styles as before */
+=======
+        /* Base: elegant black & white theme */
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         body, html {
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+<<<<<<< HEAD
+            background-color: #f9fafb;
+            color: #111827;
+            transition: background-color 0.3s, color 0.3s;
+=======
+<<<<<<< HEAD
             background-color: #f9fafb;
             color: #111827;
             transition: background-color 0.3s, color 0.3s;
@@ -35,7 +49,157 @@
             background-color: #374151;
             color: #fff;
         }
+=======
+            background-color: #ffffff;
+            color: #0b0f19;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+        }
 
+        body.dark {
+            background-color: #1f2937;
+            color: #fff;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s ease, background-color 0.3s, color 0.3s;
+        }
+
+        body.dark .card {
+            background-color: #374151;
+            color: #fff;
+        }
+
+<<<<<<< HEAD
+=======
+        /* Buttons */
+        .btn-primary {
+            background-color: #0b0f19;
+            color: #ffffff;
+            border: 1px solid #0b0f19;
+            padding: 0.45rem 0.9rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.05s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary:hover { background-color: #111827; box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+        body.dark .btn-primary { background-color: #ffffff; color: #000000; border-color: #ffffff; }
+        body.dark .btn-primary:hover { background-color: #e5e7eb; }
+
+        /* Typography */
+        h1, h2, h3, h4 { letter-spacing: -0.02em; }
+        h1 { font-size: 2rem; margin: 0.25rem 0 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 0.25rem 0 0.5rem; }
+        h3 { font-size: 1.1rem; margin: 0.25rem 0 0.75rem; }
+        p { color: #4b5563; }
+        body.dark p { color: #9ca3af; }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            backdrop-filter: saturate(120%) blur(6px);
+        }
+        body.dark .navbar { background-color: #0b0b0b; border-color: #1f2937; }
+        .nav-links a { color: #111827; opacity: 0.8; padding: 0.25rem 0.35rem; border-radius: 6px; }
+        .nav-links a:hover { opacity: 1; text-decoration: none; background: #f3f4f6; }
+        .nav-links a.active { color: #000; border-bottom: 2px solid #000; }
+        body.dark .nav-links a { color: #e5e7eb; }
+        body.dark .nav-links a.active { color: #fff; border-color: #fff; }
+
+        /* Inputs / Selects */
+        input[type="text"], input[type="date"], input[type="email"],
+        input[type="password"], select, textarea {
+            background: #ffffff;
+            color: #0b0f19;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.55rem 0.75rem;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #111827; box-shadow: 0 0 0 3px rgba(17,24,39,0.1); }
+        body.dark input, body.dark select, body.dark textarea { background: #0f1115; color: #e5e7eb; border-color: #1f2937; }
+        body.dark input:focus, body.dark select:focus, body.dark textarea:focus { border-color: #e5e7eb; box-shadow: 0 0 0 3px rgba(229,231,235,0.12); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; }
+        thead th { text-align: left; font-weight: 600; color: #6b7280; font-size: 0.85rem; padding: 0.5rem 0.5rem; border-bottom: 1px solid #e5e7eb; }
+        tbody td { padding: 0.75rem 0.5rem; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
+        tbody tr:hover { background: #fafafa; }
+        body.dark thead th { color: #9ca3af; border-color: #1f2937; }
+        body.dark tbody td { border-color: #111827; }
+        body.dark tbody tr:hover { background: #0b0b0b; }
+
+        /* Modals (backdrop already inline; tweak content style via class if needed) */
+        .modal-card { border-radius: 14px; border: 1px solid #e5e7eb; }
+        body.dark .modal-card { background: #0b0b0b; border-color: #1f2937; color: #fff; }
+
+        /* Layout helpers */
+        .main-content { width: 100%; max-width: none; margin: 0; padding: 1rem 0; }
+        .section { margin: 1rem 0; }
+
+        /* Calendar cell polish (keeps event colors) */
+        .cal-cell { border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; }
+        body.dark .cal-cell { background: #0f1115; border-color: #1f2937; }
+
+        /* Calendar UI */
+        .calendar-card { padding: 1rem; overflow: hidden; }
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; }
+        .calendar-title { margin:0; font-size: 1.1rem; }
+        .calendar-nav { display:flex; gap:0.5rem; }
+        .calendar-grid { display:grid; width: 100%; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-bottom: 1rem; }
+        .calendar-weekday { font-weight:600; color:#6b7280; text-align:center; }
+        .calendar-cell { cursor:pointer; min-height:110px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:6px; display:flex; flex-direction:column; transition: box-shadow .15s ease, transform .05s ease; }
+        .calendar-cell:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .calendar-cell.outside { background:#f3f4f6; }
+        body.dark .calendar-cell { background:#0f1115; border-color:#1f2937; }
+        .calendar-date { font-size:12px; color:#6b7280; margin-bottom:4px; text-align:right; }
+        .calendar-events { display:flex; flex-direction:column; gap:4px; }
+        .event-pill { color:#fff; border-radius:6px; padding:2px 6px; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .event-more { font-size:12px; color:#374151; }
+
+        /* Modal overlay */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
+        .modal-card { background:#fff; color:#111827; width: min(720px, 95vw); border-radius:12px; padding:1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        body.dark .modal-card { background:#0b0b0b; color:#fff; border:1px solid #1f2937; }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: .5rem; }
+        .modal-actions { display:flex; gap:.5rem; }
+
+        /* Auth (login) enhancements */
+        #auth { position: relative; overflow: hidden; }
+        #auth:before { content:""; position:absolute; inset:-20%; pointer-events: none; z-index: 0; background: radial-gradient(closest-side, rgba(0,0,0,0.06), transparent 70%) -20% -20%/60% 60% no-repeat,
+                                                             radial-gradient(closest-side, rgba(0,0,0,0.06), transparent 70%) 120% 20%/60% 60% no-repeat; filter: blur(2px); }
+        body.dark #auth:before { pointer-events: none; z-index: 0; background: radial-gradient(closest-side, rgba(255,255,255,0.06), transparent 70%) -20% -20%/60% 60% no-repeat,
+                                         radial-gradient(closest-side, rgba(255,255,255,0.06), transparent 70%) 120% 20%/60% 60% no-repeat; }
+        #auth .card { position: relative; z-index: 1; max-width: 440px; padding: 1.5rem; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+        #auth .brand { display:flex; align-items:center; gap:.5rem; margin-bottom:.5rem; font-weight:700; font-size:1.15rem; }
+        #auth .subtle { color:#6b7280; margin-bottom: 1rem; }
+        #auth .auth-title { text-align:center; font-size: 1.6rem; margin: 0.25rem 0 0.75rem; }
+        #auth form { display:flex; flex-direction:column; gap: 0.75rem; }
+        #auth .input-group { display:flex; flex-direction:column; }
+        #auth .input-label { font-size: 0.85rem; color:#6b7280; margin: 0.15rem 0 0.25rem 0.15rem; }
+        #auth .btn-row { display:flex; justify-content:center; margin-top: 0.5rem; }
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         /* Auth styles */
         #auth {
             display: flex;
@@ -108,6 +272,109 @@
             border-bottom: 2px solid #2563eb;
         }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        /* Profile dropdown and top-right logo */
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .top-right img.top-right-logo {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            border-radius: 0.375rem;
+        }
+
+        .profile-button {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        body.dark .profile-button {
+            background: #4b5563;
+            border-color: #6b7280;
+            color: #fff;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 130%;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            min-width: 220px;
+            z-index: 10;
+        }
+
+        body.dark .profile-dropdown {
+            background: #374151;
+            border-color: #4b5563;
+            color: #fff;
+        }
+
+        .profile-dropdown .item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .profile-dropdown .item + .item {
+            border-top: 1px solid #e5e7eb;
+        }
+
+        body.dark .profile-dropdown .item + .item {
+            border-top-color: #4b5563;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { display:none; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #d1d5db;
+            transition: .2s;
+            border-radius: 9999px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 9999px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         /* Chat styles */
         .chat-card {
             display: flex;
@@ -141,6 +408,9 @@
             border-radius: 1rem;
             margin-right: 2rem;
             align-self: flex-start;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
         }
 
         .chat-input-area {
@@ -230,6 +500,126 @@
             pointer-events: none;
         }
 
+=======
+            line-height: 1.6;
+            max-width: 85%;
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .chat-input-area input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            outline: none;
+        }
+
+        .image-upload-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-upload-btn {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: background-color 0.2s;
+        }
+
+        .image-upload-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .image-upload-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .image-upload-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            border: 2px solid #e5e7eb;
+        }
+
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+<<<<<<< HEAD
+=======
+            .chat-message-ai br {
+                line-height: 1.2;
+            }
+
+            .chat-input-area {
+                display: flex;
+                gap: 0.5rem;
+                align-items: flex-end;
+            }
+
+            .chat-input-area input[type="text"] {
+                flex: 1;
+                padding: 0.5rem;
+                border-radius: 0.5rem;
+                border: 1px solid #d1d5db;
+                outline: none;
+            }
+
+            .image-upload-container {
+                position: relative;
+                display: inline-block;
+            }
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         .error-message {
             color: #dc2626;
             background-color: #fef2f2;
@@ -239,6 +629,9 @@
         }
 
         /* Quick action styles */
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
 
             .quick-action-btn {
                 background-color: #f3f4f6;
@@ -255,6 +648,35 @@
             }
 
             /* Layout styles */
+=======
+        .quick-actions-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+
+            .quick-action-btn {
+                background-color: #f3f4f6;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: left;
+            }
+
+<<<<<<< HEAD
+            .quick-action-btn:hover {
+                background-color: #e5e7eb;
+            }
+
+            /* Layout styles */
+=======
+        .quick-action-btn:hover {
+            background-color: #e5e7eb;
+        }
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
 
         /* Layout styles */
         .ai-tutor-layout {
@@ -390,6 +812,97 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        // Text formatting utility function
+        function formatText(text) {
+            if (!text) return '';
+            
+            // Split text into lines for better processing
+            let lines = text.split('\n');
+            let formatted = [];
+            let inList = false;
+            let listItems = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                
+                // Skip empty lines but add spacing
+                if (line === '') {
+                    if (inList) {
+                        formatted.push('<ul>' + listItems.join('') + '</ul>');
+                        listItems = [];
+                        inList = false;
+                    }
+                    formatted.push('<br>');
+                    continue;
+                }
+                
+                // Handle bullet points
+                if (line.match(/^[\-\*]\s+/)) {
+                    let content = line.replace(/^[\-\*]\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    listItems.push('<li>' + content + '</li>');
+                    inList = true;
+                    continue;
+                }
+                
+                // Handle numbered lists
+                if (line.match(/^\d+\.\s+/)) {
+                    if (inList && listItems.length > 0) {
+                        formatted.push('<ul>' + listItems.join('') + '</ul>');
+                        listItems = [];
+                    }
+                    let content = line.replace(/^\d+\.\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    listItems.push('<li>' + content + '</li>');
+                    inList = true;
+                    continue;
+                }
+                
+                // Close any open list
+                if (inList) {
+                    formatted.push('<ul>' + listItems.join('') + '</ul>');
+                    listItems = [];
+                    inList = false;
+                }
+                
+                // Handle headers (##, ###, etc.)
+                if (line.match(/^#{1,3}\s+/)) {
+                    let level = line.match(/^#{1,3}/)[0].length;
+                    let content = line.replace(/^#{1,3}\s+/, '');
+                    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    formatted.push(`<h${level + 2}>${content}</h${level + 2}>`);
+                    continue;
+                }
+                
+                // Handle regular paragraphs
+                line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                formatted.push('<p>' + line + '</p>');
+            }
+            
+            // Close any remaining list
+            if (inList) {
+                formatted.push('<ul>' + listItems.join('') + '</ul>');
+            }
+            
+            return formatted.join('');
+        }
+
+        // React component for formatted text
+        function FormattedText({ text }) {
+            return (
+                <div 
+                    dangerouslySetInnerHTML={{ __html: formatText(text) }}
+                />
+            );
+        }
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         // (Removed) API Configuration Component
 
         // API Service for Gemini
@@ -460,7 +973,15 @@ Please provide a helpful response:`
                     const response = await fetch(`${this.baseUrl}${endpoint}`, {
                         headers: {
                             'Content-Type': 'application/json',
+<<<<<<< HEAD
                             ...(options.headers || {})
+=======
+<<<<<<< HEAD
+                            ...(options.headers || {})
+=======
+                            ...options.headers
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                         },
                         ...options
                     });
@@ -486,10 +1007,13 @@ Please provide a helpful response:`
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async teacherLogin(credentials) {
                 return this.request('/auth/teacher/login', {
                     method: 'POST',
@@ -502,6 +1026,10 @@ Please provide a helpful response:`
                 return this.request(`/todos/${userId}`);
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+=======
 =======
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
             async register(userData) {
@@ -517,20 +1045,37 @@ Please provide a helpful response:`
             }
 
 >>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async createTodo(userId, todo) {
                 return this.request(`/todos/${userId}`, {
                     method: 'POST',
                     body: JSON.stringify(todo)
                 });
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateTodo(todoId, updates) {
                 return this.request(`/todos/${todoId}`, {
                     method: 'PUT',
                     body: JSON.stringify(updates)
                 });
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async deleteTodo(todoId) {
                 return this.request(`/todos/${todoId}`, {
                     method: 'DELETE'
@@ -541,24 +1086,49 @@ Please provide a helpful response:`
             async getAssignments(userId) {
                 return this.request(`/assignments/${userId}`);
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async createAssignment(userId, assignment) {
                 return this.request(`/assignments/${userId}`, {
                     method: 'POST',
                     body: JSON.stringify(assignment)
                 });
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateAssignment(assignmentId, updates) {
                 return this.request(`/assignments/${assignmentId}`, {
                     method: 'PUT',
                     body: JSON.stringify(updates)
                 });
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async deleteAssignment(assignmentId) {
                 return this.request(`/assignments/${assignmentId}`, {
                     method: 'DELETE'
                 });
             }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Calendar Operations
             async getCalendar(userId) {
                 return this.request(`/calendar/${userId}`);
@@ -570,10 +1140,22 @@ Please provide a helpful response:`
                 });
             }
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Progress/Analytics
             async getProgress(userId) {
                 return this.request(`/progress/${userId}`);
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async updateProgress(userId, progressData) {
                 return this.request(`/progress/${userId}`, {
                     method: 'PUT',
@@ -585,6 +1167,13 @@ Please provide a helpful response:`
             async getChatHistory(userId) {
                 return this.request(`/chat/${userId}`);
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             async saveChatMessage(userId, message) {
                 return this.request(`/chat/${userId}`, {
                     method: 'POST',
@@ -594,14 +1183,40 @@ Please provide a helpful response:`
 
             // Image chat (multipart/form-data)
             async sendImageMessage(userId, formData) {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                 const response = await fetch(`${this.baseUrl}/chat/${userId}/ai/image`, {
                     method: 'POST',
                     body: formData
                 });
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
+<<<<<<< HEAD
                 }
                 return await response.json();
+=======
+                }
+                return await response.json();
+=======
+                try {
+                    const response = await fetch(`${this.baseUrl}/chat/${userId}/ai/image`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Image API Error:', error);
+                    throw error;
+                }
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             }
         }
 
@@ -757,7 +1372,19 @@ Please provide a helpful response:`
                                 ) : (
                                     chatMessages.map((msg, i) => (
                                         <div key={i} className={msg.sender === 'user' ? 'chat-message-user' : 'chat-message-ai'}>
+<<<<<<< HEAD
                                             {msg.text}
+=======
+<<<<<<< HEAD
+                                            {msg.text}
+=======
+                                            {msg.sender === 'ai' ? (
+                                                <FormattedText text={msg.text} />
+                                            ) : (
+                                                msg.text
+                                            )}
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                             {msg.imagePreview && (
                                                 <div className="image-preview-container">
                                                     <img src={msg.imagePreview} alt="uploaded preview" className="image-preview" />
@@ -766,7 +1393,15 @@ Please provide a helpful response:`
                                         </div>
                                     ))
                                 )}
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+                                
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                 {isLoading && (
                                     <div className="chat-message-ai">
                                         <span>🤔 Thinking...</span>
@@ -783,9 +1418,19 @@ Please provide a helpful response:`
                                         </div>
                                     )}
                                     <div className="image-upload-container" title="Upload image">
+<<<<<<< HEAD
                                         <button className="image-upload-btn" disabled={isLoading}>
                                             📷
                                         </button>
+=======
+<<<<<<< HEAD
+                                        <button className="image-upload-btn" disabled={isLoading}>
+                                            📷
+                                        </button>
+=======
+                                        <button className="image-upload-btn" disabled={isLoading}>📷</button>
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                         <input 
                                             type="file" 
                                             accept="image/*" 
@@ -1005,10 +1650,13 @@ Please provide a helpful response:`
         // Simple Auth Component (enhanced to work with API)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         function Auth({ setStudentName, setStudentId, setLoggedIn, setRole, setTeacherId }) {
             const [name, setName] = useState('');
             const [id, setId] = useState('');
@@ -1022,6 +1670,10 @@ Please provide a helpful response:`
                 if (!name || !id) {
                     setMsg(`Please enter both ${roleLocal === 'teacher' ? 'Teacher' : 'Student'} Name and ${roleLocal === 'teacher' ? 'Teacher' : 'Student'} ID.`);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+=======
 =======
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
         function Auth({ setStudentName, setStudentId, setLoggedIn }) {
@@ -1036,16 +1688,21 @@ Please provide a helpful response:`
                 if (!name || !id) {
                     setMsg('Please enter both Student Name and Student ID.');
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     return;
                 }
 
                 setIsLoading(true);
                 try {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                     // Try to authenticate with backend
@@ -1062,6 +1719,8 @@ Please provide a helpful response:`
 <<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     if (roleLocal === 'teacher') {
                         const response = await apiService.teacherLogin({ name, teacherId: id });
                         setRole(response.role || 'teacher');
@@ -1086,6 +1745,9 @@ Please provide a helpful response:`
                         setStudentId(id);
                     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
 =======
                     // Try to authenticate with backend
                     const response = await apiService.login({ name, studentId: id });
@@ -1098,9 +1760,12 @@ Please provide a helpful response:`
                     setStudentName(name);
                     setStudentId(id);
 >>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+<<<<<<< HEAD
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     setLoggedIn(true);
                 } finally {
                     setIsLoading(false);
@@ -1112,10 +1777,13 @@ Please provide a helpful response:`
                     <div className="card">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                         <h2 style={{ marginTop: 0 }}>Welcome to Tutorly</h2>
                         <p style={{ color: '#6b7280' }}>Your AI-powered learning companion</p>
                         {msg && (<div className="error-message">{msg}</div>)}
@@ -1147,6 +1815,10 @@ Please provide a helpful response:`
                             {isLoading ? 'Logging in...' : 'Login'}
                         </button>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+=======
 =======
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
                         <h2 className="auth-title">Login to Tutorly</h2>
@@ -1179,11 +1851,15 @@ Please provide a helpful response:`
                         </form>
                         {msg && <p className="error-msg">{msg}</p>}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     </div>
                 </div>
             );
@@ -1201,8 +1877,18 @@ Please provide a helpful response:`
             const [search, setSearch] = useState('');
             const [filterStatus, setFilterStatus] = useState('');
             const [isLoading, setIsLoading] = useState(false);
+<<<<<<< HEAD
             
             const apiService = new APIService();
+=======
+<<<<<<< HEAD
+            
+            const apiService = new APIService();
+=======
+
+            const apiService = new APIService('/api');
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
 
             useEffect(() => {
                 loadAssignments();
@@ -1215,7 +1901,14 @@ Please provide a helpful response:`
                     if (saved) {
                         setAssignments(JSON.parse(saved));
                     }
+<<<<<<< HEAD
                     setIsLoading(false);
+=======
+<<<<<<< HEAD
+                    setIsLoading(false);
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     return;
                 }
 
@@ -1243,7 +1936,15 @@ Please provide a helpful response:`
                 if (!title.trim() || !subject || !due) return;
 
                 const newAssignment = {
+<<<<<<< HEAD
                     title, subject, due: due, status, difficulty, score,
+=======
+<<<<<<< HEAD
+                    title, subject, due: due, status, difficulty, score,
+=======
+                    title, subject, due, status, difficulty, score,
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     id: Date.now(),
                     createdAt: new Date().toISOString()
                 };
@@ -1255,6 +1956,14 @@ Please provide a helpful response:`
                     } else {
                         saveAssignments([...assignments, newAssignment]);
                     }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+                    
+                    // Reset form
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                     setTitle(''); setSubject(''); setDue(''); 
                     setStatus('Pending'); setDifficulty('Medium'); setScore('');
                 } catch (error) {
@@ -1384,7 +2093,15 @@ Please provide a helpful response:`
                                         <tr key={a.id || i}>
                                             <td>{a.title}</td>
                                             <td>{a.subject}</td>
+<<<<<<< HEAD
                                             <td>{a.due_date || a.due}</td>
+=======
+<<<<<<< HEAD
+                                            <td>{a.due_date || a.due}</td>
+=======
+                                            <td>{a.due}</td>
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                             <td>{a.status}</td>
                                             <td>{a.difficulty}</td>
                                             <td>{a.score}</td>
@@ -1406,11 +2123,17 @@ Please provide a helpful response:`
             );
         }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
         // Calendar Component (student view)
         function Calendar({ studentId }) {
             const [events, setEvents] = useState([]);
             const [isLoading, setIsLoading] = useState(false);
             const apiService = new APIService();
+<<<<<<< HEAD
+=======
 
             useEffect(() => {
                 loadEvents();
@@ -1456,10 +2179,103 @@ Please provide a helpful response:`
                             </table>
                         </div>
                     )}
+=======
+        // Progress Tracker: per-subject histogram of recent scores
+        function ProgressTracker({ studentId }) {
+            const [data, setData] = useState({});
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const subjectsOrder = ['Math','Science','English','History'];
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+
+            useEffect(() => {
+                loadEvents();
+            }, [studentId]);
+
+            const loadEvents = async () => {
+                if (!studentId) return;
+                try {
+                    setIsLoading(true);
+                    const data = await apiService.getCalendar(studentId);
+                    setEvents(data);
+                } catch (e) {
+                    console.error('Failed to load calendar:', e);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            return (
+<<<<<<< HEAD
+                <div style={{ padding: '1.5rem' }}>
+                    <h2>Calendar {isLoading && <span style={{ fontSize: '0.8em', color: '#6b7280' }}>Loading...</span>}</h2>
+                    {events.length === 0 ? (
+                        <p style={{ color: '#6b7280' }}>No calendar events yet.</p>
+                    ) : (
+                        <div style={{ backgroundColor: 'white', borderRadius: '0.5rem', padding: '1rem', overflowX: 'auto' }}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {events.map((e) => (
+                                        <tr key={e.id}>
+                                            <td>{e.title}</td>
+                                            <td>{e.event_date}</td>
+                                            <td>{e.description || '-'}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+=======
+                <div className="card" style={{ marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                        <h3 style={{ margin: 0 }}>Progress Tracker</h3>
+                        {loading && <span style={{ color:'#6b7280', fontSize:'0.9rem' }}>Loading…</span>}
+                    </div>
+                    {error && <div style={{ color:'#b91c1c', marginBottom:'0.5rem' }}>{error}</div>}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(180px, 1fr))', gap: '12px' }}>
+                        {subjects.map((subj) => {
+                            const scores = data[subj] || [];
+                            const { bins, max } = buildHistogram(scores);
+                            const labels = ['50s','60s','70s','80s','90-100'];
+                            const color = ({'Math':'#2563eb','Science':'#059669','English':'#7c3aed','History':'#ea580c'}[subj]) || '#374151';
+                            return (
+                                <div key={subj} style={{ border:'1px solid #e5e7eb', borderRadius:'10px', padding:'10px' }}>
+                                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'6px' }}>
+                                        <div style={{ fontWeight:600 }}>{subj}</div>
+                                        <div style={{ color:'#6b7280', fontSize:'12px' }}>Avg: {avg(scores)}</div>
+                                    </div>
+                                    <div style={{ display:'flex', alignItems:'flex-end', gap:'8px', height:'90px', padding:'8px 4px' }}>
+                                        {bins.map((count, i) => (
+                                            <div key={i} title={`${labels[i]}: ${count}`} style={{ width:'18%', minWidth:'20px', background:color, opacity:0.9, height: `${Math.round((count/max)*100)}%`, borderRadius:'6px' }} />
+                                        ))}
+                                    </div>
+                                    <div style={{ display:'flex', justifyContent:'space-between', color:'#6b7280', fontSize:'11px', marginTop:'4px' }}>
+                                        {labels.map(l => <span key={l}>{l}</span>)}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                 </div>
             );
         }
 
+<<<<<<< HEAD
+        // Teacher Dashboard: add assignments and calendar events for a student
+        function TeacherDashboard({ teacherId }) {
+            const [targetStudentId, setTargetStudentId] = useState('');
+=======
+<<<<<<< HEAD
         // Teacher Dashboard: add assignments and calendar events for a student
         function TeacherDashboard({ teacherId }) {
             const [targetStudentId, setTargetStudentId] = useState('');
@@ -1534,6 +2350,88 @@ Please provide a helpful response:`
                             </div>
                         </div>
                     </div>
+=======
+        // Calendar View for Dashboard (color-coded + edit modal)
+        function CalendarView({ studentId }) {
+            const [current, setCurrent] = useState(new Date());
+            const [assignments, setAssignments] = useState([]);
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+            const [title, setTitle] = useState('');
+            const [subject, setSubject] = useState('');
+            const [due, setDue] = useState('');
+            const [eventTitle, setEventTitle] = useState('');
+            const [eventDate, setEventDate] = useState('');
+            const [eventDesc, setEventDesc] = useState('');
+            const [msg, setMsg] = useState('');
+            const apiService = new APIService();
+
+            const addAssignment = async () => {
+                setMsg('');
+                if (!targetStudentId || !title || !subject || !due) {
+                    setMsg('Please enter Student ID and all assignment fields.');
+                    return;
+                }
+                try {
+                    await apiService.createAssignment(targetStudentId, { title, subject, due_date: due });
+                    setMsg('Assignment added successfully.');
+                    setTitle(''); setSubject(''); setDue('');
+                } catch (e) {
+                    setMsg('Failed to add assignment.');
+                }
+            };
+
+            const addCalendarEvent = async () => {
+                setMsg('');
+                if (!targetStudentId || !eventTitle || !eventDate) {
+                    setMsg('Please enter Student ID, event title and date.');
+                    return;
+                }
+                try {
+                    await apiService.createCalendarEvent(targetStudentId, { title: eventTitle, event_date: eventDate, description: eventDesc });
+                    setMsg('Calendar event added successfully.');
+                    setEventTitle(''); setEventDate(''); setEventDesc('');
+                } catch (e) {
+                    setMsg('Failed to add calendar event.');
+                }
+            };
+
+            return (
+                <div className="main-content">
+                    <div className="card">
+                        <h2>Teacher Dashboard</h2>
+                        {msg && <div className="error-message" style={{ backgroundColor: '#ECFDF5', color: '#065F46' }}>{msg}</div>}
+                        <div style={{ marginBottom: '1rem' }}>
+                            <label style={{ fontWeight: 600 }}>Target Student ID</label>
+                            <input type="text" placeholder="Student ID" value={targetStudentId} onChange={(e) => setTargetStudentId(e.target.value)} />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+                            <div className="settings-panel">
+                                <h3 style={{ marginTop: 0 }}>Add Assignment</h3>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                                    <input type="text" placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                                    <input type="date" value={due} onChange={(e) => setDue(e.target.value)} />
+                                    <button className="btn-primary" onClick={addAssignment}>Add Assignment</button>
+                                </div>
+                            </div>
+
+                            <div className="settings-panel">
+                                <h3 style={{ marginTop: 0 }}>Add Calendar Event</h3>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <input type="text" placeholder="Event Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                                    <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+                                    <input type="text" placeholder="Description (optional)" value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
+                                    <button className="btn-primary" onClick={addCalendarEvent}>Add Event</button>
+                                </div>
+                            </div>
+                        </div>
+<<<<<<< HEAD
+                    </div>
+=======
+                    )}
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                 </div>
             );
         }
@@ -1544,18 +2442,48 @@ Please provide a helpful response:`
             const [studentId, setStudentId] = useState('');
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
 >>>>>>> parent of 6067a66 (Deleted files)
+=======
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             const [teacherId, setTeacherId] = useState('');
             const [role, setRole] = useState('student');
 >>>>>>> parent of d8ff936 (Deleted files and moving files)
             const [loggedIn, setLoggedIn] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [tab, setTab] = useState('ai-tutor');
+<<<<<<< HEAD
             
 
+=======
+            
+
+=======
+            const [loggedIn, setLoggedIn] = useState(false);
+            const [currentPage, setCurrentPage] = useState('dashboard');
+            const [tab, setTab] = useState('ai-tutor');
+            const [profileOpen, setProfileOpen] = useState(false);
+            const [theme, setTheme] = useState(localStorage.getItem('tutorly_theme') || 'light');
+            
+
+            // Apply theme to body and persist
+            useEffect(() => {
+                document.body.classList.toggle('dark', theme === 'dark');
+                localStorage.setItem('tutorly_theme', theme);
+            }, [theme]);
+
+            const handleLogout = () => {
+                setLoggedIn(false);
+                setStudentName('');
+                setStudentId('');
+                setProfileOpen(false);
+            };
+
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Simple routing
             useEffect(() => {
                 const handleHashChange = () => {
@@ -1573,6 +2501,10 @@ Please provide a helpful response:`
                 return () => window.removeEventListener('hashchange', handleHashChange);
             }, []);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             // Ensure correct initial tab by role after login
             useEffect(() => {
                 if (!loggedIn) return;
@@ -1583,6 +2515,11 @@ Please provide a helpful response:`
                 }
             }, [loggedIn, role]);
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
             if (!loggedIn) {
                 return (
                     <div>
@@ -1590,8 +2527,16 @@ Please provide a helpful response:`
                             setStudentName={setStudentName}
                             setStudentId={setStudentId}
                             setLoggedIn={setLoggedIn}
+<<<<<<< HEAD
                             setRole={setRole}
                             setTeacherId={setTeacherId}
+=======
+<<<<<<< HEAD
+                            setRole={setRole}
+                            setTeacherId={setTeacherId}
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                         />
                     </div>
                 );
@@ -1632,6 +2577,11 @@ Please provide a helpful response:`
                                 AI Tutor
                             </a>
                         </div>
+<<<<<<< HEAD
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                            {studentName}
+=======
+<<<<<<< HEAD
                         <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                             {studentName}
                         </div>
@@ -1643,12 +2593,56 @@ Please provide a helpful response:`
                         <div>
                             <div className="secondary-nav">
                                 {(role === 'student' ? ['ai-tutor', 'assignments', 'calendar'] : ['teacher']).map((item) => (
+=======
+                        <div className="top-right">
+                            <div style={{ position: 'relative' }}>
+                                <button className="profile-button" onClick={() => setProfileOpen(v => !v)}>
+                                    Profile ▾
+                                </button>
+                                {profileOpen && (
+                                    <div className="profile-dropdown" onMouseLeave={() => setProfileOpen(false)}>
+                                        <div className="item" onClick={(e)=>e.stopPropagation()}>
+                                            <span>Theme</span>
+                                            <label className="switch">
+                                                <input type="checkbox" checked={theme === 'dark'} onChange={(e)=> setTheme(e.target.checked ? 'dark' : 'light')} />
+                                                <span className="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div className="item" onClick={handleLogout}>
+                                            <span>Logout</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+                        </div>
+                    </nav>
+
+                    {/* API Settings removed */}
+
+                    {currentPage === 'ai-tutor' ? (
+                        <div>
+                            <div className="secondary-nav">
+<<<<<<< HEAD
+                                {(role === 'student' ? ['ai-tutor', 'assignments', 'calendar'] : ['teacher']).map((item) => (
+=======
+                                {['ai-tutor', 'calendar'].map((item) => (
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                     <button
                                         key={item}
                                         onClick={() => setTab(item)}
                                         className={tab === item ? 'active-tab' : ''}
                                     >
+<<<<<<< HEAD
                                         {item === 'ai-tutor' ? 'AI Tutor' : item === 'teacher' ? 'Teacher Dashboard' : item.charAt(0).toUpperCase() + item.slice(1)}
+=======
+<<<<<<< HEAD
+                                        {item === 'ai-tutor' ? 'AI Tutor' : item === 'teacher' ? 'Teacher Dashboard' : item.charAt(0).toUpperCase() + item.slice(1)}
+=======
+                                        {item === 'ai-tutor' ? 'AI Tutor' : item.charAt(0).toUpperCase() + item.slice(1)}
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                                     </button>
                                 ))}
                             </div>
@@ -1663,6 +2657,10 @@ Please provide a helpful response:`
                                     />
                                 )}
 
+<<<<<<< HEAD
+                                {tab === 'assignments' && role === 'student' && (
+=======
+<<<<<<< HEAD
                                 {tab === 'assignments' && role === 'student' && (
                                     <div className="card">
                                         <Assignments studentId={studentId} />
@@ -1678,6 +2676,33 @@ Please provide a helpful response:`
                                 {tab === 'teacher' && role === 'teacher' && (
                                     <TeacherDashboard teacherId={teacherId} />
                                 )}
+=======
+                                {tab === 'todo' && (
+                                    <div className="card">
+                                        <TodoList studentId={studentId} />
+                                    </div>
+                                )}
+
+                                {tab === 'calendar' && (
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
+                                    <div className="card">
+                                        <Assignments studentId={studentId} />
+                                    </div>
+                                )}
+<<<<<<< HEAD
+
+                                {tab === 'calendar' && role === 'student' && (
+                                    <div className="card">
+                                        <Calendar studentId={studentId} />
+                                    </div>
+                                )}
+
+                                {tab === 'teacher' && role === 'teacher' && (
+                                    <TeacherDashboard teacherId={teacherId} />
+                                )}
+=======
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                             </div>
                         </div>
                     ) : (
@@ -1701,6 +2726,10 @@ Please provide a helpful response:`
                                 </button>
                             </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                             {role === 'student' ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', padding: '0 1.5rem' }}>
                                     <div className="card">
@@ -1715,6 +2744,17 @@ Please provide a helpful response:`
                             ) : (
                                 <TeacherDashboard teacherId={teacherId} />
                             )}
+<<<<<<< HEAD
+=======
+=======
+                            <div style={{ padding: '0 1.5rem' }}>
+                                <ProgressTracker studentId={studentId} />
+                            </div>
+                            <div style={{ padding: '0 1.5rem' }}>
+                                <CalendarView studentId={studentId} />
+                            </div>
+>>>>>>> d0bac7cb5111a98373d6f13899cd141aa41f476b
+>>>>>>> parent of d8ff936 (Deleted files and moving files)
                         </div>
                     )}
                 </div>

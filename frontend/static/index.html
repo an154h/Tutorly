@@ -212,17 +212,20 @@
 
     /* ── Login ──────────────────────────────────────────────────────── */
     function LoginPage() {
-      const [name,    setName]    = useState('');
-      const [email,   setEmail]   = useState('');
-      const [error,   setError]   = useState('');
-      const [loading, setLoading] = useState(false);
+      const [name,    setName]    = React.useState('');
+      const [email,   setEmail]   = React.useState('');
+      const [error,   setError]   = React.useState('');
+      const [loading, setLoading] = React.useState(false);
 
       const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim() || !email.trim()) { setError('Please enter your name and email.'); return; }
         setLoading(true); setError('');
         try {
-          const student = await api('/auth/login', { method: 'POST', body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase() }) });
+          const student = await api('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase() }),
+          });
           setAuth(student);
           navigate('home');
         } catch (err) {
@@ -231,46 +234,107 @@
       };
 
       return (
-        <div className="login-root">
-          <div className="blob blob-1" />
-          <div className="blob blob-2" />
-          <div className="blob blob-3" />
+        <div className="min-h-screen bg-primary-container font-body text-on-surface flex flex-col overflow-x-hidden">
+          {/* Simplified header */}
+          <header className="bg-surface border-b-2 border-[#110e06] flex justify-between items-center px-6 py-4">
+            <span className="font-headline font-black text-2xl italic tracking-tight text-[#110e06]">Tutorly</span>
+          </header>
 
-          <div className="login-inner">
-            <div className="login-hero fade-up">
-              <div className="login-eyebrow">📚 O-Level Exam Prep</div>
-              <h1 className="login-title">
-                Study smarter,<br />
-                not <span className="underline-word">harder</span><span className="teal">.</span>
-              </h1>
-              <p className="login-sub">
-                An AI tutor that guides you through past-year questions using the Socratic method — helping you think, not just memorise.
-              </p>
-              <div className="login-peek-cards">
-                <div className="login-peek-card"><span>📐</span> Mathematics</div>
-                <div className="login-peek-card"><span>📖</span> English</div>
-                <div className="login-peek-card"><span>🔬</span> Biology</div>
+          <main className="flex-grow flex items-center justify-center p-6 relative">
+            {/* Decorative floating card — top right */}
+            <div className="hidden lg:block absolute top-10 right-10 -rotate-12 transition-transform hover:rotate-0 duration-300">
+              <div className="bg-tertiary-container scribble-border p-5 rounded-xl neo-shadow flex flex-col items-center gap-2">
+                <span className="text-4xl">📚</span>
+                <span className="font-headline font-extrabold text-on-tertiary-container uppercase tracking-widest text-xs">Study Hard!</span>
               </div>
             </div>
 
-            <div className="login-card fade-up" style={{ animationDelay: '80ms' }}>
-              <h2 className="login-card-title">Start studying →</h2>
-              {error && <div className="error-msg">{error}</div>}
-              <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                  <label className="input-label">Your name</label>
-                  <input className="input-field" type="text" placeholder="e.g. Ahmad Rizal" value={name} onChange={e => setName(e.target.value)} />
-                </div>
-                <div className="input-group">
-                  <label className="input-label">Email address</label>
-                  <input className="input-field" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
-                </div>
-                <button className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '0.5rem' }} type="submit" disabled={loading}>
-                  {loading ? 'Signing in…' : 'Get Started Learning'}
-                </button>
-              </form>
+            {/* Decorative floating card — bottom left */}
+            <div className="hidden lg:block absolute bottom-10 left-10 rotate-6 transition-transform hover:rotate-0 duration-300">
+              <div className="bg-secondary-container scribble-border p-5 rounded-xl neo-shadow flex flex-col items-center gap-2">
+                <span className="text-4xl">🧠</span>
+                <span className="font-headline font-extrabold text-on-secondary-container uppercase tracking-widest text-xs">Think Deep!</span>
+              </div>
             </div>
-          </div>
+
+            {/* Login container */}
+            <div className="max-w-md w-full flex flex-col gap-8 relative z-10">
+              <div className="text-center space-y-2 fade-up">
+                <h1 className="font-headline font-extrabold text-4xl md:text-5xl text-[#110e06] tracking-tight leading-tight">
+                  Ready to crush your O-levels?
+                </h1>
+                <p className="text-lg font-medium opacity-80">
+                  An AI Socratic tutor for Brunei O-Level exam prep. Think, don't memorise.
+                </p>
+              </div>
+
+              {/* Login card */}
+              <div className="bg-surface scribble-border rounded-[2rem] p-8 md:p-10 neo-shadow fade-up" style={{ animationDelay: '80ms' }}>
+                <h2 className="font-headline font-black text-xl text-[#110e06] mb-6">Start studying →</h2>
+
+                {error && (
+                  <div className="bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-[#110e06] mb-4">
+                    {error}
+                  </div>
+                )}
+
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="space-y-2">
+                    <label className="font-headline font-bold text-sm flex items-center gap-2" htmlFor="login-name">
+                      <span className="material-symbols-outlined text-primary text-lg">person</span>
+                      Your Name
+                    </label>
+                    <input
+                      id="login-name"
+                      type="text"
+                      placeholder="e.g. Ahmad Rizal"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      className="w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant transition-all focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-headline font-bold text-sm flex items-center gap-2" htmlFor="login-email">
+                      <span className="material-symbols-outlined text-primary text-lg">alternate_email</span>
+                      Email Address
+                    </label>
+                    <input
+                      id="login-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      className="w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant transition-all focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-tertiary-container scribble-border py-4 rounded-xl font-headline font-black text-xl text-on-tertiary-container neo-shadow neo-shadow-hover neo-shadow-active transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {loading ? 'Signing in…' : 'Get Started Learning'}
+                    {!loading && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>}
+                  </button>
+                </form>
+
+                <div className="mt-8 pt-6 border-t-2 border-dashed border-outline-variant">
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {['📐 Mathematics', '📖 English', '🔬 Biology', '🌍 Geography'].map(s => (
+                      <span key={s} className="bg-surface-container scribble-border px-3 py-1 rounded-lg text-sm font-bold text-on-surface-variant">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-center font-bold text-on-primary-container opacity-90 text-sm italic fade-up" style={{ animationDelay: '160ms' }}>
+                "The mind is not a vessel to be filled, but a fire to be kindled."
+              </p>
+            </div>
+          </main>
         </div>
       );
     }

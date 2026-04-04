@@ -341,42 +341,79 @@
 
     /* ── Home ───────────────────────────────────────────────────────── */
     function HomePage() {
-      const [subjects, setSubjects] = useState([]);
-      const [loading,  setLoading]  = useState(true);
-      const [error,    setError]    = useState('');
+      const [subjects, setSubjects] = React.useState([]);
+      const [loading,  setLoading]  = React.useState(true);
+      const [error,    setError]    = React.useState('');
 
-      useEffect(() => {
+      React.useEffect(() => {
         api('/subjects').then(setSubjects).catch(e => setError(e.message)).finally(() => setLoading(false));
       }, []);
 
-      if (loading) return <><Navbar page="home" /><div className="loading">Loading subjects…</div></>;
-      if (error)   return <><Navbar page="home" /><div className="page"><div className="error-msg">{error}</div></div></>;
+      const cardFills = [
+        'bg-primary-container',
+        'bg-secondary-container',
+        'bg-tertiary-container',
+      ];
+
+      if (loading) return (
+        <>
+          <Navbar page="home" />
+          <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">
+            Loading subjects…
+          </div>
+        </>
+      );
+
+      if (error) return (
+        <>
+          <Navbar page="home" />
+          <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-on-error-container">{error}</div>
+          </div>
+        </>
+      );
 
       return (
         <>
           <Navbar page="home" />
-          <div className="page">
-            <h1 className="section-title">Where should we start?</h1>
-            <p className="section-sub">Choose a subject to browse predicted exam questions</p>
-            <div className="subjects-grid">
+          <main className="bg-surface min-h-screen px-6 py-12 max-w-7xl mx-auto w-full">
+            {/* Hero heading */}
+            <div className="mb-12 fade-up">
+              <div className="inline-block bg-primary-container scribble-border px-4 py-1 mb-4 rounded-full neo-shadow-sm">
+                <span className="text-xs font-headline font-black uppercase tracking-widest text-on-primary-container">
+                  O-Level Prep
+                </span>
+              </div>
+              <h1 className="font-headline font-black text-6xl md:text-8xl tracking-tighter leading-none mb-4 text-[#110e06]">
+                Where should<br />
+                <span className="text-primary italic">we start?</span>
+              </h1>
+              <p className="text-xl font-medium text-on-surface-variant max-w-xl">
+                Choose a subject to browse AI-predicted past-year exam questions.
+              </p>
+            </div>
+
+            {/* Subject grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {subjects.map((s, idx) => (
                 <div
                   key={s.id}
-                  className={`subject-card subject-card-${idx % 3} fade-up`}
+                  className={`${cardFills[idx % 3]} scribble-border rounded-2xl p-8 flex flex-col h-full neo-shadow neo-shadow-hover transition-all fade-up`}
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
-                  <div className="subject-icon">{s.icon}</div>
-                  <div>
-                    <div className="subject-code">{s.code}</div>
-                    <div className="subject-name">{s.name}</div>
-                  </div>
-                  <button className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('topics', { subject: s.id })}>
+                  <div className="text-5xl mb-4">{s.icon}</div>
+                  <div className="font-body text-xs text-outline uppercase tracking-widest mb-1">{s.code}</div>
+                  <h3 className="font-headline font-extrabold text-2xl mb-4 text-[#110e06]">{s.name}</h3>
+                  <button
+                    className="mt-auto w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow-hover neo-shadow-active transition-all"
+                    onClick={() => navigate('topics', { subject: s.id })}
+                  >
                     Revise →
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          </main>
         </>
       );
     }

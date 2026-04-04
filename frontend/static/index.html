@@ -173,15 +173,38 @@
     function Navbar({ page }) {
       const student = getStudent();
       return (
-        <nav className="navbar">
-          <span className="navbar-brand">
-            Tutorly<span className="navbar-brand-dot">.</span>
-          </span>
-          <div className="navbar-links">
-            <a className={`nav-link${page === 'home' ? ' active' : ''}`} href="#home">Home</a>
-            <a className={`nav-link${page === 'dashboard' ? ' active' : ''}`} href="#dashboard">Dashboard</a>
-            {student && <span className="nav-student">👤 {student.name}</span>}
-            <button className="btn btn-ghost btn-sm" onClick={() => { clearAuth(); navigate('login'); }}>Logout</button>
+        <nav className="bg-surface border-b-2 border-[#110e06] sticky top-0 z-50 flex justify-between items-center px-6 py-4">
+          <div className="flex items-center gap-8">
+            <span className="font-headline font-black text-2xl italic tracking-tight text-[#110e06]">
+              Tutorly
+            </span>
+            <div className="hidden md:flex gap-6 items-center">
+              <a
+                href="#home"
+                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'home' ? 'border-b-4 border-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+              >
+                Home
+              </a>
+              <a
+                href="#dashboard"
+                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'dashboard' ? 'border-b-4 border-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+              >
+                Dashboard
+              </a>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {student && (
+              <span className="bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-sm">
+                {student.name}
+              </span>
+            )}
+            <button
+              className="bg-surface-container scribble-border px-3 py-2 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              onClick={() => { clearAuth(); navigate('login'); }}
+            >
+              Logout
+            </button>
           </div>
         </nav>
       );

@@ -181,13 +181,13 @@
             <div className="hidden md:flex gap-6 items-center">
               <a
                 href="#home"
-                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'home' ? 'border-b-4 border-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'home' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
               >
                 Home
               </a>
               <a
                 href="#dashboard"
-                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'dashboard' ? 'border-b-4 border-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'dashboard' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
               >
                 Dashboard
               </a>
@@ -200,7 +200,7 @@
               </span>
             )}
             <button
-              className="bg-surface-container scribble-border px-3 py-2 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              className="bg-surface-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
               onClick={() => { clearAuth(); navigate('login'); }}
             >
               Logout

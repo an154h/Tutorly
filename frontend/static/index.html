@@ -873,129 +873,194 @@
 
     /* ── Dashboard ──────────────────────────────────────────────────── */
     function DashboardPage() {
-      const student = getStudent();
-      const [data,    setData]    = useState(null);
-      const [loading, setLoading] = useState(true);
-      const [error,   setError]   = useState('');
-      const chartRef      = useRef(null);
-      const chartInstance = useRef(null);
+  const student = getStudent();
+  const [data,    setData]    = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error,   setError]   = React.useState('');
+  const chartRef      = React.useRef(null);
+  const chartInstance = React.useRef(null);
 
-      useEffect(() => {
-        if (!student) { navigate('login'); return; }
-        api(`/analytics/${student.id}`).then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
-      }, []);
+  React.useEffect(() => {
+    if (!student) { navigate('login'); return; }
+    api(`/analytics/${student.id}`)
+      .then(setData)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
 
-      useEffect(() => {
-        if (!data || !chartRef.current) return;
-        if (chartInstance.current) chartInstance.current.destroy();
-        chartInstance.current = new Chart(chartRef.current, {
-          type: 'bar',
-          data: {
-            labels: data.attempts_by_subject.map(s => s.subject_name),
-            datasets: [{
-              label: 'Attempts',
-              data: data.attempts_by_subject.map(s => s.count),
-              backgroundColor: ['rgba(110,231,183,0.75)', 'rgba(147,197,253,0.75)', 'rgba(252,211,77,0.75)'],
-              borderColor:     ['#6EE7B7', '#93C5FD', '#FCD34D'],
-              borderWidth: 2,
-              borderRadius: 8,
-            }],
+  React.useEffect(() => {
+    if (!data || !chartRef.current) return;
+    if (chartInstance.current) chartInstance.current.destroy();
+    chartInstance.current = new Chart(chartRef.current, {
+      type: 'bar',
+      data: {
+        labels: data.attempts_by_subject.map(s => s.subject_name),
+        datasets: [{
+          label: 'Attempts',
+          data: data.attempts_by_subject.map(s => s.count),
+          backgroundColor: ['#f5d1fb', '#aee7ee', '#ddfcde'],
+          borderColor:     ['#110e06', '#110e06', '#110e06'],
+          borderWidth: 2,
+          borderRadius: 0,
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { family: 'Manrope', weight: '700' } },
+            grid: { color: 'rgba(17,14,6,0.06)' },
+            border: { color: '#110e06', width: 2 },
           },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(24,24,27,0.05)' } },
-              x: { grid: { display: false } },
-            },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Manrope', weight: '700' } },
+            border: { color: '#110e06', width: 2 },
           },
-        });
-        return () => chartInstance.current?.destroy();
-      }, [data]);
+        },
+      },
+    });
+    return () => chartInstance.current?.destroy();
+  }, [data]);
 
-      if (loading) return <><Navbar page="dashboard" /><div className="loading">Loading dashboard…</div></>;
-      if (error)   return <><Navbar page="dashboard" /><div className="page"><div className="error-msg">{error}</div></div></>;
+  if (loading) return (
+    <>
+      <Navbar page="dashboard" />
+      <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">Loading dashboard…</div>
+    </>
+  );
 
-      return (
-        <>
-          <Navbar page="dashboard" />
-          <div className="page">
-            <h1 className="section-title">Your Progress</h1>
-            <p className="section-sub">Study stats at a glance</p>
+  if (error) return (
+    <>
+      <Navbar page="dashboard" />
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-on-error-container">{error}</div>
+      </div>
+    </>
+  );
 
-            <div className="stats-grid">
-              <div className="stat-card fade-up" style={{ animationDelay: '0ms' }}>
-                <div className="stat-value">{data.total_attempts}</div>
-                <div className="stat-label">Total Attempts</div>
-              </div>
-              <div className="stat-card fade-up" style={{ animationDelay: '80ms' }}>
-                <div className="stat-value">{data.completed_attempts}</div>
-                <div className="stat-label">Completed</div>
-              </div>
-              <div className="stat-card fade-up" style={{ animationDelay: '160ms' }}>
-                <div className="stat-value">{data.avg_confidence != null ? data.avg_confidence.toFixed(1) : '—'}</div>
-                <div className="stat-label">Avg. Confidence ⭐</div>
-              </div>
+  const statCards = [
+    { value: data.total_attempts,    label: 'Total Attempts',      fill: 'bg-primary-container' },
+    { value: data.completed_attempts, label: 'Completed',          fill: 'bg-secondary-container' },
+    {
+      value: data.avg_confidence != null ? data.avg_confidence.toFixed(1) : '—',
+      label: 'Avg. Confidence ⭐',
+      fill: 'bg-tertiary-container',
+    },
+  ];
+
+  return (
+    <>
+      <Navbar page="dashboard" />
+      <main className="bg-[#d2faff] min-h-screen font-body text-on-surface">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 w-full">
+
+          {/* Header */}
+          <section className="flex flex-col md:flex-row gap-6 mb-8 items-start md:items-center justify-between fade-up">
+            <div>
+              <h1 className="font-headline font-black text-4xl tracking-tight text-[#110e06]">
+                Welcome back, {student?.name?.split(' ')[0] || 'Student'}!
+              </h1>
+              <p className="text-lg font-bold opacity-80 mt-1">Your progress at a glance.</p>
             </div>
+          </section>
 
-            <div className="dashboard-grid">
-              <div className="card fade-up" style={{ animationDelay: '240ms' }}>
-                <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Attempts by Subject</h3>
-                {data.attempts_by_subject.length === 0
-                  ? <div className="empty-state">No attempts yet. Start revising!</div>
-                  : <canvas ref={chartRef} />}
+          {/* Stat cards row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {statCards.map((s, i) => (
+              <div key={i} className={`${s.fill} scribble-border rounded-xl p-6 neo-shadow fade-up`} style={{ animationDelay: `${i * 80}ms` }}>
+                <p className="text-xs font-headline font-black uppercase tracking-widest text-on-surface-variant mb-2">{s.label}</p>
+                <p className="font-headline font-black text-5xl tracking-tight text-[#110e06]">{s.value}</p>
               </div>
-
-              <div className="card fade-up" style={{ animationDelay: '320ms' }}>
-                <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Topics Needing Work</h3>
-                {data.weak_topics.length === 0
-                  ? <div className="empty-state" style={{ padding: '1rem' }}>No hint data yet — great going!</div>
-                  : <div className="weak-list">
-                      {data.weak_topics.map((t, i) => (
-                        <div key={i} className="weak-item">
-                          <span style={{ fontSize: '0.88rem' }}>{t.topic_name}</span>
-                          <span className="weak-hints">{t.total_hints} hint{t.total_hints !== 1 ? 's' : ''}</span>
-                        </div>
-                      ))}
-                    </div>
-                }
-              </div>
-            </div>
-
-            <div className="card fade-up" style={{ marginTop: '1.25rem', animationDelay: '400ms' }}>
-              <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Recent Attempts</h3>
-              {data.recent_attempts.length === 0
-                ? <div className="empty-state">Complete a question to see your history here.</div>
-                : <div className="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Question</th>
-                          <th>Subject</th>
-                          <th>Confidence</th>
-                          <th>Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.recent_attempts.map((a, i) => (
-                          <tr key={i}>
-                            <td style={{ maxWidth: '300px' }}>{a.question_text}{a.question_text.length >= 80 ? '…' : ''}</td>
-                            <td>{a.subject_name}</td>
-                            <td>{a.self_rated_confidence ? '⭐'.repeat(a.self_rated_confidence) : '—'}</td>
-                            <td style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.78rem', color: 'var(--ink-faint)' }}>
-                              {new Date(a.started_at).toLocaleDateString()}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-              }
-            </div>
+            ))}
           </div>
-        </>
-      );
-    }
+
+          {/* Bento grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+            {/* Chart card */}
+            <div className="md:col-span-7 bg-secondary-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '240ms' }}>
+              <div className="flex items-center gap-2 mb-5">
+                <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>bar_chart</span>
+                <h3 className="font-headline font-black text-xl text-[#110e06]">Attempts by Subject</h3>
+              </div>
+              {data.attempts_by_subject.length === 0 ? (
+                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No attempts yet. Start revising!</div>
+              ) : (
+                <canvas ref={chartRef} />
+              )}
+            </div>
+
+            {/* Weak topics card */}
+            <div className="md:col-span-5 bg-surface scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '320ms' }}>
+              <div className="flex items-center gap-2 mb-5">
+                <span className="material-symbols-outlined text-error" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                <h3 className="font-headline font-black text-xl text-[#110e06]">Topics Needing Work</h3>
+              </div>
+              {data.weak_topics.length === 0 ? (
+                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No hint data yet — great going!</div>
+              ) : (
+                <div className="flex flex-col divide-y-2 divide-[#110e06]/10">
+                  {data.weak_topics.map((t, i) => (
+                    <div key={i} className="flex items-center justify-between py-3">
+                      <span className="font-medium text-on-surface">{t.topic_name}</span>
+                      <span className="bg-error-container scribble-border px-3 py-0.5 rounded-full font-headline font-black text-xs text-on-error-container">
+                        {t.total_hints} hint{t.total_hints !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent attempts table */}
+            <div className="md:col-span-12 bg-surface scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '400ms' }}>
+              <div className="flex items-center gap-2 mb-5">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
+                <h3 className="font-headline font-black text-xl text-[#110e06]">Recent Attempts</h3>
+              </div>
+              {data.recent_attempts.length === 0 ? (
+                <div className="text-center py-8 font-body text-on-surface-variant font-bold">Complete a question to see your history here.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-surface-container-high">
+                        <th className="text-left px-4 py-3 font-headline font-black text-xs uppercase tracking-widest opacity-60 rounded-tl-lg">Question</th>
+                        <th className="text-left px-4 py-3 font-headline font-black text-xs uppercase tracking-widest opacity-60">Subject</th>
+                        <th className="text-left px-4 py-3 font-headline font-black text-xs uppercase tracking-widest opacity-60">Confidence</th>
+                        <th className="text-left px-4 py-3 font-headline font-black text-xs uppercase tracking-widest opacity-60 rounded-tr-lg">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.recent_attempts.map((a, i) => (
+                        <tr key={i} className="border-t-2 border-[#110e06]/10">
+                          <td className="px-4 py-3 max-w-xs font-medium">
+                            {a.question_text.length > 80 ? a.question_text.slice(0, 80) + '…' : a.question_text}
+                          </td>
+                          <td className="px-4 py-3 font-bold text-on-surface-variant">{a.subject_name}</td>
+                          <td className="px-4 py-3">
+                            {a.self_rated_confidence ? '⭐'.repeat(a.self_rated_confidence) : '—'}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-xs text-outline">
+                            {new Date(a.started_at).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
 
     /* ── App router ─────────────────────────────────────────────────── */
     function App() {

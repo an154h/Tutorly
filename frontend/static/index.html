@@ -106,11 +106,11 @@
     .fade-up { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
     /* Bounce dots for chat thinking indicator */
-    @keyframes bounce {
+    @keyframes dotBounce {
       0%, 100% { transform: translateY(0); }
       50%       { transform: translateY(-6px); }
     }
-    .dot-bounce { animation: bounce 0.8s ease-in-out infinite; }
+    .dot-bounce { animation: dotBounce 0.8s ease-in-out infinite; }
 
     /* Global base */
     body {
@@ -138,7 +138,7 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.07);padding:0.1em 0.3em;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:0.85em">$1</code>')
+        .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.07);padding:0.1em 0.3em;border-radius:4px;font-family:monospace;font-size:0.85em">$1</code>')
         .replace(/\n/g, '<br/>');
       return { __html: html };
     }
@@ -898,7 +898,7 @@
         datasets: [{
           label: 'Attempts',
           data: data.attempts_by_subject.map(s => s.count),
-          backgroundColor: ['#f5d1fb', '#aee7ee', '#ddfcde'],
+          backgroundColor: ['#6e5275', '#2a646a', '#47624b'],
           borderColor:     ['#110e06', '#110e06', '#110e06'],
           borderWidth: 2,
           borderRadius: 0,
@@ -967,6 +967,28 @@
             </div>
           </section>
 
+          {/* Progress hero card */}
+          <div className="bg-primary-container scribble-border rounded-xl p-8 neo-shadow mb-6 fade-up">
+            <div className="flex justify-between items-end mb-3">
+              <div>
+                <h2 className="font-headline font-extrabold text-2xl text-[#110e06] mb-1">Overall Progress</h2>
+                <p className="font-bold text-on-primary-container">
+                  {data.completed_attempts} of {data.total_attempts} question{data.total_attempts !== 1 ? 's' : ''} completed
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-5xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+            </div>
+            <div className="h-8 w-full bg-surface-container-lowest scribble-border rounded-full overflow-hidden relative">
+              <div
+                className="h-full bg-secondary border-r-2 border-[#110e06] transition-all"
+                style={{ width: `${data.total_attempts > 0 ? Math.round((data.completed_attempts / data.total_attempts) * 100) : 0}%` }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-xs font-headline font-black">
+                {data.total_attempts > 0 ? Math.round((data.completed_attempts / data.total_attempts) * 100) : 0}% complete
+              </div>
+            </div>
+          </div>
+
           {/* Stat cards row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {statCards.map((s, i) => (
@@ -1016,7 +1038,7 @@
             </div>
 
             {/* Recent attempts table */}
-            <div className="md:col-span-12 bg-surface scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '400ms' }}>
+            <div className="md:col-span-12 bg-surface-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '400ms' }}>
               <div className="flex items-center gap-2 mb-5">
                 <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
                 <h3 className="font-headline font-black text-xl text-[#110e06]">Recent Attempts</h3>

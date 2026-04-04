@@ -580,165 +580,296 @@
 
     /* ── Question room ──────────────────────────────────────────────── */
     function QuestionPage({ params }) {
-      const questionId = parseInt(params.id, 10);
+  const questionId = parseInt(params.id, 10);
 
-      const [question,   setQuestion]   = useState(null);
-      const [messages,   setMessages]   = useState([]);
-      const [input,      setInput]      = useState('');
-      const [sending,    setSending]    = useState(false);
-      const [attemptId,  setAttemptId]  = useState(null);
-      const [sessionId,  setSessionId]  = useState(null);
-      const [loading,    setLoading]    = useState(true);
-      const [error,      setError]      = useState('');
-      const [showModal,  setShowModal]  = useState(false);
-      const [confidence, setConfidence] = useState(0);
-      const [submitting, setSubmitting] = useState(false);
-      const [showAnswer, setShowAnswer] = useState(false);
+  const [question,   setQuestion]   = React.useState(null);
+  const [messages,   setMessages]   = React.useState([]);
+  const [input,      setInput]      = React.useState('');
+  const [sending,    setSending]    = React.useState(false);
+  const [attemptId,  setAttemptId]  = React.useState(null);
+  const [sessionId,  setSessionId]  = React.useState(null);
+  const [loading,    setLoading]    = React.useState(true);
+  const [error,      setError]      = React.useState('');
+  const [showModal,  setShowModal]  = React.useState(false);
+  const [confidence, setConfidence] = React.useState(0);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [showAnswer, setShowAnswer] = React.useState(false);
 
-      const messagesEndRef = useRef(null);
+  const messagesEndRef = React.useRef(null);
 
-      useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, [messages]);
+  React.useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-      useEffect(() => {
-        (async () => {
-          try {
-            const q       = await api(`/questions/${questionId}`);
-            const attempt = await api('/attempts', { method: 'POST', body: JSON.stringify({ question_id: questionId }) });
-            const session = await api('/chat/session', { method: 'POST', body: JSON.stringify({ question_id: questionId, attempt_id: attempt.id }) });
-            setQuestion(q); setAttemptId(attempt.id); setSessionId(session.id);
-          } catch (e) { setError(e.message); }
-          finally { setLoading(false); }
-        })();
-      }, [questionId]);
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const q       = await api(`/questions/${questionId}`);
+        const attempt = await api('/attempts', { method: 'POST', body: JSON.stringify({ question_id: questionId }) });
+        const session = await api('/chat/session', { method: 'POST', body: JSON.stringify({ question_id: questionId, attempt_id: attempt.id }) });
+        setQuestion(q); setAttemptId(attempt.id); setSessionId(session.id);
+      } catch (e) { setError(e.message); }
+      finally { setLoading(false); }
+    })();
+  }, [questionId]);
 
-      const sendMessage = async (text) => {
-        const msg = text || input.trim();
-        if (!msg || sending) return;
-        setInput('');
-        setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'thinking' }]);
-        setSending(true);
-        try {
-          const res = await api(`/chat/session/${sessionId}/message`, { method: 'POST', body: JSON.stringify({ message: msg }) });
-          setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: res.content }));
-        } catch {
-          setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: '⚠️ Could not reach the AI. Please try again.' }));
-        } finally { setSending(false); }
-      };
+  const sendMessage = async (text) => {
+    const msg = text || input.trim();
+    if (!msg || sending) return;
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'thinking' }]);
+    setSending(true);
+    try {
+      const res = await api(`/chat/session/${sessionId}/message`, {
+        method: 'POST',
+        body: JSON.stringify({ message: msg }),
+      });
+      setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: res.content }));
+    } catch {
+      setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: '⚠️ Could not reach the AI. Please try again.' }));
+    } finally { setSending(false); }
+  };
 
-      const handleDone = async () => {
-        if (!confidence) { setShowModal(true); return; }
-        setSubmitting(true);
-        try {
-          await api(`/attempts/${attemptId}`, { method: 'PATCH', body: JSON.stringify({ self_rated_confidence: confidence, completed_at: new Date().toISOString() }) });
-          setShowModal(false); setShowAnswer(true);
-        } catch { setSubmitting(false); }
-      };
+  const handleDone = async () => {
+    if (!confidence) { setShowModal(true); return; }
+    setSubmitting(true);
+    try {
+      await api(`/attempts/${attemptId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ self_rated_confidence: confidence, completed_at: new Date().toISOString() }),
+      });
+      setShowModal(false); setShowAnswer(true);
+    } catch { setSubmitting(false); }
+  };
 
-      if (loading) return <><Navbar page="question" /><div className="loading">Preparing your question…</div></>;
-      if (error)   return <><Navbar page="question" /><div className="page"><div className="error-msg">{error}</div></div></>;
+  if (loading) return (
+    <>
+      <Navbar page="question" />
+      <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">Preparing your question…</div>
+    </>
+  );
 
-      return (
-        <>
-          <Navbar page="question" />
-          <div className="page">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
-              <button className="btn btn-secondary btn-sm" onClick={() => setShowModal(true)}>I'm Done ✓</button>
-            </div>
+  if (error) return (
+    <>
+      <Navbar page="question" />
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-on-error-container">{error}</div>
+      </div>
+    </>
+  );
 
-            <div className="question-room">
-              <div className="question-panel">
-                <div className="breadcrumb">{question.subject_name} › <span>{question.topic_name}</span></div>
-                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                  <span className={`badge badge-${question.difficulty}`}>{question.difficulty}</span>
-                  <span className="badge badge-marks">{question.marks} mark{question.marks !== 1 ? 's' : ''}</span>
-                </div>
-                {question.image_url && <img className="question-image" src={question.image_url} alt="Question diagram" />}
-                <p className="question-full-text">{question.question_text}</p>
-                {(question.years_appeared || []).length > 0 && (
-                  <div>
-                    <p style={{ fontSize: '0.72rem', color: 'var(--ink-faint)', marginBottom: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Appeared in:</p>
-                    <div className="years-chips">{question.years_appeared.map(y => <span key={y} className="badge badge-year">{y}</span>)}</div>
-                  </div>
-                )}
-                {showAnswer && question.answer && (
-                  <div className="answer-reveal">
-                    <div className="answer-reveal-label">✅ Model Answer</div>
-                    <p className="answer-reveal-text">{question.answer}</p>
-                  </div>
-                )}
-                {showAnswer && (
-                  <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('home')}>
-                    ← Back to Home
-                  </button>
-                )}
-              </div>
+  return (
+    <>
+      <Navbar page="question" />
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
 
-              <div className="chat-panel">
-                <div className="chat-panel-header">🤖 AI Tutor</div>
-                <div className="chat-messages">
-                  {messages.length === 0 && (
-                    <div className="chat-bubble chat-bubble-assistant">
-                      Hi! I'm here to help you work through this question. Have a go at it first — what do you think the answer might be?
-                    </div>
-                  )}
-                  {messages.map((m, i) =>
-                    m.role === 'thinking'
-                      ? <div key={i} className="chat-bubble chat-bubble-thinking">Thinking…</div>
-                      : m.role === 'user'
-                        ? <div key={i} className="chat-bubble chat-bubble-user">{m.content}</div>
-                        : <div key={i} className="chat-bubble chat-bubble-assistant" dangerouslySetInnerHTML={renderMarkdown(m.content)} />
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-                <div>
-                  <div className="chat-input-row">
-                    <textarea
-                      className="chat-input"
-                      rows={2}
-                      placeholder="Type your answer or question…"
-                      value={input}
-                      onChange={e => setInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                    />
-                    <button className="btn btn-primary" style={{ alignSelf: 'flex-end' }} onClick={() => sendMessage()} disabled={sending || !input.trim()}>
-                      Send
-                    </button>
-                  </div>
-                  <div className="chat-actions">
-                    <button className="btn btn-hint btn-sm" onClick={() => sendMessage('Can I have a hint?')} disabled={sending}>
-                      💡 Hint
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* ── Left: Question Panel ───────────────────────────── */}
+        <section className="w-1/2 bg-surface border-r-2 border-[#110e06] flex flex-col overflow-y-auto p-8">
+          {/* Top row: back + done */}
+          <div className="flex justify-between items-center mb-6">
+            <button
+              className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              onClick={() => navigate('home')}
+            >
+              ← Back
+            </button>
+            <button
+              className="bg-secondary-container scribble-border px-4 py-2 rounded-xl font-headline font-bold text-sm neo-shadow neo-shadow-hover neo-shadow-active transition-all"
+              onClick={() => setShowModal(true)}
+            >
+              I'm Done ✓
+            </button>
           </div>
 
-          {showModal && (
-            <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
-              <div className="modal">
-                <h2>How confident do you feel?</h2>
-                <p>Rate your understanding before moving on.</p>
-                <div className="stars">
-                  {[1,2,3,4,5].map(n => (
-                    <span key={n} className={`star${confidence >= n ? ' active' : ''}`} onClick={() => setConfidence(n)}>⭐</span>
+          {/* Active lesson badge */}
+          <span className="bg-primary-container scribble-border px-3 py-1 rounded-full font-headline font-black text-xs uppercase tracking-widest text-on-primary-container self-start mb-4">
+            Active Lesson
+          </span>
+
+          {/* Subject / topic */}
+          <p className="text-xs font-bold text-outline uppercase tracking-widest mb-2">
+            {question.subject_name} › {question.topic_name}
+          </p>
+
+          {/* Question card */}
+          <div className="bg-surface-container-lowest scribble-border rounded-2xl p-6 neo-shadow relative overflow-hidden mb-6">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <span className="material-symbols-outlined text-6xl">quiz</span>
+            </div>
+            {/* Badges */}
+            <div className="flex gap-2 mb-4 flex-wrap">
+              <span className="bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-headline font-black text-xs uppercase">
+                {question.difficulty}
+              </span>
+              <span className="bg-surface-container scribble-border px-3 py-1 rounded-lg font-bold text-xs">
+                {question.marks} mark{question.marks !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {question.image_url && (
+              <img className="w-full rounded-xl scribble-border mb-4 object-cover max-h-48" src={question.image_url} alt="Question diagram" />
+            )}
+
+            <p className="text-xl leading-relaxed font-medium text-[#110e06]">{question.question_text}</p>
+
+            {/* Years */}
+            {(question.years_appeared || []).length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs font-bold text-outline uppercase tracking-widest mb-2">Appeared in:</p>
+                <div className="flex flex-wrap gap-2">
+                  {question.years_appeared.map(y => (
+                    <span key={y} className="px-2 py-1 bg-[#110e06] text-white text-[10px] font-bold rounded">{y}</span>
                   ))}
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-                  <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancel</button>
-                  <button className="btn btn-primary" disabled={!confidence || submitting} onClick={handleDone}>
-                    {submitting ? 'Saving…' : 'Done'}
-                  </button>
-                </div>
               </div>
+            )}
+          </div>
+
+          {/* Answer reveal */}
+          {showAnswer && question.answer && (
+            <div className="bg-tertiary-container scribble-border rounded-2xl p-6 neo-shadow mb-4">
+              <p className="text-xs font-headline font-black uppercase tracking-widest text-tertiary mb-3">✅ Model Answer</p>
+              <p className="text-base leading-relaxed text-on-tertiary-container">{question.answer}</p>
             </div>
           )}
-        </>
-      );
-    }
+
+          {showAnswer && (
+            <button
+              className="w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active transition-all"
+              onClick={() => navigate('home')}
+            >
+              ← Back to Home
+            </button>
+          )}
+        </section>
+
+        {/* ── Right: Chat Panel ─────────────────────────────── */}
+        <section className="w-1/2 bg-surface-container-low flex flex-col">
+          {/* Chat header */}
+          <div className="bg-surface border-b-2 border-[#110e06] flex items-center justify-between px-5 py-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-full border-2 border-[#110e06] flex items-center justify-center">
+                <span className="material-symbols-outlined text-on-primary text-lg">smart_toy</span>
+              </div>
+              <div>
+                <p className="font-headline font-black text-sm leading-none">Tutorly AI Tutor</p>
+                <p className="text-[10px] font-bold text-secondary flex items-center gap-1 mt-0.5">
+                  <span className="w-2 h-2 bg-secondary rounded-full inline-block" />
+                  Socratic mode
+                </p>
+              </div>
+            </div>
+            <button
+              className="bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              onClick={() => sendMessage('Can I have a hint?')}
+              disabled={sending}
+            >
+              💡 Hint
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-grow overflow-y-auto p-5 space-y-5">
+            {messages.length === 0 && (
+              <div className="bg-surface-container-highest scribble-border rounded-2xl p-4 neo-shadow max-w-[85%]">
+                <p className="font-medium text-on-surface">
+                  Hi! I'm here to help you work through this question. Have a go at it first — what do you think the answer might be?
+                </p>
+              </div>
+            )}
+            {messages.map((m, i) => {
+              if (m.role === 'thinking') return (
+                <div key={i} className="flex gap-1 ml-2">
+                  {[0, 0.2, 0.4].map((delay, di) => (
+                    <div key={di} className="w-2 h-2 bg-outline rounded-full dot-bounce" style={{ animationDelay: `${delay}s` }} />
+                  ))}
+                </div>
+              );
+              if (m.role === 'user') return (
+                <div key={i} className="flex flex-col items-end">
+                  <div className="bg-secondary-container scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] self-end fade-up">
+                    <p className="font-medium text-on-secondary-container">{m.content}</p>
+                  </div>
+                </div>
+              );
+              return (
+                <div key={i} className="flex flex-col items-start">
+                  <div className="bg-surface-container-highest scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] fade-up">
+                    <p className="font-medium text-on-surface" dangerouslySetInnerHTML={renderMarkdown(m.content)} />
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input area */}
+          <div className="bg-surface border-t-2 border-[#110e06] p-4">
+            <div className="flex gap-3">
+              <textarea
+                className="flex-grow bg-surface-container-lowest scribble-border rounded-xl p-4 font-medium resize-none outline-none h-[58px] focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)] transition-all placeholder:text-outline-variant"
+                placeholder="Type your answer here…"
+                rows={1}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              />
+              <button
+                className="bg-primary scribble-border rounded-xl p-4 neo-shadow neo-shadow-hover neo-shadow-active transition-all flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={() => sendMessage()}
+                disabled={sending || !input.trim()}
+              >
+                <span className="material-symbols-outlined text-on-primary">send</span>
+              </button>
+            </div>
+            <p className="text-[10px] font-headline font-black uppercase tracking-tight text-outline text-right mt-2">
+              Powered by Tutorly AI
+            </p>
+          </div>
+        </section>
+      </div>
+
+      {/* ── Confidence modal ──────────────────────────────── */}
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 bg-[#110e06]/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}
+        >
+          <div className="bg-surface scribble-border rounded-[2rem] p-8 neo-shadow max-w-sm w-full text-center fade-up">
+            <h2 className="font-headline font-black text-2xl mb-2 text-[#110e06]">How confident do you feel?</h2>
+            <p className="font-medium text-on-surface-variant mb-6">Rate your understanding before moving on.</p>
+            <div className="flex justify-center gap-3 mb-6">
+              {[1,2,3,4,5].map(n => (
+                <button
+                  key={n}
+                  onClick={() => setConfidence(n)}
+                  className={`text-3xl transition-all ${confidence >= n ? 'scale-125' : 'opacity-30 grayscale'}`}
+                >
+                  ⭐
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3 justify-center">
+              <button
+                className="bg-surface-container scribble-border px-5 py-2 rounded-xl font-bold neo-shadow-hover neo-shadow-active transition-all"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-tertiary-container scribble-border px-5 py-2 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={!confidence || submitting}
+                onClick={handleDone}
+              >
+                {submitting ? 'Saving…' : 'Done ✓'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
     /* ── Dashboard ──────────────────────────────────────────────────── */
     function DashboardPage() {

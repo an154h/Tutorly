@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorly</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,700;0,800;1,800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'primary':                  '#6e5275',
+            'primary-container':        '#f5d1fb',
+            'on-primary':               '#ffedfe',
+            'on-primary-container':     '#604567',
+            'primary-fixed':            '#f5d1fb',
+            'secondary':                '#2a646a',
+            'secondary-container':      '#aee7ee',
+            'on-secondary-container':   '#19565c',
+            'tertiary':                 '#47624b',
+            'tertiary-container':       '#ddfcde',
+            'on-tertiary-container':    '#48624b',
+            'surface':                  '#fef6e7',
+            'surface-container':        '#f0e7d6',
+            'surface-container-low':    '#f8f0e0',
+            'surface-container-high':   '#eae2d0',
+            'surface-container-highest':'#e5dcc9',
+            'surface-container-lowest': '#ffffff',
+            'surface-variant':          '#e5dcc9',
+            'on-surface':               '#322e25',
+            'on-surface-variant':       '#605b50',
+            'outline':                  '#7c766a',
+            'outline-variant':          '#b3ac9f',
+            'inverse-surface':          '#110e06',
+            'background':               '#fef6e7',
+            'error':                    '#b41340',
+            'error-container':          '#f74b6d',
+            'on-error-container':       '#510017',
+          },
+          fontFamily: {
+            'headline': ['Plus Jakarta Sans', 'sans-serif'],
+            'body':     ['Manrope', 'sans-serif'],
+          },
+          borderRadius: {
+            DEFAULT: '0.25rem',
+            lg:      '0.5rem',
+            xl:      '0.75rem',
+            '2xl':   '1rem',
+            '3xl':   '1.5rem',
+            full:    '9999px',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- React + Babel + Chart.js -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Material Symbols baseline */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      white-space: nowrap;
+    }
+
+    /* Neo-brutalism shadow utilities */
+    .neo-shadow        { box-shadow: 4px 4px 0px #110e06; }
+    .neo-shadow-sm     { box-shadow: 2px 2px 0px #110e06; }
+    .neo-shadow-lg     { box-shadow: 6px 6px 0px #110e06; }
+
+    .neo-shadow-hover:hover {
+      box-shadow: 6px 6px 0px #110e06;
+      transform: translate(-2px, -2px);
+    }
+    .neo-shadow-active:active {
+      box-shadow: 0px 0px 0px #110e06;
+      transform: translate(4px, 4px);
+    }
+
+    /* 2px solid #110e06 border — the "scribble border" rule */
+    .scribble-border { border: 2px solid #110e06; }
+
+    /* Page entry animation */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    /* Bounce dots for chat thinking indicator */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+    .dot-bounce { animation: bounce 0.8s ease-in-out infinite; }
+
+    /* Global base */
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: #fef6e7;
+      color: #322e25;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    * { box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const API_BASE = 'http://localhost:8000/api';
+
+    function renderMarkdown(text) {
+      const html = text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.07);padding:0.1em 0.3em;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:0.85em">$1</code>')
+        .replace(/\n/g, '<br/>');
+      return { __html: html };
+    }
+
+    const getToken   = () => localStorage.getItem('tutorly_token');
+    const getStudent = () => { try { return JSON.parse(localStorage.getItem('tutorly_student') || 'null'); } catch { return null; } };
+    const setAuth    = (s) => { localStorage.setItem('tutorly_token', s.session_token); localStorage.setItem('tutorly_student', JSON.stringify(s)); };
+    const clearAuth  = () => { localStorage.removeItem('tutorly_token'); localStorage.removeItem('tutorly_student'); };
+
+    async function api(path, opts = {}) {
+      const token = getToken();
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(opts.headers || {}) };
+      const res = await fetch(`${API_BASE}${path}`, { ...opts, headers });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    }
+
+    function parseHash() {
+      const raw = window.location.hash.replace(/^#/, '') || '';
+      const [page, qs] = raw.split('?');
+      const params = {};
+      if (qs) qs.split('&').forEach(p => { const [k, v] = p.split('='); params[k] = decodeURIComponent(v || ''); });
+      return { page: page || 'home', params };
+    }
+    function navigate(page, params = {}) {
+      const qs = Object.keys(params).length ? '?' + Object.entries(params).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join('&') : '';
+      window.location.hash = `#${page}${qs}`;
+    }
+
+    /* ── Navbar ─────────────────────────────────────────────────────── */
+    function Navbar({ page }) {
+      const student = getStudent();
+      return (
+        <nav className="navbar">
+          <span className="navbar-brand">
+            Tutorly<span className="navbar-brand-dot">.</span>
+          </span>
+          <div className="navbar-links">
+            <a className={`nav-link${page === 'home' ? ' active' : ''}`} href="#home">Home</a>
+            <a className={`nav-link${page === 'dashboard' ? ' active' : ''}`} href="#dashboard">Dashboard</a>
+            {student && <span className="nav-student">👤 {student.name}</span>}
+            <button className="btn btn-ghost btn-sm" onClick={() => { clearAuth(); navigate('login'); }}>Logout</button>
+          </div>
+        </nav>
+      );
+    }
+
+    /* ── Login ──────────────────────────────────────────────────────── */
+    function LoginPage() {
+      const [name,    setName]    = useState('');
+      const [email,   setEmail]   = useState('');
+      const [error,   setError]   = useState('');
+      const [loading, setLoading] = useState(false);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!name.trim() || !email.trim()) { setError('Please enter your name and email.'); return; }
+        setLoading(true); setError('');
+        try {
+          const student = await api('/auth/login', { method: 'POST', body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase() }) });
+          setAuth(student);
+          navigate('home');
+        } catch (err) {
+          setError(err.message || 'Something went wrong. Please try again.');
+        } finally { setLoading(false); }
+      };
+
+      return (
+        <div className="login-root">
+          <div className="blob blob-1" />
+          <div className="blob blob-2" />
+          <div className="blob blob-3" />
+
+          <div className="login-inner">
+            <div className="login-hero fade-up">
+              <div className="login-eyebrow">📚 O-Level Exam Prep</div>
+              <h1 className="login-title">
+                Study smarter,<br />
+                not <span className="underline-word">harder</span><span className="teal">.</span>
+              </h1>
+              <p className="login-sub">
+                An AI tutor that guides you through past-year questions using the Socratic method — helping you think, not just memorise.
+              </p>
+              <div className="login-peek-cards">
+                <div className="login-peek-card"><span>📐</span> Mathematics</div>
+                <div className="login-peek-card"><span>📖</span> English</div>
+                <div className="login-peek-card"><span>🔬</span> Biology</div>
+              </div>
+            </div>
+
+            <div className="login-card fade-up" style={{ animationDelay: '80ms' }}>
+              <h2 className="login-card-title">Start studying →</h2>
+              {error && <div className="error-msg">{error}</div>}
+              <form onSubmit={handleSubmit}>
+                <div className="input-group">
+                  <label className="input-label">Your name</label>
+                  <input className="input-field" type="text" placeholder="e.g. Ahmad Rizal" value={name} onChange={e => setName(e.target.value)} />
+                </div>
+                <div className="input-group">
+                  <label className="input-label">Email address</label>
+                  <input className="input-field" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+                <button className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '0.5rem' }} type="submit" disabled={loading}>
+                  {loading ? 'Signing in…' : 'Get Started Learning'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ── Home ───────────────────────────────────────────────────────── */
+    function HomePage() {
+      const [subjects, setSubjects] = useState([]);
+      const [loading,  setLoading]  = useState(true);
+      const [error,    setError]    = useState('');
+
+      useEffect(() => {
+        api('/subjects').then(setSubjects).catch(e => setError(e.message)).finally(() => setLoading(false));
+      }, []);
+
+      if (loading) return <><Navbar page="home" /><div className="loading">Loading subjects…</div></>;
+      if (error)   return <><Navbar page="home" /><div className="page"><div className="error-msg">{error}</div></div></>;
+
+      return (
+        <>
+          <Navbar page="home" />
+          <div className="page">
+            <h1 className="section-title">Where should we start?</h1>
+            <p className="section-sub">Choose a subject to browse predicted exam questions</p>
+            <div className="subjects-grid">
+              {subjects.map((s, idx) => (
+                <div
+                  key={s.id}
+                  className={`subject-card subject-card-${idx % 3} fade-up`}
+                  style={{ animationDelay: `${idx * 80}ms` }}
+                >
+                  <div className="subject-icon">{s.icon}</div>
+                  <div>
+                    <div className="subject-code">{s.code}</div>
+                    <div className="subject-name">{s.name}</div>
+                  </div>
+                  <button className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('topics', { subject: s.id })}>
+                    Revise →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    /* ── Topics ─────────────────────────────────────────────────────── */
+    function TopicsPage({ params }) {
+      const subjectId = parseInt(params.subject, 10);
+      const [topics,    setTopics]    = useState([]);
+      const [questions, setQuestions] = useState([]);
+      const [activeTab, setActiveTab] = useState(null);
+      const [loading,   setLoading]   = useState(true);
+      const [qLoading,  setQLoading]  = useState(false);
+      const [error,     setError]     = useState('');
+
+      useEffect(() => {
+        api(`/subjects/${subjectId}/topics`)
+          .then(t => { setTopics(t); if (t.length > 0) setActiveTab(t[0].id); })
+          .catch(e => setError(e.message))
+          .finally(() => setLoading(false));
+      }, [subjectId]);
+
+      useEffect(() => {
+        if (!activeTab) return;
+        setQLoading(true);
+        api(`/topics/${activeTab}/questions`)
+          .then(setQuestions)
+          .catch(e => setError(e.message))
+          .finally(() => setQLoading(false));
+      }, [activeTab]);
+
+      if (loading) return <><Navbar page="topics" /><div className="loading">Loading…</div></>;
+      if (error)   return <><Navbar page="topics" /><div className="page"><div className="error-msg">{error}</div></div></>;
+
+      return (
+        <>
+          <Navbar page="topics" />
+          <div className="page">
+            <button className="btn btn-ghost btn-sm" style={{ marginBottom: '1.25rem' }} onClick={() => navigate('home')}>
+              ← Back to subjects
+            </button>
+            <h1 className="section-title">Predicted Questions</h1>
+            <p className="section-sub">Ranked by frequency, recency &amp; mark weight</p>
+
+            <div className="topic-tabs">
+              {topics.map(t => (
+                <button key={t.id} className={`topic-tab${activeTab === t.id ? ' active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                  {t.name}
+                </button>
+              ))}
+            </div>
+
+            {qLoading ? <div className="loading">Loading questions…</div> : (
+              <div className="questions-list">
+                {questions.length === 0 && <div className="empty-state">No questions for this topic yet.</div>}
+                {questions.map((q, idx) => (
+                  <div
+                    key={q.id}
+                    className="question-card fade-up"
+                    data-difficulty={q.difficulty}
+                    onClick={() => navigate('question', { id: q.id })}
+                    style={{ animationDelay: `${idx * 45}ms` }}
+                  >
+                    <div className="question-card-top">
+                      <p className="question-text">{q.question_text}{q.question_text.length >= 120 ? '…' : ''}</p>
+                      <span className={`badge badge-${q.difficulty}`}>{q.difficulty}</span>
+                    </div>
+                    <div className="score-bar-wrap">
+                      <span className="score-bar-label">Predicted</span>
+                      <div className="score-bar-track"><div className="score-bar-fill" style={{ width: `${q.predicted_score}%` }} /></div>
+                      <span className="score-bar-value">{parseFloat(q.predicted_score).toFixed(0)}</span>
+                    </div>
+                    <div className="question-meta">
+                      <span className="badge badge-marks">{q.marks} mark{q.marks !== 1 ? 's' : ''}</span>
+                      <div className="years-chips">
+                        {(q.years_appeared || []).map(y => <span key={y} className="badge badge-year">{y}</span>)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      );
+    }
+
+    /* ── Question room ──────────────────────────────────────────────── */
+    function QuestionPage({ params }) {
+      const questionId = parseInt(params.id, 10);
+
+      const [question,   setQuestion]   = useState(null);
+      const [messages,   setMessages]   = useState([]);
+      const [input,      setInput]      = useState('');
+      const [sending,    setSending]    = useState(false);
+      const [attemptId,  setAttemptId]  = useState(null);
+      const [sessionId,  setSessionId]  = useState(null);
+      const [loading,    setLoading]    = useState(true);
+      const [error,      setError]      = useState('');
+      const [showModal,  setShowModal]  = useState(false);
+      const [confidence, setConfidence] = useState(0);
+      const [submitting, setSubmitting] = useState(false);
+      const [showAnswer, setShowAnswer] = useState(false);
+
+      const messagesEndRef = useRef(null);
+
+      useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, [messages]);
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const q       = await api(`/questions/${questionId}`);
+            const attempt = await api('/attempts', { method: 'POST', body: JSON.stringify({ question_id: questionId }) });
+            const session = await api('/chat/session', { method: 'POST', body: JSON.stringify({ question_id: questionId, attempt_id: attempt.id }) });
+            setQuestion(q); setAttemptId(attempt.id); setSessionId(session.id);
+          } catch (e) { setError(e.message); }
+          finally { setLoading(false); }
+        })();
+      }, [questionId]);
+
+      const sendMessage = async (text) => {
+        const msg = text || input.trim();
+        if (!msg || sending) return;
+        setInput('');
+        setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'thinking' }]);
+        setSending(true);
+        try {
+          const res = await api(`/chat/session/${sessionId}/message`, { method: 'POST', body: JSON.stringify({ message: msg }) });
+          setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: res.content }));
+        } catch {
+          setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: '⚠️ Could not reach the AI. Please try again.' }));
+        } finally { setSending(false); }
+      };
+
+      const handleDone = async () => {
+        if (!confidence) { setShowModal(true); return; }
+        setSubmitting(true);
+        try {
+          await api(`/attempts/${attemptId}`, { method: 'PATCH', body: JSON.stringify({ self_rated_confidence: confidence, completed_at: new Date().toISOString() }) });
+          setShowModal(false); setShowAnswer(true);
+        } catch { setSubmitting(false); }
+      };
+
+      if (loading) return <><Navbar page="question" /><div className="loading">Preparing your question…</div></>;
+      if (error)   return <><Navbar page="question" /><div className="page"><div className="error-msg">{error}</div></div></>;
+
+      return (
+        <>
+          <Navbar page="question" />
+          <div className="page">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowModal(true)}>I'm Done ✓</button>
+            </div>
+
+            <div className="question-room">
+              <div className="question-panel">
+                <div className="breadcrumb">{question.subject_name} › <span>{question.topic_name}</span></div>
+                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                  <span className={`badge badge-${question.difficulty}`}>{question.difficulty}</span>
+                  <span className="badge badge-marks">{question.marks} mark{question.marks !== 1 ? 's' : ''}</span>
+                </div>
+                {question.image_url && <img className="question-image" src={question.image_url} alt="Question diagram" />}
+                <p className="question-full-text">{question.question_text}</p>
+                {(question.years_appeared || []).length > 0 && (
+                  <div>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--ink-faint)', marginBottom: '0.4rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Appeared in:</p>
+                    <div className="years-chips">{question.years_appeared.map(y => <span key={y} className="badge badge-year">{y}</span>)}</div>
+                  </div>
+                )}
+                {showAnswer && question.answer && (
+                  <div className="answer-reveal">
+                    <div className="answer-reveal-label">✅ Model Answer</div>
+                    <p className="answer-reveal-text">{question.answer}</p>
+                  </div>
+                )}
+                {showAnswer && (
+                  <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('home')}>
+                    ← Back to Home
+                  </button>
+                )}
+              </div>
+
+              <div className="chat-panel">
+                <div className="chat-panel-header">🤖 AI Tutor</div>
+                <div className="chat-messages">
+                  {messages.length === 0 && (
+                    <div className="chat-bubble chat-bubble-assistant">
+                      Hi! I'm here to help you work through this question. Have a go at it first — what do you think the answer might be?
+                    </div>
+                  )}
+                  {messages.map((m, i) =>
+                    m.role === 'thinking'
+                      ? <div key={i} className="chat-bubble chat-bubble-thinking">Thinking…</div>
+                      : m.role === 'user'
+                        ? <div key={i} className="chat-bubble chat-bubble-user">{m.content}</div>
+                        : <div key={i} className="chat-bubble chat-bubble-assistant" dangerouslySetInnerHTML={renderMarkdown(m.content)} />
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+                <div>
+                  <div className="chat-input-row">
+                    <textarea
+                      className="chat-input"
+                      rows={2}
+                      placeholder="Type your answer or question…"
+                      value={input}
+                      onChange={e => setInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                    />
+                    <button className="btn btn-primary" style={{ alignSelf: 'flex-end' }} onClick={() => sendMessage()} disabled={sending || !input.trim()}>
+                      Send
+                    </button>
+                  </div>
+                  <div className="chat-actions">
+                    <button className="btn btn-hint btn-sm" onClick={() => sendMessage('Can I have a hint?')} disabled={sending}>
+                      💡 Hint
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {showModal && (
+            <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
+              <div className="modal">
+                <h2>How confident do you feel?</h2>
+                <p>Rate your understanding before moving on.</p>
+                <div className="stars">
+                  {[1,2,3,4,5].map(n => (
+                    <span key={n} className={`star${confidence >= n ? ' active' : ''}`} onClick={() => setConfidence(n)}>⭐</span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                  <button className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancel</button>
+                  <button className="btn btn-primary" disabled={!confidence || submitting} onClick={handleDone}>
+                    {submitting ? 'Saving…' : 'Done'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      );
+    }
+
+    /* ── Dashboard ──────────────────────────────────────────────────── */
+    function DashboardPage() {
+      const student = getStudent();
+      const [data,    setData]    = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error,   setError]   = useState('');
+      const chartRef      = useRef(null);
+      const chartInstance = useRef(null);
+
+      useEffect(() => {
+        if (!student) { navigate('login'); return; }
+        api(`/analytics/${student.id}`).then(setData).catch(e => setError(e.message)).finally(() => setLoading(false));
+      }, []);
+
+      useEffect(() => {
+        if (!data || !chartRef.current) return;
+        if (chartInstance.current) chartInstance.current.destroy();
+        chartInstance.current = new Chart(chartRef.current, {
+          type: 'bar',
+          data: {
+            labels: data.attempts_by_subject.map(s => s.subject_name),
+            datasets: [{
+              label: 'Attempts',
+              data: data.attempts_by_subject.map(s => s.count),
+              backgroundColor: ['rgba(110,231,183,0.75)', 'rgba(147,197,253,0.75)', 'rgba(252,211,77,0.75)'],
+              borderColor:     ['#6EE7B7', '#93C5FD', '#FCD34D'],
+              borderWidth: 2,
+              borderRadius: 8,
+            }],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(24,24,27,0.05)' } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+        return () => chartInstance.current?.destroy();
+      }, [data]);
+
+      if (loading) return <><Navbar page="dashboard" /><div className="loading">Loading dashboard…</div></>;
+      if (error)   return <><Navbar page="dashboard" /><div className="page"><div className="error-msg">{error}</div></div></>;
+
+      return (
+        <>
+          <Navbar page="dashboard" />
+          <div className="page">
+            <h1 className="section-title">Your Progress</h1>
+            <p className="section-sub">Study stats at a glance</p>
+
+            <div className="stats-grid">
+              <div className="stat-card fade-up" style={{ animationDelay: '0ms' }}>
+                <div className="stat-value">{data.total_attempts}</div>
+                <div className="stat-label">Total Attempts</div>
+              </div>
+              <div className="stat-card fade-up" style={{ animationDelay: '80ms' }}>
+                <div className="stat-value">{data.completed_attempts}</div>
+                <div className="stat-label">Completed</div>
+              </div>
+              <div className="stat-card fade-up" style={{ animationDelay: '160ms' }}>
+                <div className="stat-value">{data.avg_confidence != null ? data.avg_confidence.toFixed(1) : '—'}</div>
+                <div className="stat-label">Avg. Confidence ⭐</div>
+              </div>
+            </div>
+
+            <div className="dashboard-grid">
+              <div className="card fade-up" style={{ animationDelay: '240ms' }}>
+                <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Attempts by Subject</h3>
+                {data.attempts_by_subject.length === 0
+                  ? <div className="empty-state">No attempts yet. Start revising!</div>
+                  : <canvas ref={chartRef} />}
+              </div>
+
+              <div className="card fade-up" style={{ animationDelay: '320ms' }}>
+                <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Topics Needing Work</h3>
+                {data.weak_topics.length === 0
+                  ? <div className="empty-state" style={{ padding: '1rem' }}>No hint data yet — great going!</div>
+                  : <div className="weak-list">
+                      {data.weak_topics.map((t, i) => (
+                        <div key={i} className="weak-item">
+                          <span style={{ fontSize: '0.88rem' }}>{t.topic_name}</span>
+                          <span className="weak-hints">{t.total_hints} hint{t.total_hints !== 1 ? 's' : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                }
+              </div>
+            </div>
+
+            <div className="card fade-up" style={{ marginTop: '1.25rem', animationDelay: '400ms' }}>
+              <h3 style={{ marginBottom: '1.25rem', fontSize: '0.95rem', fontFamily: 'Fraunces, serif' }}>Recent Attempts</h3>
+              {data.recent_attempts.length === 0
+                ? <div className="empty-state">Complete a question to see your history here.</div>
+                : <div className="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Question</th>
+                          <th>Subject</th>
+                          <th>Confidence</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.recent_attempts.map((a, i) => (
+                          <tr key={i}>
+                            <td style={{ maxWidth: '300px' }}>{a.question_text}{a.question_text.length >= 80 ? '…' : ''}</td>
+                            <td>{a.subject_name}</td>
+                            <td>{a.self_rated_confidence ? '⭐'.repeat(a.self_rated_confidence) : '—'}</td>
+                            <td style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.78rem', color: 'var(--ink-faint)' }}>
+                              {new Date(a.started_at).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+              }
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    /* ── App router ─────────────────────────────────────────────────── */
+    function App() {
+      const [route, setRoute] = useState(parseHash());
+
+      useEffect(() => {
+        const onHash = () => setRoute(parseHash());
+        window.addEventListener('hashchange', onHash);
+        return () => window.removeEventListener('hashchange', onHash);
+      }, []);
+
+      const { page, params } = route;
+      const token = getToken();
+
+      if (!token && page !== 'login') { setTimeout(() => navigate('login'), 0); return null; }
+      if (token  && page === 'login') { setTimeout(() => navigate('home'),  0); return null; }
+
+      if (page === 'login')     return <LoginPage />;
+      if (page === 'home')      return <HomePage />;
+      if (page === 'topics')    return <TopicsPage params={params} />;
+      if (page === 'question')  return <QuestionPage params={params} />;
+      if (page === 'dashboard') return <DashboardPage />;
+
+      setTimeout(() => navigate('home'), 0);
+      return null;
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

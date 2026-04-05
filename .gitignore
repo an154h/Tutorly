@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Environment variables
 .env
 .env.local
@@ -30,12 +29,16 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+media/
+docs/
+CLAUDE.md
+PLAN.md
+
 # Virtual environments
 .venv
 venv/
 ENV/
 env/
-.env
 
 # Flask
 instance/
@@ -45,6 +48,9 @@ instance/
 *.db
 *.sqlite
 *.sqlite3
+
+# Uploads (runtime-generated)
+backend/uploads/
 
 # IDEs and editors
 .vscode/
@@ -72,41 +78,18 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage
 coverage/
 *.lcov
-
-# nyc test coverage
 .nyc_output
 
 # Dependency directories
 node_modules/
 
-# Optional npm cache directory
+# Optional npm cache
 .npm
-
-# Optional eslint cache
 .eslintcache
 
 # Temporary folders
 tmp/
 temp/
-=======
-# Node stuff (if anything left)
-node_modules/
-package-lock.json
-
-# Python stuff
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Virtual environments
-venv/
-.env
-
-# IDE / system files
-.vscode/
-.DS_Store
->>>>>>> parent of 6067a66 (Deleted files)

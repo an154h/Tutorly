@@ -5,12 +5,11 @@
   "main": "index.html",
   "scripts": {
     "start": "python run_server.py",
-    "server": "python app.py",
     "dev": "python run_server.py",
-    "install-deps": "pip install -r requirements.txt",
-    "setup": "pip install -r requirements.txt && python run_server.py",
-    "health": "curl http://localhost:5000/api/health",
-    "test-api": "curl -X GET http://localhost:5000/api/health && echo '\nAPI is working!'"
+    "install-deps": "pip install -r backend/requirements.txt",
+    "setup": "pip install -r backend/requirements.txt && python run_server.py",
+    "health": "curl http://localhost:8000/api/health",
+    "test-api": "curl -X GET http://localhost:8000/api/health && echo '\nAPI is working!'"
   },
   "repository": {
     "type": "git",

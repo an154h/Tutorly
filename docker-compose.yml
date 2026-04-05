@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15
+    container_name: tutorly_db
+    environment:
+      POSTGRES_DB: tutorly
+      POSTGRES_USER: tutorly
+      POSTGRES_PASSWORD: tutorly
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - tutorly_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tutorly -d tutorly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: tutorly_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@tutorly.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - tutorly_net
+
+volumes:
+  pgdata:
+
+networks:
+  tutorly_net:

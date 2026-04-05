@@ -261,10 +261,10 @@
             <div className="max-w-md w-full flex flex-col gap-8 relative z-10">
               <div className="text-center space-y-2 fade-up">
                 <h1 className="font-headline font-extrabold text-4xl md:text-5xl text-[#110e06] tracking-tight leading-tight">
-                  Ready to crush your O-levels?
+                  Learn it, don't memorize.
                 </h1>
                 <p className="text-lg font-medium opacity-80">
-                  An AI Socratic tutor for Brunei O-Level exam prep. Think, don't memorise.
+                  Because understanding beats memorizing every time.
                 </p>
               </div>
 
@@ -321,7 +321,7 @@
 
                 <div className="mt-8 pt-6 border-t-2 border-dashed border-outline-variant">
                   <div className="flex flex-wrap gap-2 justify-center">
-                    {['📐 Mathematics', '📖 English', '🔬 Biology', '🌍 Geography'].map(s => (
+                    {['📐 Mathematics', '📖 English', '🔬 Biology'].map(s => (
                       <span key={s} className="bg-surface-container scribble-border px-3 py-1 rounded-lg text-sm font-bold text-on-surface-variant">
                         {s}
                       </span>
@@ -401,9 +401,9 @@
                   className={`${cardFills[idx % 3]} scribble-border rounded-2xl p-8 flex flex-col h-full neo-shadow neo-shadow-hover transition-all fade-up`}
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
-                  <div className="text-5xl mb-4">{s.icon}</div>
-                  <div className="font-body text-xs text-outline uppercase tracking-widest mb-1">{s.code}</div>
-                  <h3 className="font-headline font-extrabold text-2xl mb-4 text-[#110e06]">{s.name}</h3>
+                  <div className="text-5xl mb-4 text-center">{s.icon}</div>
+                  <div className="font-body text-xs text-outline uppercase tracking-widest mb-1 text-center">{s.code}</div>
+                  <h3 className="font-headline font-extrabold text-2xl mb-4 text-[#110e06] text-center">{s.name}</h3>
                   <button
                     className="mt-auto w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow-hover neo-shadow-active transition-all"
                     onClick={() => navigate('topics', { subject: s.id })}
@@ -594,6 +594,7 @@
   const [confidence, setConfidence] = React.useState(0);
   const [submitting, setSubmitting] = React.useState(false);
   const [showAnswer, setShowAnswer] = React.useState(false);
+  const [hintsRevealed, setHintsRevealed] = React.useState(0);
 
   const messagesEndRef = React.useRef(null);
 
@@ -669,7 +670,7 @@
           <div className="flex justify-between items-center mb-6">
             <button
               className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
-              onClick={() => navigate('home')}
+              onClick={() => navigate('topics', { subject: question.subject_id })}
             >
               ← Back
             </button>
@@ -692,10 +693,7 @@
           </p>
 
           {/* Question card */}
-          <div className="bg-surface-container-lowest scribble-border rounded-2xl p-6 neo-shadow relative overflow-hidden mb-6">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <span className="material-symbols-outlined text-6xl">quiz</span>
-            </div>
+          <div className="bg-surface-container-lowest scribble-border rounded-2xl p-6 neo-shadow mb-6">
             {/* Badges */}
             <div className="flex gap-2 mb-4 flex-wrap">
               <span className="bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-headline font-black text-xs uppercase">
@@ -708,6 +706,13 @@
 
             {question.image_url && (
               <img className="w-full rounded-xl scribble-border mb-4 object-cover max-h-48" src={question.image_url} alt="Question diagram" />
+            )}
+
+            {question.passage && (
+              <div className="bg-surface scribble-border rounded-xl p-4 mb-4 max-h-48 overflow-y-auto text-sm leading-relaxed text-on-surface whitespace-pre-wrap">
+                <p className="text-[10px] font-headline font-black uppercase tracking-widest text-outline mb-2">Reading Passage</p>
+                {question.passage}
+              </div>
             )}
 
             <p className="text-xl leading-relaxed font-medium text-[#110e06]">{question.question_text}</p>
@@ -725,6 +730,20 @@
             )}
           </div>
 
+          {/* Hint stages — revealed one at a time */}
+          {hintsRevealed > 0 && (question.hint_stages || []).length > 0 && (
+            <div className="mb-6">
+              <p className="text-xs font-bold text-outline uppercase tracking-widest mb-2">Hints</p>
+              <div className="flex flex-col gap-2">
+                {question.hint_stages.slice(0, hintsRevealed).map((hint, i) => (
+                  <span key={i} className="bg-surface-container scribble-border px-4 py-2 rounded-xl text-sm font-bold text-on-surface">
+                    {i + 1}. {hint}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Answer reveal */}
           {showAnswer && question.answer && (
             <div className="bg-tertiary-container scribble-border rounded-2xl p-6 neo-shadow mb-4">
@@ -736,9 +755,9 @@
           {showAnswer && (
             <button
               className="w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active transition-all"
-              onClick={() => navigate('home')}
+              onClick={() => navigate('topics', { subject: question.subject_id })}
             >
-              ← Back to Home
+              ← Back to Topics
             </button>
           )}
         </section>
@@ -760,11 +779,15 @@
               </div>
             </div>
             <button
-              className="bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
-              onClick={() => sendMessage('Can I have a hint?')}
-              disabled={sending}
+              className="bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => {
+                const stages = question.hint_stages || [];
+                if (hintsRevealed < stages.length) setHintsRevealed(h => h + 1);
+                sendMessage('Can I have a hint?');
+              }}
+              disabled={sending || hintsRevealed >= (question.hint_stages || []).length}
             >
-              💡 Hint
+              💡 Hint {hintsRevealed > 0 && `(${hintsRevealed}/${(question.hint_stages || []).length})`}
             </button>
           </div>
 

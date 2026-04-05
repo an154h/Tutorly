@@ -1,203 +1,201 @@
-# Tutorly — Elegant AI-Powered Student Dashboard
+# Tutorly
 
-Tutorly is a lightweight, full‑stack web app that helps students stay organized and improve learning outcomes. It combines a clean, professional UI with a simple Flask API and a local SQLite database. The app features an AI tutor, assignment tracking, a color‑coded calendar with edit-in-place, and a progress tracker that visualizes subject performance.
+An O-level exam preparation platform for students in Brunei. Students browse predicted past-year questions ranked by a weighted score, interact with a Socratic AI tutor chatbot that guides them without giving answers directly, and track their topic-level performance on a personal dashboard.
 
-## Problem We’re Solving
-Students juggle many assignments across subjects without a single, easy place to track due dates, see workload at a glance, and monitor personal progress. Many tools are heavy, subscription‑based, or lack a simple “one-page” view that is actionable. Tutorly solves this by:
-- Providing a calendar‑first dashboard with color‑coded subjects and quick edit.
-- Seeding smart sample data on first login so the experience is useful immediately.
-- Saving new or edited assignments to a real database.
-- Visualizing subject performance (histograms) to highlight strengths and gaps.
-- Offering an optional AI tutor (Gemini) to guide learning rather than give answers.
+## Stack
 
-## Main Features
-- **AI Tutor (optional)**
-  - Conversational assistant with an educational system prompt.
-  - Fallback responses when no API key is set.
-- **Assignment Management**
-  - Create, update, and delete assignments per student.
-  - Fields include title, subject, due date, status, difficulty, and optional score.
-- **Calendar View (Dashboard)**
-  - Monthly grid with subject‑color coding.
-  - Click any day to open a modal and edit items due that day.
-  - Quick‑add row to rapidly insert new assignments.
-- **Progress Tracker**
-  - Per‑subject histograms (50s, 60s, 70s, 80s, 90–100) with averages.
-  - Data seeded automatically for new students (about 10 entries/subject).
-- **Clean, Professional UI**
-  - Black/white core theme; charts and calendar retain subject colors.
-  - Modernized login, sticky navbar, refined cards, inputs, and modal polish.
+- **Backend**: Python 3.9+ / Flask, PostgreSQL (psycopg2)
+- **Frontend**: React 18 (UMD via CDN), Babel Standalone — no build step
+- **AI**: OpenRouter API (`google/gemini-2.0-flash-lite-001`)
+- **Infrastructure**: Docker Compose (Postgres + pgAdmin)
 
-## Tech Stack and Tools
-- **Backend**: `Flask` + `flask-cors`, `sqlite3` (standard library)
-- **DB**: SQLite (file: `tutorly.db`)
-- **HTTP/JSON**: `requests` for AI calls
-- **Images**: `Pillow` (only used by the AI image endpoint)
-- **Frontend**: HTML/CSS/JavaScript with React 18 (UMD) + Babel Standalone
-- **Styling**: Hand‑rolled CSS (professional black/white theme)
+## Project Structure
 
-Key files:
-- `app.py` — Flask app, routes, DB initialization/seed
-- `static/index.html` — Single‑page frontend (React components: Auth, ProgressTracker, CalendarView, Assignments, etc.)
-
-## Getting Started
-### 1) Prerequisites
-- Python 3.9+ recommended
-
-### 2) Install Python dependencies
-```bash
-pip install Flask flask-cors requests Pillow
+```
+Tutorly/
+├── backend/
+│   ├── app.py                      # Flask app, blueprint registration, health route
+│   ├── db.py                       # psycopg2 connection + init_db()
+│   ├── schema.sql                  # PostgreSQL schema (7 tables)
+│   ├── seed.py                     # Sample data seeder (idempotent)
+│   ├── compute_predicted_scores.py # Recomputes predicted_score for all questions
+│   ├── routes/
+│   │   ├── auth.py                 # Login, /me, require_auth decorator
+│   │   ├── questions.py            # Subjects, topics, questions, attempts
+│   │   ├── chat.py                 # Chat sessions, messages, AI integration
+│   │   └── analytics.py           # Student dashboard stats
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   └── static/
+│       ├── index.html              # React SPA — all components inline
+│       ├── logo.png
+│       └── favicon.ico
+├── docker-compose.yml              # Postgres 15 + pgAdmin
+├── run_server.py                   # Entry point
+├── PLAN.md
+└── CLAUDE.md
 ```
 
-Optionally create a virtual environment first.
+## Prerequisites
 
-### 3) (Optional) Configure Gemini API key
-Create a `.env` file in the project root if you want the AI Tutor online:
+- Python 3.9+
+- Docker and Docker Compose
+
+## Setup
+
+### 1. Start the database
+
 ```bash
-GEMINI_API_KEY=your_api_key_here
-PORT=8000
-DEBUG=True
+docker compose up -d
 ```
-If no key is provided, Tutorly will use friendly fallback responses for the AI Tutor.
 
-### 4) Run the server
+Postgres runs on `localhost:5432`. pgAdmin is available at `http://localhost:5050` (email: `admin@tutorly.com`, password: `admin`).
+
+### 2. Create a virtual environment and install dependencies
+
 ```bash
-python app.py
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
-By default Tutorly starts on `http://localhost:8000` and serves the frontend from `static/index.html`.
 
-### 5) First login and sample data
-On first login for a given `student_id`, the backend will seed:
-- ~10 assignments spread over ~30 days across common subjects.
-- ~10 performance records per subject (Math, Science, English, History) over the last 60 days.
+### 3. Configure environment variables
 
-## How to Use
-- **Login** with a name and a student ID (e.g., Name: "Alex Johnson", ID: "S12345").
-- **Dashboard** shows a Progress Tracker on top and a Calendar below.
-- **Click a date** in the calendar to open the edit modal for items due that day.
-- **Quick‑add** to create assignments immediately.
-- **Assignments tab** offers a table view for power‑editing.
-- **AI Tutor** is available in its tab; set the API key in `.env` for live responses.
+```bash
+cp backend/.env.example .env
+```
 
-## API Overview
+Edit `.env` at the project root:
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `OPENROUTER_API_KEY` | No | OpenRouter API key for live AI responses. Falls back to mock Socratic responses if missing. |
+| `PORT` | No | Server port (default: `8000`) |
+| `SECRET_KEY` | No | Flask secret key |
+
+### 4. Start the server
+
+```bash
+python run_server.py
+```
+
+This initialises the database schema on first run. The server starts on `http://localhost:8000`. The frontend is at `http://localhost:8000/static/`.
+
+### 5. Seed sample data
+
+```bash
+python backend/seed.py
+python backend/compute_predicted_scores.py
+```
+
+This inserts 3 subjects, 9 topics, 32 questions, and 3 demo students.
+
+## Demo Credentials
+
+Log in with any of these emails (name field can be anything):
+
+- `demo1@tutorly.com`
+- `demo2@tutorly.com`
+- `demo3@tutorly.com`
+
+## Adding Questions Manually
+
+Connect to Postgres (via pgAdmin or psql) and insert directly:
+
+```sql
+-- Find the topic ID first
+SELECT t.id, t.name, s.name AS subject
+FROM topics t JOIN subjects s ON s.id = t.subject_id;
+
+-- Insert a question
+INSERT INTO questions (topic_id, question_text, marks, difficulty, years_appeared, hint_stages, answer)
+VALUES (
+    1,
+    'Your question text here.',
+    4,
+    'medium',
+    '{2021, 2023}',
+    '["First hint", "Second hint", "Third hint"]',
+    'The model answer here.'
+);
+```
+
+After adding questions, recompute predicted scores:
+
+```bash
+python backend/compute_predicted_scores.py
+```
+
+## Predicted Score Algorithm
+
+Each question is scored 0–100 using three weighted components:
+
+| Component | Weight | Formula |
+|---|---|---|
+| Frequency | 0.4 | `len(years_appeared) / max_frequency_in_topic` |
+| Recency | 0.3 | `0.5` if appeared in last 2 years (examiners avoid repeats), else `1.0` |
+| Mark weight | 0.3 | `marks / max_marks_in_topic` |
+
+## API Reference
+
 Base URL: `http://localhost:8000/api`
 
-- **Health**
-  - `GET /api/health` — health check
+All protected routes require `Authorization: Bearer <token>` header.
 
-- **Auth**
-  - `POST /api/auth/login` — body: `{ name, studentId }`
-    - Creates a user if new
-    - Seeds sample assignments and subject performance if none exist
+### Auth
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/auth/login` | No | `{name, email}` — login or register, returns session token |
+| GET | `/auth/me` | Yes | Returns current student |
 
-- **Assignments**
-  - `GET /api/assignments/<student_id>` — list assignments (latest first)
-  - `POST /api/assignments/<student_id>` — create assignment
-    - body: `{ title, subject, due, status?, difficulty?, score? }`
-  - `PUT /api/assignments/<int:assignment_id>` — update one or more fields
-  - `DELETE /api/assignments/<int:assignment_id>` — delete
+### Subjects & Topics
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/subjects` | No | List all subjects |
+| GET | `/subjects/<id>/topics` | No | List topics for a subject |
+| GET | `/topics/<id>/questions` | No | List questions ordered by `predicted_score DESC` |
+| GET | `/questions/<id>` | No | Full question detail including hints and model answer |
 
-- **Chat**
-  - `GET /api/chat/<student_id>` — list messages
-  - `POST /api/chat/<student_id>` — body: `{ sender, text }`
-  - `POST /api/chat/<student_id>/ai` — body: `{ message }` (uses Gemini if configured)
-  - `POST /api/chat/<student_id>/ai/image` — multipart with `image` and `message` (uses Pillow)
+### Attempts
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/attempts` | Yes | `{question_id}` — start a new attempt |
+| PATCH | `/attempts/<id>` | Yes | Update `completed_at`, `hint_count`, `self_rated_confidence` |
 
-- **Analytics**
-  - `GET /api/progress/<student_id>` — aggregates assignment status counts, subject averages, and chat activity
-  - `GET /api/performance/<student_id>` — returns time‑series performance grouped by subject:
-    ```json
-    {
-      "Math": [{ "date": "2025-08-15", "score": 84 }, ...],
-      "Science": [...],
-      "English": [...],
-      "History": [...]
-    }
-    ```
+### Chat
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/chat/session` | Yes | `{question_id, attempt_id}` — create a chat session |
+| GET | `/chat/session/<id>/messages` | Yes | Get all messages for a session |
+| POST | `/chat/session/<id>/message` | Yes | `{message}` — send a message and get AI response |
 
-## Database — Intricate Details
-SQLite database file: `tutorly.db`. Tables are created in `init_database()` within `app.py` and include:
+### Analytics
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/analytics/<student_id>` | Yes | Dashboard stats for a student |
 
-### 1) `users`
-```sql
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-- **Purpose**: Identify each student by a stable `student_id` with a display `name`.
-- **Behavior**: On login, if the user exists, the name is updated if changed.
+### Health
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Health check |
 
-### 2) `assignments`
-```sql
-CREATE TABLE IF NOT EXISTS assignments (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id TEXT NOT NULL,
-  title TEXT NOT NULL,
-  subject TEXT NOT NULL,
-  due_date DATE NOT NULL,
-  status TEXT DEFAULT 'Pending',
-  difficulty TEXT DEFAULT 'Medium',
-  score INTEGER,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES users (student_id)
-);
-```
-- **Purpose**: Track all work items for a student.
-- **Notable fields**:
-  - `due_date` controls calendar placement.
-  - `status` and `difficulty` support filtering/analytics.
-  - `score` is optional so results can be logged gradually.
-- **Seeding**: On first login, about ten assignments are created and distributed across the next ~30 days.
+## Database Schema
 
-### 3) `chat_messages`
-```sql
-CREATE TABLE IF NOT EXISTS chat_messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id TEXT NOT NULL,
-  sender TEXT NOT NULL,
-  message TEXT NOT NULL,
-  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES users (student_id)
-);
-```
-- **Purpose**: Persist user and AI messages for context‑aware tutoring.
-- **Usage**: The latest messages are retrieved to provide AI with short‑term conversation history.
-
-### 4) `subject_performance`
-```sql
-CREATE TABLE IF NOT EXISTS subject_performance (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  student_id TEXT NOT NULL,
-  subject TEXT NOT NULL,
-  date DATE NOT NULL,
-  score INTEGER NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES users (student_id)
-);
-```
-- **Purpose**: Store time‑series assessment scores per subject to power the dashboard histograms.
-- **Seeding**: On first login, ~10 entries per subject across the prior ~60 days with realistic variance.
-- **Frontend mapping**: `/api/performance/<student_id>` endpoint groups rows by subject and returns ordered arrays for each subject.
-
-### Data Flow
-- On `POST /api/auth/login`, user is ensured, then seeding runs if the student has no assignments/performance.
-- Calendar uses `GET /api/assignments/<student_id>` and color‑codes by `subject`.
-- Modal actions call `PUT` and `DELETE` to persist edits.
-- Progress Tracker uses `GET /api/performance/<student_id>` and computes histograms client‑side.
-
-## Development Notes
-- Default port is `8000` (configurable by `PORT`).
-- The app serves `static/index.html` at `/`.
-- CORS is enabled for all routes to simplify local development.
-- If you change table schemas, update `init_database()` in `app.py` accordingly.
+| Table | Purpose |
+|---|---|
+| `subjects` | O-level subjects with exam code and icon |
+| `topics` | Topics within a subject |
+| `questions` | Questions with marks, difficulty, years appeared, hint stages, model answer, predicted score |
+| `students` | Students (name + email, no passwords). Session token stored per login. |
+| `attempts` | One row per student per question session. Tracks hint count and confidence rating. |
+| `chat_sessions` | One chat session per attempt |
+| `chat_messages` | Individual messages within a chat session |
 
 ## Troubleshooting
-- If you see a blank page, hard refresh (Ctrl+Shift+R). Inline Babel/React can cache aggressively.
-- If the login page inputs don’t work, ensure the decorative `#auth:before` overlay has `pointer-events: none` (already configured).
-- If AI calls fail, verify `GEMINI_API_KEY` in `.env`; app falls back to safe mock tutoring responses.
 
-## License
-MIT
+- **Blank page on load** — hard refresh (`Ctrl+Shift+R`). Babel Standalone caches aggressively.
+- **AI returns mock responses** — check `OPENROUTER_API_KEY` is set in `.env` and the server has been restarted.
+- **Port 5432 already in use** — stop your local Postgres: `sudo systemctl stop postgresql`, then `docker compose up -d`.
+- **Port conflict on 8000** — set `PORT=8001` in `.env`.

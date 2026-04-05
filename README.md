@@ -1,40 +1,41 @@
 # Tutorly
 
-An O-level exam preparation platform for students in Brunei. Students browse predicted past-year questions ranked by a weighted score, interact with a Socratic AI tutor chatbot that guides them without giving answers directly, and track their topic-level performance on a personal dashboard.
+An O-level exam preparation platform for students in Brunei. Students browse predicted past-year questions ranked by a weighted score, interact with a Socratic AI tutor that guides them without giving answers directly, and track their topic-level performance on a personal dashboard.
 
 ## Stack
 
 - **Backend**: Python 3.9+ / Flask, PostgreSQL (psycopg2)
-- **Frontend**: React 18 (UMD via CDN), Babel Standalone — no build step
+- **Frontend**: React 18 (UMD via CDN), Babel Standalone, Tailwind CSS (CDN) — no build step
 - **AI**: OpenRouter API (`google/gemini-2.0-flash-lite-001`)
-- **Infrastructure**: Docker Compose (Postgres + pgAdmin)
+- **Infrastructure**: Docker Compose (Postgres 15 + pgAdmin)
 
 ## Project Structure
 
 ```
 Tutorly/
 ├── backend/
-│   ├── app.py                      # Flask app, blueprint registration, health route
-│   ├── db.py                       # psycopg2 connection + init_db()
+│   ├── app.py                      # Flask app, blueprint registration, static file serving
+│   ├── db.py                       # psycopg2 connection pool + init_db()
 │   ├── schema.sql                  # PostgreSQL schema (7 tables)
-│   ├── seed.py                     # Sample data seeder (idempotent)
-│   ├── compute_predicted_scores.py # Recomputes predicted_score for all questions
+│   ├── seed.py                     # Sample data seeder — 3 subjects, 9 topics, 32 questions
+│   ├── compute_predicted_scores.py # Weighted predicted score computation
 │   ├── routes/
+│   │   ├── __init__.py
 │   │   ├── auth.py                 # Login, /me, require_auth decorator
-│   │   ├── questions.py            # Subjects, topics, questions, attempts
-│   │   ├── chat.py                 # Chat sessions, messages, AI integration
-│   │   └── analytics.py           # Student dashboard stats
+│   │   ├── questions.py            # Subjects, topics, questions, attempts CRUD
+│   │   ├── chat.py                 # Chat sessions, messages, Socratic AI via OpenRouter
+│   │   └── analytics.py           # Per-student dashboard stats
 │   ├── requirements.txt
-│   └── .env.example
+│   └── .env.example                # Environment variable template
 ├── frontend/
 │   └── static/
-│       ├── index.html              # React SPA — all components inline
+│       ├── index.html              # React 18 SPA — all components inline, no build step
 │       ├── logo.png
 │       └── favicon.ico
 ├── docker-compose.yml              # Postgres 15 + pgAdmin
-├── run_server.py                   # Entry point
-├── PLAN.md
-└── CLAUDE.md
+├── run_server.py                   # Entry point — run from project root
+├── .env                            # Local env vars (gitignored)
+└── README.md
 ```
 
 ## Prerequisites
@@ -56,7 +57,7 @@ Postgres runs on `localhost:5432`. pgAdmin is available at `http://localhost:505
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r backend/requirements.txt
 ```
 
@@ -71,7 +72,7 @@ Edit `.env` at the project root:
 | Variable | Required | Description |
 |---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `OPENROUTER_API_KEY` | No | OpenRouter API key for live AI responses. Falls back to mock Socratic responses if missing. |
+| `OPENROUTER_API_KEY` | No | OpenRouter API key for live AI responses. Falls back to mock responses if missing. |
 | `PORT` | No | Server port (default: `8000`) |
 | `SECRET_KEY` | No | Flask secret key |
 
@@ -81,16 +82,16 @@ Edit `.env` at the project root:
 python run_server.py
 ```
 
-This initialises the database schema on first run. The server starts on `http://localhost:8000`. The frontend is at `http://localhost:8000/static/`.
+Initialises the database schema on first run. Server starts on `http://localhost:8000`. Frontend at `http://localhost:8000/static/`.
 
-### 5. Seed sample data
+### 5. Seed sample data (first run only)
 
 ```bash
 python backend/seed.py
 python backend/compute_predicted_scores.py
 ```
 
-This inserts 3 subjects, 9 topics, 32 questions, and 3 demo students.
+Inserts 3 subjects, 9 topics, 32 questions with model answers and hint stages, and 3 demo students.
 
 ## Demo Credentials
 
@@ -110,10 +111,11 @@ SELECT t.id, t.name, s.name AS subject
 FROM topics t JOIN subjects s ON s.id = t.subject_id;
 
 -- Insert a question
-INSERT INTO questions (topic_id, question_text, marks, difficulty, years_appeared, hint_stages, answer)
+INSERT INTO questions (topic_id, question_text, passage, marks, difficulty, years_appeared, hint_stages, answer)
 VALUES (
     1,
     'Your question text here.',
+    NULL,           -- optional reading passage (used for English comprehension/summary questions)
     4,
     'medium',
     '{2021, 2023}',
@@ -156,7 +158,7 @@ All protected routes require `Authorization: Bearer <token>` header.
 | GET | `/subjects` | No | List all subjects |
 | GET | `/subjects/<id>/topics` | No | List topics for a subject |
 | GET | `/topics/<id>/questions` | No | List questions ordered by `predicted_score DESC` |
-| GET | `/questions/<id>` | No | Full question detail including hints and model answer |
+| GET | `/questions/<id>` | No | Full question detail including passage, hints, and model answer |
 
 ### Attempts
 | Method | Endpoint | Auth | Description |
@@ -186,8 +188,8 @@ All protected routes require `Authorization: Bearer <token>` header.
 | Table | Purpose |
 |---|---|
 | `subjects` | O-level subjects with exam code and icon |
-| `topics` | Topics within a subject |
-| `questions` | Questions with marks, difficulty, years appeared, hint stages, model answer, predicted score |
+| `topics` | Topics within a subject (unique per subject) |
+| `questions` | Questions with marks, difficulty, years appeared, optional reading passage, hint stages, model answer, predicted score |
 | `students` | Students (name + email, no passwords). Session token stored per login. |
 | `attempts` | One row per student per question session. Tracks hint count and confidence rating. |
 | `chat_sessions` | One chat session per attempt |

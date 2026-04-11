@@ -131,7 +131,7 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    const API_BASE = 'http://localhost:8000/api';
+    const API_BASE = '/api';
 
     function renderMarkdown(text) {
       const html = text
@@ -567,6 +567,11 @@
                     <span className="bg-surface-container-lowest scribble-border px-2 py-0.5 rounded font-bold text-xs text-on-surface">
                       {q.marks} mark{q.marks !== 1 ? 's' : ''}
                     </span>
+                    {q.part_count > 1 && (
+                      <span className="bg-primary-container scribble-border px-3 py-1 rounded-lg font-bold text-xs">
+                        {q.part_count} parts
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -616,7 +621,7 @@
 
   const sendMessage = async (text) => {
     const msg = text || input.trim();
-    if (!msg || sending) return;
+    if (!msg || sending) return false;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'thinking' }]);
     setSending(true);
@@ -626,8 +631,10 @@
         body: JSON.stringify({ message: msg }),
       });
       setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: res.content }));
+      return true;
     } catch {
       setMessages(prev => prev.filter(m => m.role !== 'thinking').concat({ role: 'assistant', content: '⚠️ Could not reach the AI. Please try again.' }));
+      return false;
     } finally { setSending(false); }
   };
 
@@ -640,7 +647,7 @@
         body: JSON.stringify({ self_rated_confidence: confidence, completed_at: new Date().toISOString() }),
       });
       setShowModal(false); setShowAnswer(true);
-    } catch { setSubmitting(false); }
+    } finally { setSubmitting(false); }
   };
 
   if (loading) return (
@@ -662,7 +669,71 @@
   return (
     <>
       <Navbar page="question" />
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
+      <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+
+        {/* ── Parent context zone (only for child questions) ── */}
+        {question.parent && (
+          <div className="bg-[#f5f0e8] border-b-2 border-[#110e06] px-8 py-4 flex-shrink-0">
+            {question.parent.figures?.length > 0 && (
+              <div className="flex gap-3 mb-3 flex-wrap">
+                {question.parent.figures.map((fig, i) => (
+                  <img key={i} src={`/figures/${fig}`} alt={`Figure ${i + 1}`}
+                       className="rounded-xl scribble-border object-contain max-h-40" />
+                ))}
+              </div>
+            )}
+            <p className="text-sm font-medium text-[#110e06] leading-relaxed">
+              {question.parent.question_text}
+            </p>
+          </div>
+        )}
+
+        {/* ── Sibling carousel (only for child questions) ── */}
+        {question.siblings?.length > 0 && (
+          <div className="bg-surface border-b-2 border-[#110e06] px-8 py-2 flex items-center gap-3 flex-shrink-0">
+            <button
+              className="font-bold text-lg px-2 disabled:opacity-30"
+              disabled={question.siblings[0].id === question.id}
+              onClick={() => {
+                const idx = question.siblings.findIndex(s => s.id === question.id);
+                if (idx > 0) navigate('question', { id: question.siblings[idx - 1].id });
+              }}
+            >←</button>
+
+            <div className="flex gap-2">
+              {question.siblings.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => navigate('question', { id: s.id })}
+                  className={`px-4 py-1 rounded-lg font-headline font-black text-sm scribble-border transition-all ${
+                    s.id === question.id
+                      ? 'bg-primary text-on-primary neo-shadow'
+                      : 'bg-surface-container text-on-surface neo-shadow-hover'
+                  }`}
+                >
+                  Part {s.label.toUpperCase()}
+                  <span className="ml-1 text-xs font-bold opacity-60">[{s.marks}m]</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              className="font-bold text-lg px-2 disabled:opacity-30"
+              disabled={question.siblings[question.siblings.length - 1].id === question.id}
+              onClick={() => {
+                const idx = question.siblings.findIndex(s => s.id === question.id);
+                if (idx < question.siblings.length - 1) navigate('question', { id: question.siblings[idx + 1].id });
+              }}
+            >→</button>
+
+            <span className="ml-auto text-xs font-bold text-outline uppercase tracking-widest">
+              Part {question.label?.toUpperCase()} of {question.siblings.length}
+            </span>
+          </div>
+        )}
+
+        {/* ── Main split panel ── */}
+        <div className="flex flex-1 overflow-hidden">
 
         {/* ── Left: Question Panel ───────────────────────────── */}
         <section className="w-1/2 bg-surface border-r-2 border-[#110e06] flex flex-col overflow-y-auto p-8">
@@ -704,9 +775,9 @@
               </span>
             </div>
 
-            {question.image_url && (
-              <img className="w-full rounded-xl scribble-border mb-4 object-cover max-h-48" src={question.image_url} alt="Question diagram" />
-            )}
+            {question.figures?.length > 0 && question.figures.map((fig, i) => (
+              <img key={i} className="w-full rounded-xl scribble-border mb-4 object-cover max-h-48" src={`/figures/${fig}`} alt={`Figure ${i + 1}`} />
+            ))}
 
             {question.passage && (
               <div className="bg-surface scribble-border rounded-xl p-4 mb-4 max-h-48 overflow-y-auto text-sm leading-relaxed text-on-surface whitespace-pre-wrap">
@@ -780,10 +851,10 @@
             </div>
             <button
               className="bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              onClick={() => {
+              onClick={async () => {
                 const stages = question.hint_stages || [];
-                if (hintsRevealed < stages.length) setHintsRevealed(h => h + 1);
-                sendMessage('Can I have a hint?');
+                const ok = await sendMessage('Can I have a hint?');
+                if (ok && hintsRevealed < stages.length) setHintsRevealed(h => h + 1);
               }}
               disabled={sending || hintsRevealed >= (question.hint_stages || []).length}
             >
@@ -850,7 +921,8 @@
             </p>
           </div>
         </section>
-      </div>
+        </div>{/* end split panel */}
+      </div>{/* end outer flex col */}
 
       {/* ── Confidence modal ──────────────────────────────── */}
       {showModal && (

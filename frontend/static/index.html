@@ -321,7 +321,7 @@
 
                 <div className="mt-8 pt-6 border-t-2 border-dashed border-outline-variant">
                   <div className="flex flex-wrap gap-2 justify-center">
-                    {['📐 Mathematics', '📖 English', '🔬 Biology'].map(s => (
+                    {['📐 Mathematics', '⚛️ Physics', '🔬 Biology'].map(s => (
                       <span key={s} className="bg-surface-container scribble-border px-3 py-1 rounded-lg text-sm font-bold text-on-surface-variant">
                         {s}
                       </span>
@@ -421,28 +421,29 @@
     /* ── Topics ─────────────────────────────────────────────────────── */
     function TopicsPage({ params }) {
   const subjectId = parseInt(params.subject, 10);
-  const [topics,    setTopics]    = React.useState([]);
-  const [questions, setQuestions] = React.useState([]);
-  const [activeTab, setActiveTab] = React.useState(null);
-  const [loading,   setLoading]   = React.useState(true);
-  const [qLoading,  setQLoading]  = React.useState(false);
-  const [error,     setError]     = React.useState('');
+  const [allQuestions, setAllQuestions] = React.useState([]);
+  const [activeTopicId, setActiveTopicId] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error,   setError]   = React.useState('');
 
   React.useEffect(() => {
-    api(`/subjects/${subjectId}/topics`)
-      .then(t => { setTopics(t); if (t.length > 0) setActiveTab(t[0].id); })
+    api(`/subjects/${subjectId}/questions`)
+      .then(setAllQuestions)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [subjectId]);
 
-  React.useEffect(() => {
-    if (!activeTab) return;
-    setQLoading(true);
-    api(`/topics/${activeTab}/questions`)
-      .then(setQuestions)
-      .catch(e => setError(e.message))
-      .finally(() => setQLoading(false));
-  }, [activeTab]);
+  // Derive unique topics from loaded questions, preserving order
+  const topics = React.useMemo(() => {
+    const seen = new Set();
+    return allQuestions
+      .filter(q => { if (seen.has(q.topic_id)) return false; seen.add(q.topic_id); return true; })
+      .map(q => ({ id: q.topic_id, name: q.topic_name }));
+  }, [allQuestions]);
+
+  const questions = activeTopicId
+    ? allQuestions.filter(q => q.topic_id === activeTopicId)
+    : allQuestions;
 
   const cardFills = [
     'bg-tertiary-container',
@@ -504,14 +505,24 @@
           </div>
         </div>
 
-        {/* Topic tabs */}
+        {/* Topic filter chips */}
         <div className="flex flex-wrap gap-3 mb-10 overflow-x-auto pb-2">
+          <button
+            onClick={() => setActiveTopicId(null)}
+            className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base transition-all neo-shadow-active
+              ${activeTopicId === null
+                ? 'bg-secondary-container text-on-secondary-container neo-shadow'
+                : 'bg-surface text-on-surface hover:bg-surface-container hover:translate-x-[2px] hover:translate-y-[2px]'
+              }`}
+          >
+            All
+          </button>
           {topics.map(t => (
             <button
               key={t.id}
-              onClick={() => setActiveTab(t.id)}
+              onClick={() => setActiveTopicId(activeTopicId === t.id ? null : t.id)}
               className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base transition-all neo-shadow-active
-                ${activeTab === t.id
+                ${activeTopicId === t.id
                   ? 'bg-secondary-container text-on-secondary-container neo-shadow'
                   : 'bg-surface text-on-surface hover:bg-surface-container hover:translate-x-[2px] hover:translate-y-[2px]'
                 }`}
@@ -522,10 +533,8 @@
         </div>
 
         {/* Questions grid */}
-        {qLoading ? (
-          <div className="flex items-center justify-center py-16 font-body text-on-surface-variant font-bold">Loading questions…</div>
-        ) : questions.length === 0 ? (
-          <div className="text-center py-16 font-body text-on-surface-variant font-bold">No questions for this topic yet.</div>
+        {questions.length === 0 ? (
+          <div className="text-center py-16 font-body text-on-surface-variant font-bold">No questions yet.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {questions.map((q, idx) => (
@@ -536,7 +545,7 @@
                 onClick={() => navigate('question', { id: q.id })}
               >
                 {/* Top row: difficulty + years */}
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-3">
                   <div className={`bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-headline font-black text-xs uppercase ${difficultyColors[q.difficulty] || ''}`}>
                     {q.difficulty}
                   </div>
@@ -546,6 +555,11 @@
                     ))}
                   </div>
                 </div>
+
+                {/* Topic tag */}
+                <span className="self-start bg-surface-variant scribble-border px-3 py-0.5 rounded-full text-[10px] font-bold text-on-surface-variant uppercase tracking-wide mb-4">
+                  {q.topic_name}
+                </span>
 
                 {/* Question text */}
                 <h3 className="font-headline font-black text-xl leading-tight mb-4 text-[#110e06]">
@@ -613,7 +627,9 @@
         const q       = await api(`/questions/${questionId}`);
         const attempt = await api('/attempts', { method: 'POST', body: JSON.stringify({ question_id: questionId }) });
         const session = await api('/chat/session', { method: 'POST', body: JSON.stringify({ question_id: questionId, attempt_id: attempt.id }) });
+        const history = await api(`/chat/session/${session.id}/messages`);
         setQuestion(q); setAttemptId(attempt.id); setSessionId(session.id);
+        if (history.length > 0) setMessages(history.map(m => ({ role: m.role, content: m.content })));
       } catch (e) { setError(e.message); }
       finally { setLoading(false); }
     })();
@@ -669,82 +685,21 @@
   return (
     <>
       <Navbar page="question" />
-      <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
-
-        {/* ── Parent context zone (only for child questions) ── */}
-        {question.parent && (
-          <div className="bg-[#f5f0e8] border-b-2 border-[#110e06] px-8 py-4 flex-shrink-0">
-            {question.parent.figures?.length > 0 && (
-              <div className="flex gap-3 mb-3 flex-wrap">
-                {question.parent.figures.map((fig, i) => (
-                  <img key={i} src={`/figures/${fig}`} alt={`Figure ${i + 1}`}
-                       className="rounded-xl scribble-border object-contain max-h-40" />
-                ))}
-              </div>
-            )}
-            <p className="text-sm font-medium text-[#110e06] leading-relaxed">
-              {question.parent.question_text}
-            </p>
-          </div>
-        )}
-
-        {/* ── Sibling carousel (only for child questions) ── */}
-        {question.siblings?.length > 0 && (
-          <div className="bg-surface border-b-2 border-[#110e06] px-8 py-2 flex items-center gap-3 flex-shrink-0">
-            <button
-              className="font-bold text-lg px-2 disabled:opacity-30"
-              disabled={question.siblings[0].id === question.id}
-              onClick={() => {
-                const idx = question.siblings.findIndex(s => s.id === question.id);
-                if (idx > 0) navigate('question', { id: question.siblings[idx - 1].id });
-              }}
-            >←</button>
-
-            <div className="flex gap-2">
-              {question.siblings.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => navigate('question', { id: s.id })}
-                  className={`px-4 py-1 rounded-lg font-headline font-black text-sm scribble-border transition-all ${
-                    s.id === question.id
-                      ? 'bg-primary text-on-primary neo-shadow'
-                      : 'bg-surface-container text-on-surface neo-shadow-hover'
-                  }`}
-                >
-                  Part {s.label.toUpperCase()}
-                  <span className="ml-1 text-xs font-bold opacity-60">[{s.marks}m]</span>
-                </button>
-              ))}
-            </div>
-
-            <button
-              className="font-bold text-lg px-2 disabled:opacity-30"
-              disabled={question.siblings[question.siblings.length - 1].id === question.id}
-              onClick={() => {
-                const idx = question.siblings.findIndex(s => s.id === question.id);
-                if (idx < question.siblings.length - 1) navigate('question', { id: question.siblings[idx + 1].id });
-              }}
-            >→</button>
-
-            <span className="ml-auto text-xs font-bold text-outline uppercase tracking-widest">
-              Part {question.label?.toUpperCase()} of {question.siblings.length}
-            </span>
-          </div>
-        )}
-
-        {/* ── Main split panel ── */}
-        <div className="flex flex-1 overflow-hidden">
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
 
         {/* ── Left: Question Panel ───────────────────────────── */}
         <section className="w-1/2 bg-surface border-r-2 border-[#110e06] flex flex-col overflow-y-auto p-8">
-          {/* Top row: back + done */}
-          <div className="flex justify-between items-center mb-6">
+          {/* Top row: back + active lesson badge + done */}
+          <div className="flex justify-between items-center mb-4">
             <button
               className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
               onClick={() => navigate('topics', { subject: question.subject_id })}
             >
               ← Back
             </button>
+            <span className="bg-primary-container scribble-border px-3 py-1 rounded-full font-headline font-black text-xs uppercase tracking-widest text-on-primary-container">
+              Active Lesson
+            </span>
             <button
               className="bg-secondary-container scribble-border px-4 py-2 rounded-xl font-headline font-bold text-sm neo-shadow neo-shadow-hover neo-shadow-active transition-all"
               onClick={handleDone}
@@ -753,15 +708,71 @@
             </button>
           </div>
 
-          {/* Active lesson badge */}
-          <span className="bg-primary-container scribble-border px-3 py-1 rounded-full font-headline font-black text-xs uppercase tracking-widest text-on-primary-container self-start mb-4">
-            Active Lesson
-          </span>
-
           {/* Subject / topic */}
-          <p className="text-xs font-bold text-outline uppercase tracking-widest mb-2">
+          <p className="text-xs font-bold text-outline uppercase tracking-widest mb-3">
             {question.subject_name} › {question.topic_name}
           </p>
+
+          {/* Parent context zone (only for child questions) */}
+          {question.parent && (
+            <div className="bg-[#f5f0e8] scribble-border rounded-2xl px-6 py-4 mb-3">
+              {question.parent.figures?.length > 0 && (
+                <div className="flex gap-3 mb-3 flex-wrap justify-center">
+                  {question.parent.figures.map((fig, i) => (
+                    <img key={i} src={`/figures/${fig}`} alt={`Figure ${i + 1}`}
+                         className="rounded-xl scribble-border object-contain max-h-80" />
+                  ))}
+                </div>
+              )}
+              <p className="text-sm font-medium text-[#110e06] leading-relaxed">
+                {question.parent.question_text}
+              </p>
+            </div>
+          )}
+
+          {/* Sibling carousel (only for child questions) */}
+          {question.siblings?.length > 0 && (
+            <div className="flex items-center gap-3 mb-3">
+              <button
+                className="font-bold text-lg px-1 disabled:opacity-30"
+                disabled={question.siblings[0].id === question.id}
+                onClick={() => {
+                  const idx = question.siblings.findIndex(s => s.id === question.id);
+                  if (idx > 0) navigate('question', { id: question.siblings[idx - 1].id });
+                }}
+              >←</button>
+
+              <div className="flex gap-2 flex-wrap">
+                {question.siblings.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => navigate('question', { id: s.id })}
+                    className={`px-4 py-1 rounded-lg font-headline font-black text-sm scribble-border transition-all ${
+                      s.id === question.id
+                        ? 'bg-primary text-on-primary neo-shadow'
+                        : 'bg-surface-container text-on-surface neo-shadow-hover'
+                    }`}
+                  >
+                    Part {s.label?.toUpperCase()}
+                    <span className="ml-1 text-xs font-bold opacity-60">[{s.marks}m]</span>
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="font-bold text-lg px-1 disabled:opacity-30"
+                disabled={question.siblings[question.siblings.length - 1].id === question.id}
+                onClick={() => {
+                  const idx = question.siblings.findIndex(s => s.id === question.id);
+                  if (idx < question.siblings.length - 1) navigate('question', { id: question.siblings[idx + 1].id });
+                }}
+              >→</button>
+
+              <span className="ml-auto text-xs font-bold text-outline uppercase tracking-widest">
+                Part {question.label?.toUpperCase()} of {question.siblings.length}
+              </span>
+            </div>
+          )}
 
           {/* Question card */}
           <div className="bg-surface-container-lowest scribble-border rounded-2xl p-6 neo-shadow mb-6">
@@ -921,8 +932,7 @@
             </p>
           </div>
         </section>
-        </div>{/* end split panel */}
-      </div>{/* end outer flex col */}
+      </div>
 
       {/* ── Confidence modal ──────────────────────────────── */}
       {showModal && (
@@ -1162,7 +1172,7 @@
                             {a.self_rated_confidence ? '⭐'.repeat(a.self_rated_confidence) : '—'}
                           </td>
                           <td className="px-4 py-3 font-mono text-xs text-outline">
-                            {new Date(a.started_at).toLocaleDateString()}
+                            {new Date(a.completed_at).toLocaleDateString()}
                           </td>
                         </tr>
                       ))}

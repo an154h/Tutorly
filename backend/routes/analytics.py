@@ -80,20 +80,20 @@ def get_analytics(student_id):
                 '''SELECT LEFT(q.question_text, 80) AS question_text,
                           s.name AS subject_name,
                           a.self_rated_confidence,
-                          a.started_at
+                          a.completed_at
                    FROM attempts a
                    JOIN questions q ON q.id = a.question_id
                    JOIN topics   t ON t.id = q.topic_id
                    JOIN subjects s ON s.id = t.subject_id
                    WHERE a.student_id = %s AND a.completed_at IS NOT NULL
-                   ORDER BY a.started_at DESC
+                   ORDER BY a.completed_at DESC
                    LIMIT 5''',
                 (student_id,)
             )
             recent_attempts = []
             for r in cur.fetchall():
                 row = dict(r)
-                row['started_at'] = row['started_at'].isoformat()
+                row['completed_at'] = row['completed_at'].isoformat()
                 recent_attempts.append(row)
 
     finally:

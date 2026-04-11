@@ -74,7 +74,7 @@ Edit `.env` at the project root:
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `OPENROUTER_API_KEY` | No | OpenRouter API key for live AI responses. Falls back to mock responses if missing. |
 | `PORT` | No | Server port (default: `8000`) |
-| `SECRET_KEY` | No | Flask secret key |
+| `SECRET_KEY` | No | Flask secret key (optional, unused unless session cookies are added) |
 
 ### 4. Start the server
 
@@ -157,8 +157,9 @@ All protected routes require `Authorization: Bearer <token>` header.
 |---|---|---|---|
 | GET | `/subjects` | No | List all subjects |
 | GET | `/subjects/<id>/topics` | No | List topics for a subject |
-| GET | `/topics/<id>/questions` | No | List questions ordered by `predicted_score DESC` |
-| GET | `/questions/<id>` | No | Full question detail including passage, hints, and model answer |
+| GET | `/subjects/<id>/questions` | No | All questions for a subject (with `topic_name`, `part_count`), ordered by `predicted_score DESC` |
+| GET | `/topics/<id>/questions` | No | Questions for a single topic, ordered by `predicted_score DESC` |
+| GET | `/questions/<id>` | No | Full question detail including passage, hints, model answer, and `parent`/`siblings` for multi-part questions |
 
 ### Attempts
 | Method | Endpoint | Auth | Description |
@@ -181,7 +182,7 @@ All protected routes require `Authorization: Bearer <token>` header.
 ### Health
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/health` | Health check |
+| GET | `/api/health` | Health check |
 
 ## Database Schema
 
@@ -189,7 +190,7 @@ All protected routes require `Authorization: Bearer <token>` header.
 |---|---|
 | `subjects` | O-level subjects with exam code and icon |
 | `topics` | Topics within a subject (unique per subject) |
-| `questions` | Questions with marks, difficulty, years appeared, optional reading passage, hint stages, model answer, predicted score |
+| `questions` | Questions with marks, difficulty, years appeared, optional reading passage, hint stages, model answer, predicted score. `parent_id` and `label` support multi-part questions (a, b, c…) |
 | `students` | Students (name + email, no passwords). Session token stored per login. |
 | `attempts` | One row per student per question session. Tracks hint count and confidence rating. |
 | `chat_sessions` | One chat session per attempt |

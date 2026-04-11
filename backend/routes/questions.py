@@ -31,6 +31,10 @@ def get_topics(subject_id):
     conn = get_db()
     try:
         with conn.cursor() as cur:
+            # Check the subject actually exists before claiming "no topics"
+            cur.execute('SELECT id FROM subjects WHERE id = %s', (subject_id,))
+            if not cur.fetchone():
+                return jsonify({'error': 'Subject not found'}), 404
             cur.execute(
                 'SELECT id, name FROM topics WHERE subject_id = %s ORDER BY id',
                 (subject_id,)
@@ -38,8 +42,6 @@ def get_topics(subject_id):
             topics = [dict(r) for r in cur.fetchall()]
     finally:
         conn.close()
-    if not topics:
-        return jsonify({'error': 'Subject not found or has no topics'}), 404
     return jsonify(topics), 200
 
 
@@ -77,9 +79,10 @@ def get_question(question_id):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                '''SELECT q.id, q.question_text, q.passage, q.image_url, q.marks,
+                '''SELECT q.id, q.question_text, q.passage, q.figures, q.marks,
                           q.difficulty, q.years_appeared, q.predicted_score,
                           q.hint_stages, q.answer,
+                          q.parent_id, q.label,
                           t.id   AS topic_id,
                           t.name AS topic_name,
                           s.id   AS subject_id,
@@ -91,11 +94,38 @@ def get_question(question_id):
                 (question_id,)
             )
             row = cur.fetchone()
+            if not row:
+                return jsonify({'error': 'Question not found'}), 404
+
+            result = dict(row)
+
+            # If this is a child question, fetch parent context and siblings
+            if result['parent_id']:
+                cur.execute(
+                    '''SELECT id, question_text, figures
+                       FROM questions
+                       WHERE id = %s''',
+                    (result['parent_id'],)
+                )
+                parent_row = cur.fetchone()
+                result['parent'] = dict(parent_row) if parent_row else None
+
+                cur.execute(
+                    '''SELECT id, label, marks
+                       FROM questions
+                       WHERE parent_id = %s
+                       ORDER BY label ASC''',
+                    (result['parent_id'],)
+                )
+                result['siblings'] = [dict(r) for r in cur.fetchall()]
+            else:
+                result['parent'] = None
+                result['siblings'] = None
+
     finally:
         conn.close()
-    if not row:
-        return jsonify({'error': 'Question not found'}), 404
-    return jsonify(dict(row)), 200
+
+    return jsonify(result), 200
 
 
 # ---------------------------------------------------------------------------
@@ -114,6 +144,26 @@ def create_attempt():
     conn = get_db()
     try:
         with conn.cursor() as cur:
+            # Validate the question exists
+            cur.execute('SELECT id FROM questions WHERE id = %s', (question_id,))
+            if not cur.fetchone():
+                return jsonify({'error': 'Question not found'}), 404
+
+            # Return existing uncompleted attempt instead of creating a duplicate
+            cur.execute(
+                '''SELECT id, student_id, question_id, started_at
+                   FROM attempts
+                   WHERE student_id = %s AND question_id = %s AND completed_at IS NULL
+                   ORDER BY started_at DESC
+                   LIMIT 1''',
+                (g.student['id'], question_id)
+            )
+            existing = cur.fetchone()
+            if existing:
+                result = dict(existing)
+                result['started_at'] = result['started_at'].isoformat()
+                return jsonify(result), 200
+
             cur.execute(
                 '''INSERT INTO attempts (student_id, question_id)
                    VALUES (%s, %s)

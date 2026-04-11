@@ -55,12 +55,43 @@ def get_questions(topic_id):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                '''SELECT id,
-                          LEFT(question_text, 120) AS question_text,
-                          marks, difficulty, years_appeared, predicted_score
-                   FROM questions
-                   WHERE topic_id = %s
-                   ORDER BY predicted_score DESC''',
+                '''SELECT id FROM topics WHERE id = %s''',
+                (topic_id,)
+            )
+            if not cur.fetchone():
+                return jsonify({'error': 'Topic not found'}), 404
+
+            cur.execute(
+                '''SELECT
+                       q.id,
+                       CASE
+                           WHEN q.parent_id IS NOT NULL THEN LEFT(p.question_text, 120)
+                           ELSE LEFT(q.question_text, 120)
+                       END AS question_text,
+                       q.marks,
+                       q.difficulty,
+                       q.years_appeared,
+                       q.predicted_score,
+                       q.label,
+                       (
+                           SELECT COUNT(*)
+                           FROM questions c
+                           WHERE c.parent_id = q.parent_id
+                             AND q.parent_id IS NOT NULL
+                       ) AS part_count
+                   FROM questions q
+                   LEFT JOIN questions p ON p.id = q.parent_id
+                   WHERE q.topic_id = %s
+                     AND (
+                         -- standalone: no parent, no children
+                         (q.parent_id IS NULL AND NOT EXISTS (
+                             SELECT 1 FROM questions c WHERE c.parent_id = q.id
+                         ))
+                         OR
+                         -- first child of a group (label = 'a')
+                         q.label = 'a'
+                     )
+                   ORDER BY q.predicted_score DESC''',
                 (topic_id,)
             )
             questions = [dict(r) for r in cur.fetchall()]

@@ -509,8 +509,8 @@ def seed():
                     cur.execute(
                         '''INSERT INTO questions
                                (topic_id, question_text, passage, marks, difficulty,
-                                years_appeared, hint_stages, answer)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                                years_appeared, hint_stages, answer, figures)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                            ON CONFLICT DO NOTHING''',
                         (
                             tid,
@@ -521,6 +521,7 @@ def seed():
                             q['years_appeared'],
                             json.dumps(q['hint_stages']),
                             q.get('answer'),
+                            q.get('figures', []),
                         )
                     )
                     q_count += 1

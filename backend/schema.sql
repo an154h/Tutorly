@@ -17,13 +17,16 @@ CREATE TABLE IF NOT EXISTS questions (
     topic_id INTEGER REFERENCES topics(id) ON DELETE CASCADE,
     question_text TEXT NOT NULL,
     passage TEXT,
-    image_url TEXT,
+    figures TEXT[] DEFAULT '{}',
     marks INTEGER NOT NULL DEFAULT 1,
     difficulty TEXT CHECK (difficulty IN ('easy', 'medium', 'hard')),
     years_appeared INTEGER[] DEFAULT '{}',
     predicted_score NUMERIC(5,2) DEFAULT 0,
     hint_stages JSONB DEFAULT '[]',
-    answer TEXT
+    answer TEXT,
+    parent_id INTEGER REFERENCES questions(id) ON DELETE CASCADE,
+    label TEXT,
+    UNIQUE (topic_id, question_text)
 );
 
 CREATE TABLE IF NOT EXISTS students (

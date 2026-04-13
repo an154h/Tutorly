@@ -113,6 +113,29 @@ def create_session():
     conn = get_db()
     try:
         with conn.cursor() as cur:
+            # Verify the attempt belongs to this student
+            cur.execute(
+                'SELECT id FROM attempts WHERE id = %s AND student_id = %s',
+                (attempt_id, g.student['id'])
+            )
+            if not cur.fetchone():
+                return jsonify({'error': 'Attempt not found'}), 404
+
+            # Return existing session for this attempt instead of creating a duplicate
+            cur.execute(
+                '''SELECT id, student_id, question_id, attempt_id, created_at
+                   FROM chat_sessions
+                   WHERE attempt_id = %s AND student_id = %s
+                   ORDER BY created_at DESC
+                   LIMIT 1''',
+                (attempt_id, g.student['id'])
+            )
+            existing = cur.fetchone()
+            if existing:
+                result = dict(existing)
+                result['created_at'] = result['created_at'].isoformat()
+                return jsonify(result), 200
+
             cur.execute(
                 '''INSERT INTO chat_sessions (student_id, question_id, attempt_id)
                    VALUES (%s, %s, %s)
@@ -200,7 +223,10 @@ def send_message(session_id):
                    WHERE q.id = %s''',
                 (question_id,)
             )
-            qrow = dict(cur.fetchone())
+            qrow = cur.fetchone()
+            if not qrow:
+                return jsonify({'error': 'Question not found'}), 404
+            qrow = dict(qrow)
             question = {
                 'question_text': qrow['question_text'],
                 'marks': qrow['marks'],

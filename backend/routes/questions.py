@@ -46,6 +46,58 @@ def get_topics(subject_id):
 
 
 # ---------------------------------------------------------------------------
+# All questions for a subject (truncated for card view, with topic_name)
+# ---------------------------------------------------------------------------
+
+@questions_bp.route('/subjects/<int:subject_id>/questions', methods=['GET'])
+def get_subject_questions(subject_id):
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute('SELECT id FROM subjects WHERE id = %s', (subject_id,))
+            if not cur.fetchone():
+                return jsonify({'error': 'Subject not found'}), 404
+
+            cur.execute(
+                '''SELECT
+                       q.id,
+                       CASE
+                           WHEN q.parent_id IS NOT NULL THEN LEFT(p.question_text, 120)
+                           ELSE LEFT(q.question_text, 120)
+                       END AS question_text,
+                       q.marks,
+                       q.difficulty,
+                       q.years_appeared,
+                       q.predicted_score,
+                       q.label,
+                       t.id   AS topic_id,
+                       t.name AS topic_name,
+                       (
+                           SELECT COUNT(*)
+                           FROM questions c
+                           WHERE c.parent_id = q.parent_id
+                             AND q.parent_id IS NOT NULL
+                       ) AS part_count
+                   FROM questions q
+                   JOIN topics   t ON t.id = q.topic_id
+                   LEFT JOIN questions p ON p.id = q.parent_id
+                   WHERE t.subject_id = %s
+                     AND (
+                         (q.parent_id IS NULL AND NOT EXISTS (
+                             SELECT 1 FROM questions c WHERE c.parent_id = q.id
+                         ))
+                         OR q.label = 'a'
+                     )
+                   ORDER BY q.predicted_score DESC''',
+                (subject_id,)
+            )
+            questions = [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+    return jsonify(questions), 200
+
+
+# ---------------------------------------------------------------------------
 # Questions list (truncated for card view)
 # ---------------------------------------------------------------------------
 

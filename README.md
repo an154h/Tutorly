@@ -32,6 +32,7 @@ Tutorly/
 │       ├── index.html              # React 18 SPA — all components inline, no build step
 │       ├── logo.png
 │       └── favicon.ico
+├── figures/                        # Question figure images, served at /figures/<filename>
 ├── docker-compose.yml              # Postgres 15 + pgAdmin
 ├── run_server.py                   # Entry point — run from project root
 ├── .env                            # Local env vars (gitignored)
@@ -75,6 +76,7 @@ Edit `.env` at the project root:
 | `OPENROUTER_API_KEY` | No | OpenRouter API key for live AI responses. Falls back to mock responses if missing. |
 | `PORT` | No | Server port (default: `8000`) |
 | `SECRET_KEY` | No | Flask secret key (optional, unused unless session cookies are added) |
+| `FLASK_DEBUG` | No | Set to `true` to enable Flask debug mode (default: `false`) |
 
 ### 4. Start the server
 
@@ -183,6 +185,11 @@ All protected routes require `Authorization: Bearer <token>` header.
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/health` | Health check |
+
+### Static Assets
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/figures/<filename>` | Serve question figure images |
 
 ## Database Schema
 

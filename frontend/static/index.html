@@ -92,25 +92,198 @@
     }
     .neo-shadow-active:active {
       box-shadow: 0px 0px 0px #110e06;
-      transform: translate(4px, 4px);
+      transform: translate(4px, 4px) scale(0.97);
+    }
+
+    /* Input focus — no layout-triggering properties */
+    .input-field {
+      transition: box-shadow 150ms ease-out;
+    }
+    .input-field:focus {
+      box-shadow: 0 0 0 3px rgba(110, 82, 117, 0.2);
+    }
+
+    /* Error banner entry */
+    .error-banner {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 150ms ease-out, transform 150ms ease-out;
+    }
+    @supports (selector(:has(*))) {
+      @starting-style {
+        .error-banner {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+      }
+    }
+
+    /* Decorative card hover — only on pointer devices */
+    @media (hover: hover) and (pointer: fine) {
+      .deco-card {
+        transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .deco-card:hover {
+        transform: rotate(0deg) !important;
+      }
     }
 
     /* 2px solid #110e06 border — the "scribble border" rule */
     .scribble-border { border: 2px solid #110e06; }
 
-    /* Page entry animation */
+    /* Page entry animation — only runs when user hasn't opted out of motion */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .fade-up { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-    /* Bounce dots for chat thinking indicator */
-    @keyframes dotBounce {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-6px); }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
-    .dot-bounce { animation: dotBounce 0.8s ease-in-out infinite; }
+    @media (prefers-reduced-motion: no-preference) {
+      .fade-up { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    }
+
+    /* Chat message entry — opacity only, no movement (messages appear frequently) */
+    .chat-msg-enter {
+      animation: fadeIn 150ms ease-out both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .chat-msg-enter { animation: none; }
+    }
+
+    /* Modal backdrop */
+    .modal-backdrop {
+      animation: fadeIn 150ms ease-out both;
+    }
+
+    /* Hint item entry */
+    @keyframes hintSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .hint-item { animation: hintSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+    }
+
+    /* Sequential fade dots (iMessage style) */
+    @keyframes dotFade {
+      0%, 60%, 100% { opacity: 0.2; transform: scale(0.85); }
+      30%            { opacity: 1;   transform: scale(1); }
+    }
+    .dot-fade {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      animation: dotFade 1.4s ease-in-out infinite;
+    }
+
+    /* Hint button idle wiggle */
+    @keyframes hintWiggle {
+      0%   { transform: rotate(0deg); }
+      15%  { transform: rotate(-12deg); }
+      30%  { transform: rotate(10deg); }
+      45%  { transform: rotate(-8deg); }
+      60%  { transform: rotate(6deg); }
+      75%  { transform: rotate(-3deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .hint-wiggle {
+      animation: hintWiggle 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      transform-origin: bottom center;
+    }
+
+    /* Sibling nav arrows */
+    .sibling-nav-btn {
+      transition: transform 120ms ease-out, opacity 120ms ease-out;
+    }
+    .sibling-nav-btn:not(:disabled):hover { transform: scale(1.15); }
+    .sibling-nav-btn:not(:disabled):active { transform: scale(0.9); }
+
+    /* Table row hover */
+    .attempts-row {
+      transition: background-color 100ms ease;
+    }
+    .attempts-row:hover { background-color: rgba(240, 231, 214, 0.6); }
+
+    /* Login page doodles */
+    .doodle { opacity: 0.5; }
+
+    /* Skeleton shimmer */
+    @keyframes shimmer {
+      0%   { background-position: -600px 0; }
+      100% { background-position:  600px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #e8e0d0 25%, #f5ede0 50%, #e8e0d0 75%);
+      background-size: 600px 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+      border-radius: 8px;
+    }
+
+    /* Page transition */
+    .page-wrap {
+      transition: opacity 150ms ease-out;
+    }
+    .page-wrap.page-exit {
+      opacity: 0;
+    }
+
+    /* Answer reveal */
+    @keyframes answerReveal {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .answer-reveal { animation: answerReveal 350ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+    }
+
+    /* Active Lesson badge pulse */
+    @keyframes lessonPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(110, 82, 117, 0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(110, 82, 117, 0); }
+    }
+    .lesson-pulse {
+      animation: lessonPulse 2.4s ease-in-out infinite;
+    }
+
+    /* Button transition utility — replaces transition-all on interactive elements */
+    .btn-transition {
+      transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+    }
+
+    /* ── Background texture patterns ─────────────────────────────────── */
+
+    /* Dot grid — Login page */
+    .bg-dot-grid {
+      background-image: radial-gradient(circle, rgba(17,14,6,0.13) 1.2px, transparent 1.2px);
+      background-size: 22px 22px;
+    }
+
+    /* Cross-hatch (graph paper) — Home page */
+    .bg-dot-grid {
+      background-image:
+        linear-gradient(rgba(17,14,6,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,14,6,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Diagonal stripes — Topics page */
+    .bg-dot-grid {
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 16px,
+        rgba(17,14,6,0.045) 16px,
+        rgba(17,14,6,0.045) 18px
+      );
+    }
+
+    /* Large dot grid — Dashboard */
+    .bg-dot-grid {
+      background-image: radial-gradient(circle, rgba(17,14,6,0.1) 1.5px, transparent 1.5px);
+      background-size: 36px 36px;
+    }
 
     /* Global base */
     body {
@@ -123,6 +296,55 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
     * { box-sizing: border-box; }
+
+    /* Focus-visible ring — keyboard navigation */
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2.5px solid #6e5275;
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    /* Chip transition — includes background-color for topic filter tabs */
+    .chip-transition {
+      transition: background-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
+    }
+
+    /* Mobile panel tabs for split-view question page */
+    .panel-tab-active {
+      background-color: #f5d1fb;
+      color: #110e06;
+      font-weight: 800;
+    }
+    .panel-tab-inactive {
+      color: #605b50;
+    }
+    .panel-tab-inactive:hover {
+      background-color: #f0e7d6;
+    }
+
+    /* Question page: responsive split-panel container */
+    .question-panels {
+      display: flex;
+      overflow: hidden;
+      height: calc(100vh - 64px);
+    }
+    @media (max-width: 767px) {
+      .question-panels {
+        display: block;
+        height: auto;
+        overflow: visible;
+      }
+      .question-panel-left,
+      .question-panel-right {
+        width: 100% !important;
+      }
+      .question-panel-right {
+        height: calc(100svh - 109px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -181,13 +403,13 @@
             <div className="hidden md:flex gap-6 items-center">
               <a
                 href="#home"
-                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'home' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+                className={`font-bold text-sm [transition:color_120ms_ease,transform_120ms_ease] hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'home' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
               >
                 Home
               </a>
               <a
                 href="#dashboard"
-                className={`font-bold text-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'dashboard' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
+                className={`font-bold text-sm [transition:color_120ms_ease,transform_120ms_ease] hover:translate-x-[2px] hover:translate-y-[2px] ${page === 'dashboard' ? 'border-b-4 border-[#110e06] text-[#110e06]' : 'text-on-surface hover:text-primary'}`}
               >
                 Dashboard
               </a>
@@ -200,7 +422,7 @@
               </span>
             )}
             <button
-              className="bg-surface-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              className="bg-surface-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active btn-transition"
               onClick={() => { clearAuth(); navigate('login'); }}
             >
               Logout
@@ -234,27 +456,93 @@
       };
 
       return (
-        <div className="min-h-screen bg-primary-container font-body text-on-surface flex flex-col overflow-x-hidden">
+        <div className="min-h-screen bg-primary-container bg-dot-grid font-body text-on-surface flex flex-col overflow-x-hidden">
           {/* Simplified header */}
           <header className="bg-surface border-b-2 border-[#110e06] flex justify-between items-center px-6 py-4">
             <span className="font-headline font-black text-2xl italic tracking-tight text-[#110e06]">Tutorly</span>
           </header>
 
           <main className="flex-grow flex items-center justify-center p-6 relative">
-            {/* Decorative floating card — top right */}
-            <div className="hidden lg:block absolute top-10 right-10 -rotate-12 transition-transform hover:rotate-0 duration-300">
-              <div className="bg-tertiary-container scribble-border p-5 rounded-xl neo-shadow flex flex-col items-center gap-2">
-                <span className="text-4xl">📚</span>
-                <span className="font-headline font-extrabold text-on-tertiary-container uppercase tracking-widest text-xs">Study Hard!</span>
-              </div>
+            {/* Doodle — large purple star, top-left near the heading */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '7%', left: '18%', transform: 'rotate(-18deg)' }}>
+              <svg width="80" height="80" viewBox="0 0 90 90" fill="none">
+                <path d="M45 5 L49 38 L82 35 L55 52 L68 83 L45 62 L22 83 L35 52 L8 35 L41 38 Z" stroke="#6e5275" strokeWidth="2.5" strokeLinejoin="round" fill="#f5d1fb" fillOpacity="0.7"/>
+              </svg>
             </div>
 
-            {/* Decorative floating card — bottom left */}
-            <div className="hidden lg:block absolute bottom-10 left-10 rotate-6 transition-transform hover:rotate-0 duration-300">
-              <div className="bg-secondary-container scribble-border p-5 rounded-xl neo-shadow flex flex-col items-center gap-2">
-                <span className="text-4xl">🧠</span>
-                <span className="font-headline font-extrabold text-on-secondary-container uppercase tracking-widest text-xs">Think Deep!</span>
-              </div>
+            {/* Doodle — wavy scribble 1, just above and right of heading */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '4%', left: '58%', transform: 'rotate(4deg)' }}>
+              <svg width="130" height="22" viewBox="0 0 130 22" fill="none">
+                <path d="M4 14 C18 4 36 20 56 11 C76 2 98 18 126 8" stroke="#6e5275" strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.45"/>
+              </svg>
+            </div>
+
+            {/* Doodle — small teal star, right side next to the card */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '42%', right: '17%', transform: 'rotate(22deg)' }}>
+              <svg width="44" height="44" viewBox="0 0 52 52" fill="none">
+                <path d="M26 4 L28.5 22 L46 20 L32 28 L40 46 L26 36 L12 46 L20 28 L6 20 L23.5 22 Z" stroke="#2a646a" strokeWidth="2" strokeLinejoin="round" fill="#aee7ee" fillOpacity="0.65"/>
+              </svg>
+            </div>
+
+            {/* Doodle — wavy scribble 2, left side just beside the card */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '52%', left: '16%', transform: 'rotate(-10deg)' }}>
+              <svg width="100" height="22" viewBox="0 0 110 22" fill="none">
+                <path d="M4 14 C16 4 30 20 50 10 C70 2 90 18 106 9" stroke="#2a646a" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.45"/>
+              </svg>
+            </div>
+
+            {/* Doodle — curved arrow, left side pointing toward the card */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '63%', left: '20%', transform: 'rotate(-8deg)' }}>
+              <svg width="90" height="75" viewBox="0 0 100 90" fill="none">
+                <path d="M15 80 C10 40 50 10 85 20" stroke="#47624b" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M78 10 L88 22 L73 24" stroke="#47624b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            </div>
+
+            {/* Doodle — wavy scribble 3, below the card center-right */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ bottom: '10%', left: '52%', transform: 'rotate(-5deg)' }}>
+              <svg width="150" height="22" viewBox="0 0 160 22" fill="none">
+                <path d="M4 14 C22 4 42 20 70 10 C98 1 124 18 156 9" stroke="#47624b" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.4"/>
+              </svg>
+            </div>
+
+            {/* Doodle — plus cluster, top-right not corner */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '18%', right: '12%', transform: 'rotate(8deg)' }}>
+              <svg width="65" height="60" viewBox="0 0 80 70" fill="none">
+                <line x1="20" y1="10" x2="20" y2="30" stroke="#6e5275" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="10" y1="20" x2="30" y2="20" stroke="#6e5275" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="55" y1="42" x2="55" y2="54" stroke="#2a646a" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="49" y1="48" x2="61" y2="48" stroke="#2a646a" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="44" cy="12" r="3" fill="#47624b" fillOpacity="0.45"/>
+              </svg>
+            </div>
+
+            {/* Doodle — wavy scribble 4, top-right edge (short) */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ top: '30%', right: '5%', transform: 'rotate(15deg)' }}>
+              <svg width="80" height="20" viewBox="0 0 90 20" fill="none">
+                <path d="M4 14 C16 4 30 18 50 10 C66 3 78 16 86 9" stroke="#6e5275" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.4"/>
+              </svg>
+            </div>
+
+            {/* Doodle — dashed circle, bottom-left floating */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ bottom: '20%', left: '8%', transform: 'rotate(12deg)' }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="16" stroke="#2a646a" strokeWidth="2.5" strokeDasharray="5 4" opacity="0.5"/>
+              </svg>
+            </div>
+
+            {/* Doodle — small green star, bottom-right area */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ bottom: '15%', right: '22%', transform: 'rotate(30deg)' }}>
+              <svg width="34" height="34" viewBox="0 0 52 52" fill="none">
+                <path d="M26 4 L28.5 22 L46 20 L32 28 L40 46 L26 36 L12 46 L20 28 L6 20 L23.5 22 Z" stroke="#47624b" strokeWidth="2" strokeLinejoin="round" fill="#ddfcde" fillOpacity="0.7"/>
+              </svg>
+            </div>
+
+            {/* Doodle — wavy scribble 5, bottom-left corner short */}
+            <div className="hidden lg:block absolute select-none pointer-events-none doodle" style={{ bottom: '7%', left: '12%', transform: 'rotate(-8deg)' }}>
+              <svg width="90" height="20" viewBox="0 0 100 20" fill="none">
+                <path d="M4 14 C16 5 30 18 50 10 C68 3 84 16 96 9" stroke="#6e5275" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.35"/>
+              </svg>
             </div>
 
             {/* Login container */}
@@ -264,7 +552,7 @@
                   Learn it, don't memorize.
                 </h1>
                 <p className="text-lg font-medium opacity-80">
-                  Because understanding beats memorizing every time.
+                  Practice predicted O-Level questions with an AI tutor that guides your thinking.
                 </p>
               </div>
 
@@ -273,7 +561,7 @@
                 <h2 className="font-headline font-black text-xl text-[#110e06] mb-6">Start studying →</h2>
 
                 {error && (
-                  <div className="bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-on-error-container mb-4">
+                  <div className="error-banner bg-error-container scribble-border rounded-xl px-4 py-3 font-bold text-sm text-on-error-container mb-4">
                     {error}
                   </div>
                 )}
@@ -290,7 +578,7 @@
                       placeholder="e.g. Ahmad Rizal"
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      className="w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant transition-all focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)]"
+                      className="input-field w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant"
                     />
                   </div>
 
@@ -305,14 +593,14 @@
                       placeholder="you@example.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
-                      className="w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant transition-all focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)]"
+                      className="input-field w-full bg-surface-container-lowest scribble-border rounded-xl px-5 py-4 outline-none font-medium placeholder:text-outline-variant"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-tertiary-container scribble-border py-4 rounded-xl font-headline font-black text-xl text-on-tertiary-container neo-shadow neo-shadow-hover neo-shadow-active transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-full bg-tertiary-container scribble-border py-4 rounded-xl font-headline font-black text-xl text-on-tertiary-container neo-shadow neo-shadow-hover neo-shadow-active btn-transition flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
                   >
                     {loading ? 'Signing in…' : 'Get Started Learning'}
                     {!loading && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>}
@@ -330,7 +618,7 @@
                 </div>
               </div>
 
-              <p className="text-center font-bold text-on-primary-container opacity-90 text-sm italic fade-up" style={{ animationDelay: '160ms' }}>
+              <p className="text-center font-bold text-on-primary-container opacity-90 text-sm italic fade-up" style={{ animationDelay: '120ms' }}>
                 "The mind is not a vessel to be filled, but a fire to be kindled."
               </p>
             </div>
@@ -358,9 +646,25 @@
       if (loading) return (
         <>
           <Navbar page="home" />
-          <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">
-            Loading subjects…
-          </div>
+          <main className="bg-surface bg-dot-grid min-h-screen">
+            <div className="px-6 py-12 max-w-7xl mx-auto w-full">
+              <div className="mb-12">
+                <div className="skeleton h-5 w-24 mb-4" />
+                <div className="skeleton h-16 w-96 mb-3" />
+                <div className="skeleton h-6 w-80" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[0,1,2].map(i => (
+                  <div key={i} className="bg-surface-container scribble-border rounded-2xl p-8 flex flex-col gap-4">
+                    <div className="skeleton h-12 w-12 rounded-full mx-auto" />
+                    <div className="skeleton h-4 w-16 mx-auto" />
+                    <div className="skeleton h-7 w-32 mx-auto" />
+                    <div className="skeleton h-10 w-full mt-auto" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </main>
         </>
       );
 
@@ -376,7 +680,8 @@
       return (
         <>
           <Navbar page="home" />
-          <main className="bg-surface min-h-screen px-6 py-12 max-w-7xl mx-auto w-full">
+          <main className="bg-surface bg-dot-grid min-h-screen">
+          <div className="px-6 py-12 max-w-7xl mx-auto w-full">
             {/* Hero heading */}
             <div className="mb-12 fade-up">
               <div className="inline-block bg-primary-container scribble-border px-4 py-1 mb-4 rounded-full neo-shadow-sm">
@@ -398,23 +703,98 @@
               {subjects.map((s, idx) => (
                 <div
                   key={s.id}
-                  className={`${cardFills[idx % 3]} scribble-border rounded-2xl p-8 flex flex-col h-full neo-shadow neo-shadow-hover transition-all fade-up`}
+                  className={`${cardFills[idx % 3]} scribble-border rounded-2xl p-8 flex flex-col h-full neo-shadow neo-shadow-hover neo-shadow-active btn-transition fade-up cursor-pointer`}
                   style={{ animationDelay: `${idx * 80}ms` }}
+                  onClick={() => navigate('topics', { subject: s.id })}
                 >
                   <div className="text-5xl mb-4 text-center">{s.icon}</div>
                   <div className="font-body text-xs text-outline uppercase tracking-widest mb-1 text-center">{s.code}</div>
                   <h3 className="font-headline font-extrabold text-2xl mb-4 text-[#110e06] text-center">{s.name}</h3>
-                  <button
-                    className="mt-auto w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow-hover neo-shadow-active transition-all"
-                    onClick={() => navigate('topics', { subject: s.id })}
-                  >
+                  <div className="mt-auto w-full bg-primary text-on-primary scribble-border py-3 rounded-xl font-headline font-bold text-center neo-shadow">
                     Revise →
-                  </button>
+                  </div>
                 </div>
               ))}
             </div>
+          </div>
           </main>
         </>
+      );
+    }
+
+    /* ── Question card with animated probability bar ────────────────── */
+    function QuestionCard({ q, idx, cardFills, difficultyColors }) {
+      const barRef = React.useRef(null);
+      const [inView, setInView] = React.useState(false);
+
+      React.useEffect(() => {
+        const el = barRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+          ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect(); } },
+          { threshold: 0.5 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+      }, []);
+
+      return (
+        <div
+          className={`${cardFills[idx % cardFills.length]} scribble-border rounded-2xl p-6 flex flex-col h-full neo-shadow neo-shadow-hover neo-shadow-active btn-transition cursor-pointer fade-up`}
+          style={{ animationDelay: `${Math.min(idx * 45, 300)}ms` }}
+          onClick={() => navigate('question', { id: q.id })}
+        >
+          {/* Top row: difficulty + years */}
+          <div className="flex justify-between items-start mb-3">
+            <div className={`bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-headline font-black text-xs uppercase ${difficultyColors[q.difficulty] || ''}`}>
+              {q.difficulty}
+            </div>
+            <div className="flex gap-1 flex-wrap justify-end">
+              {(q.years_appeared || []).map(y => (
+                <span key={y} className="px-2 py-1 bg-[#110e06] text-white text-[10px] font-bold rounded">{y}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic tag */}
+          <span className="self-start bg-surface-variant scribble-border px-3 py-0.5 rounded-full text-[10px] font-bold text-on-surface-variant uppercase tracking-wide mb-4">
+            {q.topic_name}
+          </span>
+
+          {/* Question text */}
+          <h3 className="font-headline font-black text-xl leading-tight mb-4 text-[#110e06]">
+            {q.question_text.length > 140 ? q.question_text.slice(0, 140) + '…' : q.question_text}
+          </h3>
+
+          {/* Probability bar */}
+          <div className="mt-auto pt-6 border-t-2 border-[#110e06]/10">
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-sm font-bold uppercase tracking-tight text-on-surface-variant">Predicted Probability</span>
+              <span className="text-lg font-headline font-black italic text-[#110e06]">
+                {parseFloat(q.predicted_score).toFixed(0)}%
+              </span>
+            </div>
+            <div ref={barRef} className="h-4 bg-surface-variant scribble-border rounded-full overflow-hidden">
+              <div
+                className="h-full bg-secondary"
+                style={{
+                  width: inView ? `${q.predicted_score}%` : '0%',
+                  transition: inView ? 'width 700ms cubic-bezier(0.23, 1, 0.32, 1)' : 'none',
+                }}
+              />
+            </div>
+            <div className="mt-3 flex gap-2 items-center">
+              <span className="bg-surface-container-lowest scribble-border px-2 py-0.5 rounded font-bold text-xs text-on-surface">
+                {q.marks} mark{q.marks !== 1 ? 's' : ''}
+              </span>
+              {q.part_count > 1 && (
+                <span className="bg-primary-container scribble-border px-3 py-1 rounded-lg font-bold text-xs">
+                  {q.part_count} parts
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       );
     }
 
@@ -462,7 +842,42 @@
   if (loading) return (
     <>
       <Navbar page="topics" />
-      <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">Loading…</div>
+      <main className="bg-surface bg-dot-grid min-h-screen">
+        <div className="px-6 py-6 max-w-7xl mx-auto w-full">
+          <div className="skeleton h-9 w-36 mb-4 rounded-xl" />
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <div className="skeleton h-4 w-20 mb-2" />
+              <div className="skeleton h-10 w-72 mb-1" />
+              <div className="skeleton h-4 w-48" />
+            </div>
+          </div>
+          <div className="flex gap-3 mb-6">
+            {[80,120,100,130,110].map((w,i) => <div key={i} className="skeleton h-10 rounded-xl" style={{ width: w }} />)}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[0,1,2,3,4,5].map(i => (
+              <div key={i} className="bg-surface-container scribble-border rounded-2xl p-6 flex flex-col gap-3" style={{ minHeight: 260 }}>
+                <div className="flex justify-between">
+                  <div className="skeleton h-6 w-16 rounded-lg" />
+                  <div className="flex gap-1">{[0,1,2].map(j => <div key={j} className="skeleton h-5 w-10 rounded" />)}</div>
+                </div>
+                <div className="skeleton h-5 w-28 rounded-full" />
+                <div className="skeleton h-5 w-full" />
+                <div className="skeleton h-5 w-5/6" />
+                <div className="skeleton h-5 w-4/6" />
+                <div className="mt-auto pt-4 border-t-2 border-[#110e06]/10">
+                  <div className="flex justify-between mb-2">
+                    <div className="skeleton h-4 w-36" />
+                    <div className="skeleton h-4 w-10" />
+                  </div>
+                  <div className="skeleton h-4 w-full rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     </>
   );
 
@@ -478,38 +893,42 @@
   return (
     <>
       <Navbar page="topics" />
-      <main className="bg-surface min-h-screen px-6 py-12 max-w-7xl mx-auto w-full">
+      <main className="bg-surface bg-dot-grid min-h-screen">
+      <div className="px-6 py-6 max-w-7xl mx-auto w-full">
         {/* Back button */}
         <button
-          className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm mb-8 neo-shadow-hover neo-shadow-active transition-all"
+          className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm mb-4 neo-shadow-hover neo-shadow-active btn-transition"
           onClick={() => navigate('home')}
         >
-          ← Back to subjects
+          ← Back to Home
         </button>
 
         {/* Hero heading */}
-        <div className="mb-10 relative">
-          <div className="inline-block bg-primary-container scribble-border px-4 py-1 mb-4 rounded-full neo-shadow-sm">
-            <span className="text-xs font-headline font-black uppercase tracking-widest text-on-primary-container">Exam Pulse</span>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <div className="inline-block bg-primary-container scribble-border px-3 py-0.5 mb-2 rounded-full neo-shadow-sm">
+              <span className="text-xs font-headline font-black uppercase tracking-widest text-on-primary-container">
+                {allQuestions[0]?.subject_name || 'Exam Pulse'}
+              </span>
+            </div>
+            <h1 className="font-headline font-black text-4xl md:text-5xl tracking-tighter leading-none mb-1 text-[#110e06]">
+              Predicted <span className="text-primary italic">Questions.</span>
+            </h1>
+            <p className="text-sm font-medium text-on-surface-variant">
+              Ranked by frequency, recency &amp; mark weight.
+            </p>
           </div>
-          <h1 className="font-headline font-black text-6xl md:text-8xl tracking-tighter leading-none mb-4 text-[#110e06]">
-            Predicted <br />
-            <span className="text-primary italic">Questions.</span>
-          </h1>
-          <p className="text-xl font-medium text-on-surface-variant max-w-2xl">
-            Ranked by frequency, recency &amp; mark weight.
-          </p>
-          {/* Decorative circle */}
-          <div className="absolute top-0 right-0 hidden lg:flex w-40 h-40 bg-secondary-container scribble-border rounded-full items-center justify-center -rotate-12 neo-shadow">
-            <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+          {/* Decorative circle — now inline rather than absolute */}
+          <div className="hidden lg:flex w-20 h-20 bg-secondary-container scribble-border rounded-full items-center justify-center -rotate-12 neo-shadow flex-shrink-0">
+            <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
           </div>
         </div>
 
         {/* Topic filter chips */}
-        <div className="flex flex-wrap gap-3 mb-10 overflow-x-auto pb-2">
+        <div className="flex flex-wrap gap-3 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveTopicId(null)}
-            className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base transition-all neo-shadow-active
+            className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base chip-transition neo-shadow-active
               ${activeTopicId === null
                 ? 'bg-secondary-container text-on-secondary-container neo-shadow'
                 : 'bg-surface text-on-surface hover:bg-surface-container hover:translate-x-[2px] hover:translate-y-[2px]'
@@ -521,7 +940,7 @@
             <button
               key={t.id}
               onClick={() => setActiveTopicId(activeTopicId === t.id ? null : t.id)}
-              className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base transition-all neo-shadow-active
+              className={`px-6 py-2 scribble-border rounded-xl font-headline font-bold text-base chip-transition neo-shadow-active
                 ${activeTopicId === t.id
                   ? 'bg-secondary-container text-on-secondary-container neo-shadow'
                   : 'bg-surface text-on-surface hover:bg-surface-container hover:translate-x-[2px] hover:translate-y-[2px]'
@@ -534,64 +953,25 @@
 
         {/* Questions grid */}
         {questions.length === 0 ? (
-          <div className="text-center py-16 font-body text-on-surface-variant font-bold">No questions yet.</div>
+          <div className="text-center py-20 flex flex-col items-center gap-3">
+            <span className="material-symbols-outlined text-6xl text-outline-variant" style={{ fontVariationSettings: "'FILL' 1, 'opsz' 48" }}>quiz</span>
+            <p className="font-headline font-black text-xl text-on-surface-variant">No questions here yet</p>
+            <p className="text-sm text-outline max-w-xs">Try selecting a different topic above, or check back once questions have been added.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {questions.map((q, idx) => (
-              <div
+              <QuestionCard
                 key={q.id}
-                className={`${cardFills[idx % cardFills.length]} scribble-border rounded-2xl p-6 flex flex-col h-full neo-shadow-hover transition-all cursor-pointer fade-up`}
-                style={{ animationDelay: `${idx * 45}ms` }}
-                onClick={() => navigate('question', { id: q.id })}
-              >
-                {/* Top row: difficulty + years */}
-                <div className="flex justify-between items-start mb-3">
-                  <div className={`bg-surface-container-lowest scribble-border px-3 py-1 rounded-lg font-headline font-black text-xs uppercase ${difficultyColors[q.difficulty] || ''}`}>
-                    {q.difficulty}
-                  </div>
-                  <div className="flex gap-1 flex-wrap justify-end">
-                    {(q.years_appeared || []).map(y => (
-                      <span key={y} className="px-2 py-1 bg-[#110e06] text-white text-[10px] font-bold rounded">{y}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Topic tag */}
-                <span className="self-start bg-surface-variant scribble-border px-3 py-0.5 rounded-full text-[10px] font-bold text-on-surface-variant uppercase tracking-wide mb-4">
-                  {q.topic_name}
-                </span>
-
-                {/* Question text */}
-                <h3 className="font-headline font-black text-xl leading-tight mb-4 text-[#110e06]">
-                  {q.question_text.length > 140 ? q.question_text.slice(0, 140) + '…' : q.question_text}
-                </h3>
-
-                {/* Probability bar */}
-                <div className="mt-auto pt-6 border-t-2 border-[#110e06]/10">
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-sm font-bold uppercase tracking-tight text-on-surface-variant">Predicted Probability</span>
-                    <span className="text-lg font-headline font-black italic text-[#110e06]">
-                      {parseFloat(q.predicted_score).toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="h-4 bg-surface-variant scribble-border rounded-full overflow-hidden">
-                    <div className="h-full bg-secondary transition-all" style={{ width: `${q.predicted_score}%` }} />
-                  </div>
-                  <div className="mt-3 flex gap-2 items-center">
-                    <span className="bg-surface-container-lowest scribble-border px-2 py-0.5 rounded font-bold text-xs text-on-surface">
-                      {q.marks} mark{q.marks !== 1 ? 's' : ''}
-                    </span>
-                    {q.part_count > 1 && (
-                      <span className="bg-primary-container scribble-border px-3 py-1 rounded-lg font-bold text-xs">
-                        {q.part_count} parts
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
+                q={q}
+                idx={idx}
+                cardFills={cardFills}
+                difficultyColors={difficultyColors}
+              />
             ))}
           </div>
         )}
+      </div>
       </main>
     </>
   );
@@ -600,22 +980,47 @@
     /* ── Question room ──────────────────────────────────────────────── */
     function QuestionPage({ params }) {
   const questionId = parseInt(params.id, 10);
+  const [panelVisible, setPanelVisible] = React.useState(true);
 
-  const [question,   setQuestion]   = React.useState(null);
-  const [messages,   setMessages]   = React.useState([]);
-  const [input,      setInput]      = React.useState('');
-  const [sending,    setSending]    = React.useState(false);
-  const [attemptId,  setAttemptId]  = React.useState(null);
-  const [sessionId,  setSessionId]  = React.useState(null);
-  const [loading,    setLoading]    = React.useState(true);
-  const [error,      setError]      = React.useState('');
-  const [showModal,  setShowModal]  = React.useState(false);
-  const [confidence, setConfidence] = React.useState(0);
-  const [submitting, setSubmitting] = React.useState(false);
-  const [showAnswer, setShowAnswer] = React.useState(false);
+  // Briefly fade the left panel when switching between sibling parts
+  React.useEffect(() => {
+    setPanelVisible(false);
+    const t = setTimeout(() => setPanelVisible(true), 120);
+    return () => clearTimeout(t);
+  }, [questionId]);
+
+  const [question,     setQuestion]     = React.useState(null);
+  const [messages,     setMessages]     = React.useState([]);
+  const [input,        setInput]        = React.useState('');
+  const [sending,      setSending]      = React.useState(false);
+  const [attemptId,    setAttemptId]    = React.useState(null);
+  const [sessionId,    setSessionId]    = React.useState(null);
+  const [loading,      setLoading]      = React.useState(true);
+  const [error,        setError]        = React.useState('');
+  const [showModal,    setShowModal]    = React.useState(false);
+  const [confidence,   setConfidence]   = React.useState(0);
+  const [submitting,   setSubmitting]   = React.useState(false);
+  const [showAnswer,   setShowAnswer]   = React.useState(false);
   const [hintsRevealed, setHintsRevealed] = React.useState(0);
+  const [activePanel,  setActivePanel]  = React.useState('question'); // mobile: 'question' | 'chat'
 
   const messagesEndRef = React.useRef(null);
+  const hintTimerRef   = React.useRef(null);
+  const [hintWiggling, setHintWiggling] = React.useState(false);
+
+  const scheduleHintWiggle = () => {
+    clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = setTimeout(() => {
+      setHintWiggling(true);
+      setTimeout(() => { setHintWiggling(false); scheduleHintWiggle(); }, 700);
+    }, 10000);
+  };
+
+  // Start idle timer once question is loaded
+  React.useEffect(() => {
+    if (question) scheduleHintWiggle();
+    return () => clearTimeout(hintTimerRef.current);
+  }, [question]);
 
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -639,6 +1044,8 @@
     const msg = text || input.trim();
     if (!msg || sending) return false;
     setInput('');
+    setActivePanel('chat'); // ensure chat is visible on mobile after sending
+    scheduleHintWiggle(); // reset idle timer on every send
     setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'thinking' }]);
     setSending(true);
     try {
@@ -669,7 +1076,34 @@
   if (loading) return (
     <>
       <Navbar page="question" />
-      <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">Preparing your question…</div>
+      <div className="question-panels">
+        <section className="question-panel-left w-1/2 bg-surface bg-dot-grid border-r-2 border-[#110e06] p-6 md:p-8 flex flex-col gap-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="skeleton h-9 w-20 rounded-xl" />
+            <div className="skeleton h-7 w-28 rounded-full" />
+            <div className="skeleton h-9 w-24 rounded-xl" />
+          </div>
+          <div className="skeleton h-4 w-48" />
+          <div className="bg-surface-container-lowest scribble-border rounded-2xl p-6 flex flex-col gap-3">
+            <div className="flex gap-2"><div className="skeleton h-6 w-16 rounded-lg" /><div className="skeleton h-6 w-20 rounded-lg" /></div>
+            <div className="skeleton h-5 w-full" />
+            <div className="skeleton h-5 w-full" />
+            <div className="skeleton h-5 w-3/4" />
+          </div>
+        </section>
+        <section className="question-panel-right w-1/2 bg-surface-container-low flex flex-col">
+          <div className="bg-surface border-b-2 border-[#110e06] flex items-center gap-3 px-5 py-3">
+            <div className="skeleton w-10 h-10 rounded-full" />
+            <div className="flex flex-col gap-1"><div className="skeleton h-4 w-28" /><div className="skeleton h-3 w-20" /></div>
+          </div>
+          <div className="flex-grow p-5 flex flex-col gap-4">
+            <div className="skeleton h-16 w-4/5 rounded-2xl" />
+          </div>
+          <div className="bg-surface border-t-2 border-[#110e06] p-4">
+            <div className="skeleton h-14 w-full rounded-xl" />
+          </div>
+        </section>
+      </div>
     </>
   );
 
@@ -685,23 +1119,43 @@
   return (
     <>
       <Navbar page="question" />
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
+
+      {/* ── Mobile panel switcher — hidden on md+ ─────────── */}
+      <div className="md:hidden flex bg-surface border-b-2 border-[#110e06] sticky top-[65px] z-40">
+        <button
+          onClick={() => setActivePanel('question')}
+          className={`flex-1 py-3 font-headline font-bold text-sm chip-transition ${activePanel === 'question' ? 'panel-tab-active' : 'panel-tab-inactive'}`}
+        >
+          Question
+        </button>
+        <button
+          onClick={() => { setActivePanel('chat'); }}
+          className={`flex-1 py-3 font-headline font-bold text-sm chip-transition ${activePanel === 'chat' ? 'panel-tab-active' : 'panel-tab-inactive'}`}
+        >
+          AI Tutor
+        </button>
+      </div>
+
+      <div className="question-panels">
 
         {/* ── Left: Question Panel ───────────────────────────── */}
-        <section className="w-1/2 bg-surface border-r-2 border-[#110e06] flex flex-col overflow-y-auto p-8">
+        <section
+          className={`question-panel-left w-1/2 bg-surface bg-dot-grid border-r-2 border-[#110e06] flex-col overflow-y-auto p-5 md:p-8 ${activePanel === 'question' ? 'flex' : 'hidden'} md:flex`}
+          style={{ opacity: panelVisible ? 1 : 0, transition: 'opacity 120ms ease-out' }}
+        >
           {/* Top row: back + active lesson badge + done */}
           <div className="flex justify-between items-center mb-4">
             <button
-              className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm neo-shadow-hover neo-shadow-active transition-all"
+              className="bg-surface-container scribble-border px-4 py-2 rounded-xl font-bold text-sm neo-shadow-hover neo-shadow-active btn-transition"
               onClick={() => navigate('topics', { subject: question.subject_id })}
             >
-              ← Back
+              ← Back to Topics
             </button>
-            <span className="bg-primary-container scribble-border px-3 py-1 rounded-full font-headline font-black text-xs uppercase tracking-widest text-on-primary-container">
+            <span className="lesson-pulse bg-primary-container scribble-border px-3 py-1 rounded-full font-headline font-black text-xs uppercase tracking-widest text-on-primary-container">
               Active Lesson
             </span>
             <button
-              className="bg-secondary-container scribble-border px-4 py-2 rounded-xl font-headline font-bold text-sm neo-shadow neo-shadow-hover neo-shadow-active transition-all"
+              className="bg-secondary-container scribble-border px-4 py-2 rounded-xl font-headline font-bold text-sm neo-shadow neo-shadow-hover neo-shadow-active btn-transition"
               onClick={handleDone}
             >
               I'm Done ✓
@@ -734,7 +1188,8 @@
           {question.siblings?.length > 0 && (
             <div className="flex items-center gap-3 mb-3">
               <button
-                className="font-bold text-lg px-1 disabled:opacity-30"
+                aria-label="Previous part"
+                className="sibling-nav-btn w-8 h-8 bg-surface-container scribble-border rounded-lg flex items-center justify-center font-bold text-base neo-shadow-hover btn-transition disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
                 disabled={question.siblings[0].id === question.id}
                 onClick={() => {
                   const idx = question.siblings.findIndex(s => s.id === question.id);
@@ -747,7 +1202,7 @@
                   <button
                     key={s.id}
                     onClick={() => navigate('question', { id: s.id })}
-                    className={`px-4 py-1 rounded-lg font-headline font-black text-sm scribble-border transition-all ${
+                    className={`px-4 py-1 rounded-lg font-headline font-black text-sm scribble-border btn-transition ${
                       s.id === question.id
                         ? 'bg-primary text-on-primary neo-shadow'
                         : 'bg-surface-container text-on-surface neo-shadow-hover'
@@ -760,7 +1215,8 @@
               </div>
 
               <button
-                className="font-bold text-lg px-1 disabled:opacity-30"
+                aria-label="Next part"
+                className="sibling-nav-btn w-8 h-8 bg-surface-container scribble-border rounded-lg flex items-center justify-center font-bold text-base neo-shadow-hover btn-transition disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
                 disabled={question.siblings[question.siblings.length - 1].id === question.id}
                 onClick={() => {
                   const idx = question.siblings.findIndex(s => s.id === question.id);
@@ -818,7 +1274,7 @@
               <p className="text-xs font-bold text-outline uppercase tracking-widest mb-2">Hints</p>
               <div className="flex flex-col gap-2">
                 {question.hint_stages.slice(0, hintsRevealed).map((hint, i) => (
-                  <span key={i} className="bg-surface-container scribble-border px-4 py-2 rounded-xl text-sm font-bold text-on-surface">
+                  <span key={i} className="hint-item bg-surface-container scribble-border px-4 py-2 rounded-xl text-sm font-bold text-on-surface" style={{ animationDelay: `${i * 30}ms` }}>
                     {i + 1}. {hint}
                   </span>
                 ))}
@@ -828,7 +1284,7 @@
 
           {/* Answer reveal */}
           {showAnswer && question.answer && (
-            <div className="bg-tertiary-container scribble-border rounded-2xl p-6 neo-shadow mb-4">
+            <div className="answer-reveal bg-tertiary-container scribble-border rounded-2xl p-6 neo-shadow mb-4">
               <p className="text-xs font-headline font-black uppercase tracking-widest text-tertiary mb-3">✅ Model Answer</p>
               <p className="text-base leading-relaxed text-on-tertiary-container">{question.answer}</p>
             </div>
@@ -836,7 +1292,7 @@
 
           {showAnswer && (
             <button
-              className="w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active transition-all"
+              className="w-full bg-inverse-surface text-surface scribble-border py-3 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active btn-transition"
               onClick={() => navigate('topics', { subject: question.subject_id })}
             >
               ← Back to Topics
@@ -845,7 +1301,7 @@
         </section>
 
         {/* ── Right: Chat Panel ─────────────────────────────── */}
-        <section className="w-1/2 bg-surface-container-low flex flex-col">
+        <section className={`question-panel-right w-1/2 bg-surface-container-low flex-col ${activePanel === 'chat' ? 'flex' : 'hidden'} md:flex`}>
           {/* Chat header */}
           <div className="bg-surface border-b-2 border-[#110e06] flex items-center justify-between px-5 py-3">
             <div className="flex items-center gap-3">
@@ -861,8 +1317,9 @@
               </div>
             </div>
             <button
-              className="bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className={`bg-tertiary-container scribble-border px-3 py-1 rounded-lg font-bold text-sm neo-shadow-hover neo-shadow-active btn-transition disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none ${hintWiggling && !sending && hintsRevealed < (question.hint_stages || []).length ? 'hint-wiggle' : ''}`}
               onClick={async () => {
+                setHintWiggling(false);
                 const stages = question.hint_stages || [];
                 const ok = await sendMessage('Can I have a hint?');
                 if (ok && hintsRevealed < stages.length) setHintsRevealed(h => h + 1);
@@ -884,22 +1341,24 @@
             )}
             {messages.map((m, i) => {
               if (m.role === 'thinking') return (
-                <div key={i} className="flex gap-1 ml-2">
-                  {[0, 0.2, 0.4].map((delay, di) => (
-                    <div key={di} className="w-2 h-2 bg-outline rounded-full dot-bounce" style={{ animationDelay: `${delay}s` }} />
-                  ))}
+                <div key={i} className="flex flex-col items-start">
+                  <div className="bg-surface-container-highest scribble-border rounded-2xl px-4 py-3 neo-shadow flex items-center gap-2">
+                    {[0, 0.23, 0.46].map((delay, di) => (
+                      <div key={di} className="dot-fade bg-outline" style={{ animationDelay: `${delay}s` }} />
+                    ))}
+                  </div>
                 </div>
               );
               if (m.role === 'user') return (
                 <div key={i} className="flex flex-col items-end">
-                  <div className="bg-secondary-container scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] self-end fade-up">
+                  <div className="bg-secondary-container scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] self-end chat-msg-enter">
                     <p className="font-medium text-on-secondary-container">{m.content}</p>
                   </div>
                 </div>
               );
               return (
                 <div key={i} className="flex flex-col items-start">
-                  <div className="bg-surface-container-highest scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] fade-up">
+                  <div className="bg-surface-container-highest scribble-border rounded-2xl p-4 neo-shadow max-w-[85%] chat-msg-enter">
                     <p className="font-medium text-on-surface" dangerouslySetInnerHTML={renderMarkdown(m.content)} />
                   </div>
                 </div>
@@ -912,15 +1371,21 @@
           <div className="bg-surface border-t-2 border-[#110e06] p-4">
             <div className="flex gap-3">
               <textarea
-                className="flex-grow bg-surface-container-lowest scribble-border rounded-xl p-4 font-medium resize-none outline-none h-[58px] focus:shadow-[0_0_0_3px_rgba(110,82,117,0.2)] transition-all placeholder:text-outline-variant"
+                className="input-field flex-grow bg-surface-container-lowest scribble-border rounded-xl p-4 font-medium resize-none outline-none placeholder:text-outline-variant"
                 placeholder="Type your answer here…"
                 rows={1}
                 value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                style={{ minHeight: '58px', maxHeight: '160px', overflowY: 'auto' }}
+                onChange={e => {
+                  setInput(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px';
+                }}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); e.target.style.height = '58px'; } }}
               />
               <button
-                className="bg-primary scribble-border rounded-xl p-4 neo-shadow neo-shadow-hover neo-shadow-active transition-all flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Send message"
+                className="bg-primary scribble-border rounded-xl p-4 neo-shadow neo-shadow-hover neo-shadow-active btn-transition flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
                 onClick={() => sendMessage()}
                 disabled={sending || !input.trim()}
               >
@@ -937,7 +1402,7 @@
       {/* ── Confidence modal ──────────────────────────────── */}
       {showModal && (
         <div
-          className="fixed inset-0 z-50 bg-[#110e06]/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="modal-backdrop fixed inset-0 z-50 bg-[#110e06]/40 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}
         >
           <div className="bg-surface scribble-border rounded-[2rem] p-8 neo-shadow max-w-sm w-full text-center fade-up">
@@ -948,7 +1413,7 @@
                 <button
                   key={n}
                   onClick={() => setConfidence(n)}
-                  className={`text-3xl transition-all ${confidence >= n ? 'scale-125' : 'opacity-30 grayscale'}`}
+                  className={`text-3xl [transition:transform_120ms_ease-out,opacity_120ms_ease-out] ${confidence >= n ? 'scale-125' : 'opacity-30 grayscale'}`}
                 >
                   ⭐
                 </button>
@@ -956,13 +1421,13 @@
             </div>
             <div className="flex gap-3 justify-center">
               <button
-                className="bg-surface-container scribble-border px-5 py-2 rounded-xl font-bold neo-shadow-hover neo-shadow-active transition-all"
+                className="bg-surface-container scribble-border px-5 py-2 rounded-xl font-bold neo-shadow-hover neo-shadow-active btn-transition"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-tertiary-container scribble-border px-5 py-2 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="bg-tertiary-container scribble-border px-5 py-2 rounded-xl font-headline font-bold neo-shadow neo-shadow-hover neo-shadow-active btn-transition disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
                 disabled={!confidence || submitting}
                 onClick={handleDone}
               >
@@ -976,12 +1441,43 @@
   );
 }
 
+    /* ── Count-up hook ──────────────────────────────────────────────── */
+    function useCountUp(target, duration = 900) {
+      const [value, setValue] = React.useState(0);
+      React.useEffect(() => {
+        if (target == null || isNaN(Number(target))) { setValue(target); return; }
+        const end = parseFloat(target);
+        const startTime = performance.now();
+        const tick = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // ease-out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setValue(Number.isInteger(end) ? Math.round(eased * end) : (eased * end).toFixed(1));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }, [target]);
+      return value;
+    }
+
+    function StatCard({ fill, label, value, delay }) {
+      const animated = useCountUp(value);
+      return (
+        <div className={`${fill} scribble-border rounded-xl p-6 neo-shadow fade-up`} style={{ animationDelay: `${delay}ms` }}>
+          <p className="text-xs font-headline font-black uppercase tracking-widest text-on-surface-variant mb-2">{label}</p>
+          <p className="font-headline font-black text-5xl tracking-tight text-[#110e06]">{animated}</p>
+        </div>
+      );
+    }
+
     /* ── Dashboard ──────────────────────────────────────────────────── */
     function DashboardPage() {
   const student = getStudent();
-  const [data,    setData]    = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-  const [error,   setError]   = React.useState('');
+  const [data,        setData]        = React.useState(null);
+  const [loading,     setLoading]     = React.useState(true);
+  const [error,       setError]       = React.useState('');
+  const [progressPct, setProgressPct] = React.useState(0);
   const chartRef      = React.useRef(null);
   const chartInstance = React.useRef(null);
 
@@ -1003,14 +1499,15 @@
         datasets: [{
           label: 'Attempts',
           data: data.attempts_by_subject.map(s => s.count),
-          backgroundColor: ['#6e5275', '#2a646a', '#47624b'],
-          borderColor:     ['#110e06', '#110e06', '#110e06'],
+          backgroundColor: data.attempts_by_subject.map((_, i) => ['#6e5275', '#2a646a', '#47624b'][i % 3]),
+          borderColor:     data.attempts_by_subject.map(() => '#110e06'),
           borderWidth: 2,
           borderRadius: 0,
         }],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
           y: {
@@ -1030,10 +1527,34 @@
     return () => chartInstance.current?.destroy();
   }, [data]);
 
+  // Animate progress bar after first paint with data
+  React.useEffect(() => {
+    if (!data) return;
+    const pct = data.total_attempts > 0 ? Math.round((data.completed_attempts / data.total_attempts) * 100) : 0;
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(() => setProgressPct(pct));
+      return () => cancelAnimationFrame(raf2);
+    });
+    return () => cancelAnimationFrame(raf1);
+  }, [data]);
+
   if (loading) return (
     <>
       <Navbar page="dashboard" />
-      <div className="flex items-center justify-center min-h-[60vh] font-body text-on-surface-variant font-bold">Loading dashboard…</div>
+      <main className="bg-surface bg-dot-grid min-h-screen font-body text-on-surface">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 w-full flex flex-col gap-6">
+          <div className="skeleton h-10 w-64" />
+          <div className="skeleton h-28 w-full rounded-xl" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[0,1,2].map(i => <div key={i} className="skeleton h-32 rounded-xl" />)}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="md:col-span-7 skeleton h-64 rounded-xl" />
+            <div className="md:col-span-5 skeleton h-64 rounded-xl" />
+            <div className="md:col-span-12 skeleton h-48 rounded-xl" />
+          </div>
+        </div>
+      </main>
     </>
   );
 
@@ -1059,7 +1580,7 @@
   return (
     <>
       <Navbar page="dashboard" />
-      <main className="bg-[#d2faff] min-h-screen font-body text-on-surface">
+      <main className="bg-surface bg-dot-grid min-h-screen font-body text-on-surface">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 w-full">
 
           {/* Header */}
@@ -1081,26 +1602,23 @@
                   {data.completed_attempts} of {data.total_attempts} question{data.total_attempts !== 1 ? 's' : ''} completed
                 </p>
               </div>
-              <span className="material-symbols-outlined text-5xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
-            </div>
-            <div className="h-8 w-full bg-surface-container-lowest scribble-border rounded-full overflow-hidden relative">
-              <div
-                className="h-full bg-secondary border-r-2 border-[#110e06] transition-all"
-                style={{ width: `${data.total_attempts > 0 ? Math.round((data.completed_attempts / data.total_attempts) * 100) : 0}%` }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center text-xs font-headline font-black">
-                {data.total_attempts > 0 ? Math.round((data.completed_attempts / data.total_attempts) * 100) : 0}% complete
+              <div className="flex items-center gap-3">
+                <span className="font-headline font-black text-4xl text-[#110e06] tabular-nums">{progressPct}%</span>
+                <span className="material-symbols-outlined text-5xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
               </div>
+            </div>
+            <div className="h-8 w-full bg-surface-container-lowest scribble-border rounded-full overflow-hidden">
+              <div
+                className="h-full bg-secondary"
+                style={{ width: `${progressPct}%`, transition: 'width 800ms cubic-bezier(0.23, 1, 0.32, 1)' }}
+              />
             </div>
           </div>
 
           {/* Stat cards row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {statCards.map((s, i) => (
-              <div key={i} className={`${s.fill} scribble-border rounded-xl p-6 neo-shadow fade-up`} style={{ animationDelay: `${i * 80}ms` }}>
-                <p className="text-xs font-headline font-black uppercase tracking-widest text-on-surface-variant mb-2">{s.label}</p>
-                <p className="font-headline font-black text-5xl tracking-tight text-[#110e06]">{s.value}</p>
-              </div>
+              <StatCard key={i} fill={s.fill} label={s.label} value={s.value} delay={i * 80} />
             ))}
           </div>
 
@@ -1108,26 +1626,28 @@
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
             {/* Chart card */}
-            <div className="md:col-span-7 bg-secondary-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '240ms' }}>
+            <div className="md:col-span-7 bg-secondary-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '80ms' }}>
               <div className="flex items-center gap-2 mb-5">
                 <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>bar_chart</span>
                 <h3 className="font-headline font-black text-xl text-[#110e06]">Attempts by Subject</h3>
               </div>
               {data.attempts_by_subject.length === 0 ? (
-                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No attempts yet. Start revising!</div>
+                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No attempts yet — start revising!</div>
               ) : (
-                <canvas ref={chartRef} />
+                <div className="relative" style={{ height: '240px' }}>
+                  <canvas ref={chartRef} />
+                </div>
               )}
             </div>
 
             {/* Weak topics card */}
-            <div className="md:col-span-5 bg-surface scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '320ms' }}>
+            <div className="md:col-span-5 bg-surface scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '130ms' }}>
               <div className="flex items-center gap-2 mb-5">
                 <span className="material-symbols-outlined text-error" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
                 <h3 className="font-headline font-black text-xl text-[#110e06]">Topics Needing Work</h3>
               </div>
               {data.weak_topics.length === 0 ? (
-                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No hint data yet — great going!</div>
+                <div className="text-center py-8 font-body text-on-surface-variant font-bold">No weak areas identified yet — keep it up!</div>
               ) : (
                 <div className="flex flex-col divide-y-2 divide-[#110e06]/10">
                   {data.weak_topics.map((t, i) => (
@@ -1143,13 +1663,17 @@
             </div>
 
             {/* Recent attempts table */}
-            <div className="md:col-span-12 bg-surface-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '400ms' }}>
+            <div className="md:col-span-12 bg-surface-container scribble-border rounded-xl p-6 neo-shadow fade-up" style={{ animationDelay: '180ms' }}>
               <div className="flex items-center gap-2 mb-5">
                 <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>history</span>
                 <h3 className="font-headline font-black text-xl text-[#110e06]">Recent Attempts</h3>
               </div>
               {data.recent_attempts.length === 0 ? (
-                <div className="text-center py-8 font-body text-on-surface-variant font-bold">Complete a question to see your history here.</div>
+                <div className="text-center py-8 flex flex-col items-center gap-2">
+                  <span className="material-symbols-outlined text-5xl text-outline-variant" style={{ fontVariationSettings: "'FILL' 1, 'opsz' 48" }}>history_edu</span>
+                  <p className="font-body text-on-surface-variant font-bold">No attempts yet</p>
+                  <p className="text-sm text-outline">Complete a question to see your history here.</p>
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -1163,15 +1687,15 @@
                     </thead>
                     <tbody>
                       {data.recent_attempts.map((a, i) => (
-                        <tr key={i} className="border-t-2 border-[#110e06]/10">
+                        <tr key={i} className="attempts-row border-t-2 border-[#110e06]/10">
                           <td className="px-4 py-3 max-w-xs font-medium">
                             {a.question_text.length > 80 ? a.question_text.slice(0, 80) + '…' : a.question_text}
                           </td>
                           <td className="px-4 py-3 font-bold text-on-surface-variant">{a.subject_name}</td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-3" aria-label={a.self_rated_confidence ? `${a.self_rated_confidence} out of 5` : 'Not rated'}>
                             {a.self_rated_confidence ? '⭐'.repeat(a.self_rated_confidence) : '—'}
                           </td>
-                          <td className="px-4 py-3 font-mono text-xs text-outline">
+                          <td className="px-4 py-3 text-xs text-outline">
                             {new Date(a.completed_at).toLocaleDateString()}
                           </td>
                         </tr>
@@ -1191,10 +1715,26 @@
 
     /* ── App router ─────────────────────────────────────────────────── */
     function App() {
-      const [route, setRoute] = useState(parseHash());
+      const [route,   setRoute]   = useState(parseHash());
+      const [visible, setVisible] = useState(true);
+      const routeRef = React.useRef(route);
+      routeRef.current = route;
 
       useEffect(() => {
-        const onHash = () => setRoute(parseHash());
+        const onHash = () => {
+          const newRoute = parseHash();
+          const samePageType = newRoute.page === routeRef.current.page;
+          if (samePageType) {
+            // Same page (e.g. question → question): update instantly, no fade
+            setRoute(newRoute);
+          } else {
+            setVisible(false);
+            setTimeout(() => {
+              setRoute(newRoute);
+              setVisible(true);
+            }, 150);
+          }
+        };
         window.addEventListener('hashchange', onHash);
         return () => window.removeEventListener('hashchange', onHash);
       }, []);
@@ -1205,14 +1745,19 @@
       if (!token && page !== 'login') { setTimeout(() => navigate('login'), 0); return null; }
       if (token  && page === 'login') { setTimeout(() => navigate('home'),  0); return null; }
 
-      if (page === 'login')     return <LoginPage />;
-      if (page === 'home')      return <HomePage />;
-      if (page === 'topics')    return <TopicsPage params={params} />;
-      if (page === 'question')  return <QuestionPage params={params} />;
-      if (page === 'dashboard') return <DashboardPage />;
+      let content = null;
+      if (page === 'login')     content = <LoginPage />;
+      else if (page === 'home')      content = <HomePage />;
+      else if (page === 'topics')    content = <TopicsPage params={params} />;
+      else if (page === 'question')  content = <QuestionPage params={params} />;
+      else if (page === 'dashboard') content = <DashboardPage />;
+      else { setTimeout(() => navigate('home'), 0); return null; }
 
-      setTimeout(() => navigate('home'), 0);
-      return null;
+      return (
+        <div className={`page-wrap${visible ? '' : ' page-exit'}`}>
+          {content}
+        </div>
+      );
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
